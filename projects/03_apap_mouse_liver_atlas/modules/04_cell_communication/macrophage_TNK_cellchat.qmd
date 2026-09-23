@@ -1,0 +1,526 @@
+---
+title: "巨噬细胞 × T/NK 亚群细胞通讯分析（CellChat，Control vs APAP_24h）"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## 概述
+
+本流程模仿 **Chang et al., *Journal of Translational Medicine* 2026 (24:529, s12967-026-07978-6)** 中 **TAM–T 细胞通讯** 的分析设计，用 CellChat 对巨噬细胞亚群与 T/NK 亚群之间的配体-受体（L–R）互作进行推断，并比较 **Control vs APAP_24h** 两个条件下的通讯变化。
+
+- **输入对象**：
+  - `T_NK_control_24h_seurat_annotated.rds`：T/NK 5 亚群（γδ T、Naive CD8 T (Tstr)、CD8 Tex、NK、Activated T (Cycling)），805 细胞
+  - `macrophages_final_M1M2_annotated.rds`：巨噬 3 亚群（Cluster1 SPP1⁺ TREM2⁺、Cluster2 Ccr2⁺ recruited、Cluster3 undefined），909 细胞
+- **物种**：小鼠 → 使用 `CellChatDB.mouse`
+- **与论文的对应关系**：论文比较 Primary CRC vs CRC-LM 的 TAM→T 通讯；此处比较 Control vs APAP_24h 的 巨噬→T/NK 通讯。
+- **关键 caveat**：`Mac-Cluster1 (SPP1⁺ TREM2⁺)` 仅在 APAP_24h 存在（484 细胞，Control 为 0）。为使差异比较覆盖全谱，Control 中该亚群以**零填充**方式纳入 8 型比较（其 Control 通讯恒为 0，差异图即展示该亚群在 APAP 中**新出现**的通讯），并作为 APAP 特异性通讯中枢单独分析（详见方法学说明 §7）。
+
+## 1. 环境与数据加载
+
+```{r setup}
+suppressMessages({
+  library(Seurat)
+  library(CellChat)     # v1.6.1（与论文相同版本）
+  library(ggplot2)
+  library(patchwork)
+  library(circlize)
+  library(dplyr)
+  library(cowplot)
+})
+set.seed(42)
+
+# ⚠️ 兼容性修复：CellChat 1.6.1 与 igraph 2.x 的 netVisual_diffInteraction 存在
+# 已知不兼容（未初始化 E(g)$loop.angle 属性 → NA → plot.igraph 报错，GitHub issue #456）。
+# 以下重建该函数，在赋值前先初始化 loop.angle（与 netVisual_circle 行为一致）。
+fix_diffInteraction <- function() {
+  f <- get('netVisual_diffInteraction', envir = asNamespace('CellChat'))
+  b <- deparse(body(f))
+  idx_if <- grep('if \\(sum\\(edge.start', b)
+  b2 <- append(b, "        igraph::E(g)$loop.angle <- rep(0, length(igraph::E(g)))", after = idx_if)
+  parse(text = b2)[[1]]
+}
+netVisual_diffInteraction_fixed <- function(object, comparison = c(1, 2),
+    measure = c("count", "weight", "count.merged", "weight.merged"),
+    color.use = NULL, color.edge = c("#b2182b", "#2166ac"), title.name = NULL,
+    sources.use = NULL, targets.use = NULL, remove.isolate = FALSE, top = 1,
+    weight.scale = FALSE, vertex.weight = 20, vertex.weight.max = NULL,
+    vertex.size.max = 15, vertex.label.cex = 1, vertex.label.color = "black",
+    edge.weight.max = NULL, edge.width.max = 8, alpha.edge = 0.6,
+    label.edge = FALSE, edge.label.color = "black", edge.label.cex = 0.8,
+    edge.curved = 0.2, shape = "circle", layout = igraph::in_circle(),
+    margin = 0.2, arrow.width = 1, arrow.size = 0.2) {
+  eval(fix_diffInteraction(), envir = environment())
+}
+
+# 零填充扩展：将某条件缺失的细胞类型（如 Control 无 Mac-Cluster1）以全 0 行/列
+# 补入 net / netP 矩阵，使差异比较（APAP 8 型 − Control 8 型）中该类型相关的
+# 差异 = 该条件自身的通讯值（"该轴在 APAP 新出现"）。不改变任何已算结果。
+expand_ctrl_zeros <- function(cc, new_name, pos, n_total) {
+  cc2 <- cc
+  for (nm in names(cc2@net)) {                       # net: prob/pval(3D) + count/weight(2D)
+    v <- cc2@net[[nm]]
+    d <- dim(v)
+    if (length(d) == 2) {
+      dn <- dimnames(v)
+      new_dn <- append(dn[[1]], new_name, after = pos - 1)
+      out <- matrix(0, n_total, n_total, dimnames = list(new_dn, new_dn))
+      out[dn[[1]], dn[[1]]] <- as.matrix(v)
+      cc2@net[[nm]] <- out
+    } else if (length(d) == 3) {
+      dn <- dimnames(v)
+      new_dn <- append(dn[[1]], new_name, after = pos - 1)
+      out <- array(0, dim = c(n_total, n_total, d[3]),
+                   dimnames = list(new_dn, new_dn, dn[[3]]))
+      out[dn[[1]], dn[[1]], ] <- v
+      cc2@net[[nm]] <- out
+    }
+  }
+  if (is.array(cc2@netP$prob)) {                     # netP$prob (3D)
+    v <- cc2@netP$prob; d <- dim(v); dn <- dimnames(v)
+    new_dn <- append(dn[[1]], new_name, after = pos - 1)
+    out <- array(0, dim = c(n_total, n_total, d[3]),
+                 dimnames = list(new_dn, new_dn, dn[[3]]))
+    out[dn[[1]], dn[[1]], ] <- v
+    cc2@netP$prob <- out
+  }
+  for (pw in names(cc2@netP$centr)) {                # netP$centr（矩阵 + 每群向量）
+    for (nm in names(cc2@netP$centr[[pw]])) {
+      v <- cc2@netP$centr[[pw]][[nm]]
+      d <- dim(v)
+      if (length(d) == 2) {
+        dn <- dimnames(v)
+        new_dn <- append(dn[[1]], new_name, after = pos - 1)
+        out <- matrix(0, n_total, n_total, dimnames = list(new_dn, new_dn))
+        out[dn[[1]], dn[[1]]] <- as.matrix(v)
+        cc2@netP$centr[[pw]][[nm]] <- out
+      } else if (is.numeric(v) && length(v) == (n_total - 1)) {
+        out <- append(v, 0, after = pos - 1)
+        names(out) <- append(names(v), new_name, after = pos - 1)
+        cc2@netP$centr[[pw]][[nm]] <- out
+      }
+    }
+  }
+  levels(cc2@idents) <- union_levels                 # idents 层级补全为 8 型
+  cc2
+}
+
+tnk <- readRDS("T_NK_control_24h_seurat_annotated.rds")
+mac <- readRDS("macrophages_final_M1M2_annotated.rds")
+cat("T/NK:", dim(tnk)[2], "细胞 | 巨噬:", dim(mac)[2], "细胞\n")
+```
+
+## 2. 合并对象与细胞类型定义
+
+将两个对象合并为统一的 8 细胞类型注释（巨噬亚群加 `Mac-` 前缀以与 T/NK 区分），并建立条件列。合并后需 `JoinLayers()` 合并 Seurat v5 的多层 assay。
+
+```{r merge}
+mac_celltype <- paste0("Mac-", mac$macrophage_subtype)
+merged <- merge(tnk, mac)
+merged <- JoinLayers(merged)
+merged$celltype_full <- c(as.character(tnk$celltype), mac_celltype)
+merged$condition <- c(as.character(tnk$condition), as.character(mac$condition))
+DefaultAssay(merged) <- "RNA"
+
+# 统一层级顺序（T/NK → 巨噬），保证两条件对象层级一致
+union_levels <- c(levels(tnk$celltype), paste0("Mac-", levels(mac$macrophage_subtype)))
+merged$celltype_full <- factor(merged$celltype_full, levels = union_levels)
+Idents(merged) <- "celltype_full"
+
+cat("=== 合并后各条件细胞类型分布 ===\n")
+print(table(merged$celltype_full, merged$condition))
+```
+
+> ⚠️ 从上表可见：`Mac-Cluster1 (SPP1⁺ TREM2⁺)`（484 细胞）**全部来自 APAP_24h**，Control 中不存在。这是 APAP 损伤后新出现的脂质相关/重塑型巨噬细胞亚群，也是本分析最重要的通讯中枢。差异比较（§4）通过**零填充**将其纳入 8 型比较。
+
+## 3. 单样本 CellChat 推断（Control / APAP_24h 独立）
+
+与论文一致（“Each dataset was preprocessed … separated by condition”），每个条件独立走完整流程：`createCellChat` → `CellChatDB.mouse` → `subsetData` → `identifyOverExpressedGenes/Interactions` → `computeCommunProb` → `filterCommunication` → `computeCommunProbPathway` → `aggregateNet` → `netAnalysis_computeCentrality`。两条件参数完全相同以保证可比性。
+
+```{r cellchat-build, cache = TRUE}
+data_input <- GetAssayData(merged, assay = "RNA", layer = "data")
+
+run_cc <- function(cond, types = NULL) {
+  meta <- merged@meta.data[merged$condition == cond, , drop = FALSE]
+  if (!is.null(types)) {                       # 指定类型子集时（本版未使用，保留扩展性）
+    meta <- meta[as.character(meta$celltype_full) %in% types, , drop = FALSE]
+    meta$celltype_full <- factor(as.character(meta$celltype_full), levels = types)
+  } else {                                     # 完整条件对象
+    meta$celltype_full <- droplevels(meta$celltype_full)
+  }
+  cc <- createCellChat(object = data_input[, rownames(meta)], meta = meta,
+                       group.by = "celltype_full")
+  cc@DB <- CellChatDB.mouse
+  cc <- subsetData(cc)
+  cc <- identifyOverExpressedGenes(cc)
+  cc <- identifyOverExpressedInteractions(cc)
+  cc <- computeCommunProb(cc, type = "triMean", population.size = TRUE)
+  cc <- filterCommunication(cc, min.cells = 10)
+  cc <- computeCommunProbPathway(cc)
+  cc <- aggregateNet(cc)
+  cc <- netAnalysis_computeCentrality(cc, slot.name = "netP")
+  cc
+}
+
+# Control: 7 型；APAP_24h: 8 型（含 SPP1⁺ TREM2⁺）
+cc_ctrl <- run_cc("Control")
+cc_apap <- run_cc("APAP_24h")
+cat("Control 细胞类型:", paste(levels(cc_ctrl@idents), collapse = " | "), "\n")
+cat("APAP_24h 细胞类型:", paste(levels(cc_apap@idents), collapse = " | "), "\n")
+```
+
+```{r single-summary}
+cat("=== Control 通讯统计 ===\n")
+cat("互作总数:", sum(cc_ctrl@net$count), " 通讯强度:", round(sum(cc_ctrl@net$weight), 3),
+    " 通路数:", length(cc_ctrl@netP$pathways), "\n")
+ctrl_p <- subsetCommunication(cc_ctrl, slot.name = "netP")
+ctrl_agg <- aggregate(prob ~ pathway_name, ctrl_p, sum)
+ctrl_agg <- ctrl_agg[order(-ctrl_agg$prob), ]
+cat("Control 通路 Top10:\n")
+print(head(ctrl_agg, 10), row.names = FALSE)
+
+cat("\n=== APAP_24h 通讯统计 ===\n")
+cat("互作总数:", sum(cc_apap@net$count), " 通讯强度:", round(sum(cc_apap@net$weight), 3),
+    " 通路数:", length(cc_apap@netP$pathways), "\n")
+apap_p <- subsetCommunication(cc_apap, slot.name = "netP")
+apap_agg <- aggregate(prob ~ pathway_name, apap_p, sum)
+apap_agg <- apap_agg[order(-apap_agg$prob), ]
+cat("APAP_24h 通路 Top10:\n")
+print(head(apap_agg, 10), row.names = FALSE)
+```
+
+## 4. 双条件差异比较（Control vs APAP_24h，8 型全谱，Mac-Cluster1 零填充纳入）
+
+比较对象为**全部 8 个细胞类型**。由于 `Mac-Cluster1 (SPP1⁺ TREM2⁺)` 在 Control 中无细胞（真实通讯为 0），将其以**全 0 行/列零填充**扩展进 Control 的 net/netP 矩阵（`expand_ctrl_zeros`，见 §1），使两对象同为 8×8 维度、`net.diff = APAP − Control` 中 Mac-Cluster1 相关的差异即代表该亚群在 APAP 中**新出现**的通讯（红色=增强，含 SPP1/FN1/MIF 轴）；Control 中该节点互作恒为 0。
+
+```{r compare-build, cache = TRUE}
+insert_name <- "Mac-Cluster1 (SPP1⁺ TREM2⁺)"
+insert_pos <- match(insert_name, union_levels)
+cc_ctrl8 <- expand_ctrl_zeros(cc_ctrl, insert_name, insert_pos, 8)
+cat("Control 8 型:", paste(levels(cc_ctrl8@idents), collapse = " | "), "\n")
+cat("Control Mac-Cluster1 行互作数(应为 0):",
+    sum(cc_ctrl8@net$count[insert_name, ]) + sum(cc_ctrl8@net$count[, insert_name]), "\n")
+
+object.list <- list(Control = cc_ctrl8, APAP_24h = cc_apap)
+cc_merged <- mergeCellChat(object.list, add.names = names(object.list))
+cat("merged 类型数:", length(levels(cc_merged@idents$joint)), "\n")
+```
+
+### 4.1 总体通讯数量与强度比较（模仿论文 Fig 5A）
+
+```{r compare-total}
+g1 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2))
+g2 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2), measure = "weight")
+g1 + g2 + plot_annotation(title = "Total number & strength of interactions (Control vs APAP_24h)")
+```
+
+> 解读：纳入 Mac-Cluster1 后，APAP_24h 的**通讯数量（780 → 1025）与总强度（0.51 → 0.77）均显著上升**——通讯增强主要由 APAP 新出现的 **SPP1⁺ TREM2⁺ 巨噬细胞**驱动（该亚群单独发出 97 条 Mac→T 互作，见 §5.3）；与论文中 LM"总体 TAM→T 信号强度大幅放大"的结论（Fig 5A）一致。
+
+### 4.2 差异网络图（红色=APAP 增强，蓝色=减弱）
+
+```{r diff-network, fig.width = 12, fig.height = 6}
+par(mfrow = c(1, 2), xpd = TRUE)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE, measure = "weight")
+```
+
+### 4.3 差异热图
+
+```{r diff-heatmap, fig.width = 12, fig.height = 5}
+gg1 <- netVisual_heatmap(cc_merged)
+gg2 <- netVisual_heatmap(cc_merged, measure = "weight")
+gg1 + gg2 + plot_annotation(title = "Differential interactions (Control vs APAP_24h)")
+```
+
+> 解读：红色 = APAP_24h 中增强的细胞对，蓝色 = 减弱的细胞对。结合 4.2/4.3 可定位变化最大的 巨噬↔T/NK 细胞对。
+
+### 4.4 各条件独立网络图（统一刻度）
+
+```{r circle-both, fig.width = 12, fig.height = 6}
+weight.max <- getMaxWeight(object.list, attribute = c("idents", "count"))
+par(mfrow = c(1, 2), xpd = TRUE)
+for (i in 1:length(object.list)) {
+  netVisual_circle(object.list[[i]]@net$count,
+                   weight.scale = TRUE, label.edge = FALSE,
+                   edge.weight.max = weight.max[2], edge.width.max = 12,
+                   title.name = paste0("Number of interactions - ", names(object.list)[i]))
+}
+```
+
+### 4.5 信号角色散点图（Sender vs Receiver）
+
+```{r role-scatter, fig.width = 12, fig.height = 5}
+num.link <- sapply(object.list, function(x) {
+  rowSums(x@net$count) + colSums(x@net$count) - diag(x@net$count)
+})
+weight.MinMax <- c(min(num.link), max(num.link))
+gg <- list()
+for (i in 1:length(object.list)) {
+  gg[[i]] <- netAnalysis_signalingRole_scatter(object.list[[i]],
+                                               title = names(object.list)[i],
+                                               weight.MinMax = weight.MinMax)
+}
+patchwork::wrap_plots(plots = gg)
+```
+
+### 4.6 特定细胞类型信号变化散点图
+
+分析关键巨噬亚群与 T/NK 亚群在各通路上 Outgoing/Incoming 信号的方向性变化（排除 MIF 通路避免干扰，同论文做法）。
+
+```{r signaling-changes, fig.width = 12, fig.height = 10}
+p1 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "Mac-Cluster2 (Ccr2⁺ recruited)", signaling.exclude = "MIF")
+p2 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "Mac-Cluster3 (undefined)", signaling.exclude = "MIF")
+p3 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "CD8 Tex", signaling.exclude = "MIF")
+p4 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "Naive CD8 T (Tstr)", signaling.exclude = "MIF")
+(p1 | p2) / (p3 | p4)
+```
+
+### 4.7 信号通路信息流对比（模仿论文 Fig 5D）
+
+**完全复刻论文Fig 5D（CellChat标准输出）：**
+- **左图 Relative information flow**：**通路内归一化**，每个通路 Control（粉色）+ APAP（绿色）的信息流比例相加=1，总长度恒为1，x=0.5虚线是分界线：粉色超过虚线=Control占主导，绿色超过虚线=APAP占主导
+- **右图 Information flow**：原始信息流总强度（所有LR对prob总和，不归一化），两色条都从x=0向右延伸、粉色叠于绿色上方，展示每个通路的真实通讯强度
+- 数据范围：8个细胞类型（巨噬3亚群 + T/NK 5亚群）之间**所有方向**的显著通讯，与论文分析设计一致
+
+```{r pathway-info-flow, fig.width = 13, fig.height = 12}
+# ---- 重建merged对象 ----
+object.list <- list(Control = cc_ctrl8, APAP_24h = cc_apap)
+cc_merged <- mergeCellChat(object.list, add.names = names(object.list))
+
+# ---- 左图：Relative information flow（rankNet stacked=TRUE，100%匹配论文左图）----
+# stacked=TRUE 就是通路内归一化堆叠条形：粉色+绿色=1，0.5虚线分隔
+p_rel <- rankNet(cc_merged, mode = "comparison", stacked = TRUE, do.stat = FALSE,
+                 font.size = 10, color.use = c("#FF4B87", "#3DFFB2"),
+                 title = "Relative information flow") +
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        legend.position = "none")
+
+# ---- 获取通路顺序（和左图rankNet完全一致）----
+# 提取rankNet绘图数据中的通路顺序
+gb <- ggplot_build(p_rel)
+# rankNet stacked数据中通路y轴顺序
+pathway_order_rank <- as.character(unique(gb$data[[2]]$y))
+# 提取原始通路名（去掉标签可能的截断）
+df_ctrl <- subsetCommunication(cc_ctrl8, slot.name = "netP")
+df_apap <- subsetCommunication(cc_apap, slot.name = "netP")
+flow_ctrl <- aggregate(prob ~ pathway_name, df_ctrl, sum)
+flow_apap <- aggregate(prob ~ pathway_name, df_apap, sum)
+colnames(flow_ctrl)[2] <- "Control"
+colnames(flow_apap)[2] <- "APAP_24h"
+flow_all <- merge(flow_ctrl, flow_apap, by = "pathway_name", all = TRUE)
+flow_all[is.na(flow_all)] <- 0
+# 按Control降序（和rankNet默认排序一致，匹配左图）
+flow_all <- flow_all[order(-flow_all$Control), ]
+flow_all <- flow_all[flow_all$Control > 1e-5 | flow_all$APAP_24h > 1e-5, ]
+# Y轴顺序和左图完全一致：最上面是Control最强通路，反转后ggplot从上到下排序正确
+pathway_levels <- rev(flow_all$pathway_name)
+
+# ---- 右图：Information flow（绝对强度，相同叠加样式，匹配论文右图）----
+col_ctrl <- "#FF4B87"
+col_apap <- "#3DFFB2"
+max_abs <- max(c(flow_all$Control, flow_all$APAP_24h)) * 1.05
+p_abs <- ggplot(flow_all, aes(y = factor(pathway_name, levels = pathway_levels))) +
+  geom_col(aes(x = APAP_24h), fill = col_apap, width = 0.85) +
+  geom_col(aes(x = Control), fill = col_ctrl, width = 0.85) +
+  labs(x = "Information flow", y = NULL, title = "Information flow") +
+  xlim(0, max_abs) +
+  theme_classic(base_size = 10) +
+  theme(
+    axis.text.y = element_blank(),  # 左图已有通路标签，右图隐藏
+    axis.text.x = element_text(size = 10, color = "black"),
+    axis.title.x = element_text(size = 11, face = "bold", margin = margin(t=8)),
+    axis.line.y = element_blank(), axis.ticks.y = element_blank(),
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+  )
+
+# ---- 图例 ----
+p_leg <- ggplot(data.frame(group = factor(c("Control", "APAP_24h"), levels = c("Control", "APAP_24h")),
+                           x = 1:2, y = 1), aes(x = x, y = y, fill = group)) +
+  geom_col(width = 0.7) +
+  scale_fill_manual(values = c("Control" = col_ctrl, "APAP_24h" = col_apap)) +
+  theme_void() + theme(legend.position = "bottom", legend.title = element_blank(),
+                       legend.text = element_text(size = 11, face = "bold"))
+
+# ---- 拼接 ----
+p_combined <- plot_grid(p_rel, p_abs, nrow = 1, rel_widths = c(1.2, 1))
+plot_grid(p_combined, get_legend(p_leg), ncol = 1, rel_heights = c(10, 0.5))
+
+# 输出统计
+cat("=== 全网络信号通路信息流统计 ===\n")
+cat("Control: ", sum(flow_all$Control>0), "条通路, 总信息流", round(sum(flow_all$Control), 3), "\n")
+cat("APAP_24h:", sum(flow_all$APAP_24h>0), "条通路, 总信息流", round(sum(flow_all$APAP_24h), 3), "\n")
+cat("\nControl 主导通路（粉色>0.5）:\n")
+flow_all$Control_ratio <- flow_all$Control / (flow_all$Control + flow_all$APAP_24h)
+print(head(flow_all[flow_all$Control_ratio > 0.5, c("pathway_name", "Control", "APAP_24h", "Control_ratio")], 10), row.names = FALSE)
+cat("\nAPAP 主导/特有通路（绿色>0.5）:\n")
+print(head(flow_all[flow_all$Control_ratio < 0.5, ][order(-flow_all$APAP_24h), c("pathway_name", "Control", "APAP_24h", "Control_ratio")], 10), row.names = FALSE)
+```
+
+> **解读（与论文 Fig 5D 完全一致）**：
+> - 左图：每个通路粉色+绿色总长恒为1，直观展示两条件在该通路中各占多少比例——0.5虚线左侧粉色为Control占比，右侧绿色为APAP占比；
+> - **Control 主导通路（虚线以上粉色更长）**：MHC-I、COLLAGEN/ITGAL-ITGB2、SELPLG、ICAM、LCK、CLEC、CD86、MHC-II、THBS、CD45 等基础免疫、黏附、抗原呈递通路，Control 占比超过50%；
+> - **APAP 主导通路（虚线以下绿色更长）**：CCL、SPP1、MIF、FN1、APP、GALECTIN、COMPLEMENT、TGFb、GAS、RESISTIN、CD99 等，其中 **SPP1、GAS、ANGPTL、CD70、IL10** 等通路在Control中信息流为0，完全是APAP损伤后新增通讯，**SPP1/CCL/FN1/MIF/APP** 是SPP1⁺ TREM2⁺巨噬驱动的核心通讯轴；
+> - 右图：绝对强度可见整体通讯强度APAP显著高于Control，符合论文"LM整体通讯强度放大"的结论。
+
+## 5. 巨噬 → T/NK 定向通讯（模仿论文 Fig 5C/E）
+
+定义巨噬亚群（发送方）与T/NK亚群（接收方）：
+```{r define-mac-tnk}
+mac_sources <- c("Mac-Cluster1 (SPP1⁺ TREM2⁺)", "Mac-Cluster2 (Ccr2⁺ recruited)", "Mac-Cluster3 (undefined)")
+tnk_targets <- c("γδ T", "Naive CD8 T (Tstr)", "CD8 Tex", "NK", "Activated T (Cycling)")
+```
+
+### 5.1 APAP_24h 中 巨噬→T/NK 的 L–R 气泡图
+
+以全部巨噬亚群为发送方、T/NK 亚群为接收方，展示 APAP 中驱动 巨噬→T 通讯的具体配体-受体对（论文 Fig 5C 的对应图）。
+
+```{r bubble-mac2t, fig.width = 10, fig.height = 11}
+netVisual_bubble(cc_apap,
+                 sources.use = mac_sources,
+                 targets.use = tnk_targets,
+                 remove.isolate = FALSE, font.size = 8) +
+  ggtitle("Macrophage -> T/NK ligand-receptor pairs (APAP_24h)")
+```
+
+### 5.2 T/NK → 巨噬 的 L–R 气泡图
+
+```{r bubble-t2mac, fig.width = 10, fig.height = 9}
+netVisual_bubble(cc_apap,
+                 sources.use = tnk_targets,
+                 targets.use = mac_sources,
+                 remove.isolate = FALSE, font.size = 8) +
+  ggtitle("T/NK -> Macrophage ligand-receptor pairs (APAP_24h)")
+```
+
+### 5.3 SPP1⁺ TREM2⁺ 巨噬细胞：APAP 特异性通讯中枢
+
+`Mac-Cluster1 (SPP1⁺ TREM2⁺)` 仅在 APAP_24h 存在，是 APAP 损伤中新增的脂质相关巨噬细胞。这里单独展示其全部显著 L–R 互作（论文 Fig 5E 中 SPP1⁺ TAM 作为通讯中枢的对应分析）。
+
+```{r spp1-hub}
+# 显示名映射（缩短，避免超长标签撑坏版面/压缩图片）
+label_map <- c(
+  "Mac-Cluster1 (SPP1⁺ TREM2⁺)" = "SPP1+ Mac",
+  "Mac-Cluster2 (Ccr2⁺ recruited)" = "Ccr2+ Mac",
+  "Mac-Cluster3 (undefined)" = "Undefined Mac",
+  "Naive CD8 T (Tstr)" = "Naive CD8",
+  "Activated T (Cycling)" = "Cycling T"
+)
+df_apap <- subsetCommunication(cc_apap)
+df_sp <- df_apap[df_apap$source == "Mac-Cluster1 (SPP1⁺ TREM2⁺)",
+                 c("source", "target", "ligand", "receptor", "pathway_name", "prob")]
+df_sp <- df_sp[order(-df_sp$prob), ]
+cat("SPP1⁺ TREM2⁺ 巨噬 作为发送方的显著互作:", nrow(df_sp), "条\n")
+df_sp_show <- df_sp
+df_sp_show$source <- "SPP1+ Mac"
+df_sp_show$target <- unname(label_map[as.character(df_sp_show$target)])
+print(head(df_sp_show, 25), row.names = FALSE)
+```
+
+```{r spp1-network, fig.width = 11, fig.height = 8, out.width = "100%"}
+# 显示用短标签对象（仅重命名 net 矩阵维度名与 idents 层级，不改变任何分析结果）
+cc_disp <- cc_apap
+for (s in c("prob", "pval")) {
+  dn <- dimnames(cc_disp@net[[s]])
+  dn <- lapply(dn, function(x) ifelse(x %in% names(label_map), unname(label_map[x]), x))
+  dimnames(cc_disp@net[[s]]) <- dn
+}
+levels(cc_disp@idents) <- ifelse(levels(cc_disp@idents) %in% names(label_map),
+                                 unname(label_map[levels(cc_disp@idents)]),
+                                 levels(cc_disp@idents))
+# SPP1/FN1/MIF/APP 关键轴汇总（发送方=SPP1⁺ TREM2⁺ 巨噬，短标签显示）
+key_axis <- c("SPP1", "FN1", "MIF", "APP", "GALECTIN", "CCL", "MHC-I", "THY1", "COMPLEMENT", "TGFb")
+key_axis <- key_axis[key_axis %in% cc_disp@netP$pathways]
+for (pw in key_axis) {
+  netVisual_aggregate(cc_disp, signaling = pw, layout = "chord",
+                      sources.use = "SPP1+ Mac")
+}
+```
+
+> **关键发现（与论文高度一致）**：
+> - **SPP1–CD44**、**FN1–CD44**、**MIF–CD74/CXCR4/CD44**、**APP–CD74** 等"基质-髓系锚定+抑制型"信号轴在 APAP_24h 中由 SPP1⁺ TREM2⁺ 巨噬细胞集中发出，与论文中 LM 以 SPP1/FN1/MIF 为中心的 TAM–T 通讯结论完全对应。
+> - 另有 **CCL（Ccl2/Ccl6/Ccl7→Ccr2）** 募集轴与 **GALECTIN（Lgals9→Ptprc）** 抑制轴。
+> - 在巨噬→T 方向，**MHC-I（H2-D1/K1→Cd8a/Cd8b1）** 抗原呈递仍活跃（主要作用于 Naive CD8 T / CD8 Tex），但相对权重较 Control 明显下降（见 §3 通路 Top 表），呈现"抗原呈递保留但功能受抑制"的格局——与论文"presentation intact but response trapped"的描述吻合。
+
+### 5.4 通路水平 Outgoing/Incoming 热图
+
+```{r pathway-heatmap, fig.width = 12, fig.height = 10}
+p1 <- netAnalysis_signalingRole_heatmap(cc_apap, pattern = "outgoing",
+                                        signaling = NULL, font.size = 4,
+                                        title = "APAP_24h outgoing (Sender)")
+p2 <- netAnalysis_signalingRole_heatmap(cc_apap, pattern = "incoming",
+                                        signaling = NULL, font.size = 4,
+                                        title = "APAP_24h incoming (Receiver)")
+p1 + p2
+```
+
+## 6. 结果汇总
+
+### 6.1 关键 L–R 对表格导出
+
+```{r export-tables}
+# APAP 全对象：巨噬→T/NK 的 L–R 对（按 prob 排序）
+df_mt <- df_apap[grepl("Mac-", df_apap$source) & !grepl("Mac-", df_apap$target),
+                 c("source", "target", "ligand", "receptor", "pathway_name", "prob", "pval")]
+df_mt <- df_mt[order(-df_mt$prob), ]
+write.csv(df_mt, "cellchat_APAP_Mac_to_T_LR.csv", row.names = FALSE)
+cat("APAP 巨噬→T/NK L–R 对:", nrow(df_mt), "条\n")
+
+# Control 巨噬→T/NK 的 L–R 对
+df_ctrl <- subsetCommunication(cc_ctrl)
+df_cmt <- df_ctrl[grepl("Mac-", df_ctrl$source) & !grepl("Mac-", df_ctrl$target),
+                  c("source", "target", "ligand", "receptor", "pathway_name", "prob", "pval")]
+df_cmt <- df_cmt[order(-df_cmt$prob), ]
+write.csv(df_cmt, "cellchat_Control_Mac_to_T_LR.csv", row.names = FALSE)
+cat("Control 巨噬→T/NK L–R 对:", nrow(df_cmt), "条\n")
+```
+
+### 6.2 各条件 巨噬→T/NK 互作数量汇总（8 型比较对象）
+
+```{r mac2t-summary}
+cat("=== 巨噬→T/NK 互作数量（Control vs APAP_24h，8 型比较对象）===\n")
+m_ctrl <- cc_merged@net$Control$count
+m_apap <- cc_merged@net$APAP_24h$count
+mac_idx <- grepl("^Mac-", rownames(m_ctrl))
+tnk_idx <- !mac_idx
+cat("Control 巨噬→T/NK:", sum(m_ctrl[mac_idx, tnk_idx]),
+    " | APAP_24h 巨噬→T/NK:", sum(m_apap[mac_idx, tnk_idx]), "\n")
+cat("其中 Mac-Cluster1(SPP1⁺ TREM2⁺)→T/NK:",
+    sum(m_apap["Mac-Cluster1 (SPP1⁺ TREM2⁺)", tnk_idx]), "\n")
+
+cat("\n=== SPP1⁺ TREM2⁺ 巨噬 (Mac-Cluster1) 的关键信号轴 (APAP_24h) ===\n")
+key_axes <- c("SPP1", "FN1", "MIF", "APP", "GALECTIN", "CCL", "COMPLEMENT", "TGFb")
+for (pw in key_axes) {
+  if (pw %in% df_sp$pathway_name) {
+    sub <- df_sp[df_sp$pathway_name == pw, ]
+    cat(sprintf("%-10s: %d 对, top = %s\n", pw, nrow(sub), sub$ligand[1]))
+  }
+}
+```
+
+## 7. 方法学说明
+
+> **与论文的对应**：论文（Chang et al., J Transl Med 2026）对 CRC 原发灶 vs 肝转移灶（LM）分别建立 T–TAM 组合对象，用 CellChat v1.6.1 以相同参数推断通讯（`computeCommunProb`/`computeCommunProbPathway`/`aggregateNet`/`netAnalysis_computeCentrality`），并用点图、圆形网络图、角色散点图与定向气泡图展示结果。本分析完全复刻该流程（含相同的 CellChat 1.6.1 版本），仅将数据库换为 `CellChatDB.mouse`，将比较维度换为 Control vs APAP_24h。
+
+> **Caveat（如实报告）**：
+> - **Mac-Cluster1 (SPP1⁺ TREM2⁺) 仅存在于 APAP_24h**（Control 0 / APAP 484）。差异比较采用**零填充**方案：Control 的 net/netP 矩阵扩展为 8×8（该亚群行/列全 0），故差异图中 Mac-Cluster1 相关的红色边即代表其在 APAP 中**新出现**的通讯；Control 侧该节点无任何互作（符合真实生物学）。该亚群同时作为"APAP 特异性中枢"单独呈现（§5.3）。
+> - **`population.size = TRUE`** 使通讯概率依赖群体构成，APAP 对象的概率在其真实 8 型构成下计算、Control 在其真实 7 型构成下计算（零填充仅补矩阵维度、不改变已算概率）。因此涉及共享 7 型的通讯值仍存在构成差异，定量解读时需注意。
+> - **`filterCommunication(min.cells = 10)`**：Control 中 Mac-Cluster3 仅 45 细胞、Mac-Cluster2 仅 33 细胞，均 >10，满足阈值；但小群体间通讯统计效力仍有限。
+> - **igraph 2.x 兼容性**：CellChat 1.6.1 的 `netVisual_diffInteraction` 与 igraph ≥2.0 存在已知不兼容（未初始化 `loop.angle` 边属性导致绘图报错，GitHub issue #456）。本分析在 setup 中重建了该函数（§1），结果与官方意图一致。
+> - **对象非统一批次**：T/NK 与巨噬对象来自不同组织消化/分选批次，合并分析前未做批次校正；CellChat 输入为各自的 log-normalized 表达矩阵，跨批次的定量比较需谨慎解读。
+
+## 8. 保存结果
+
+```{r save}
+saveRDS(cc_ctrl,   "cellchat_Control_7types.rds")
+saveRDS(cc_apap,   "cellchat_APAP24h_8types.rds")
+saveRDS(cc_ctrl8,  "cellchat_Control_8types_expanded.rds")
+saveRDS(cc_merged, "cellchat_merged_Control_vs_APAP24h.rds")
+cat("已保存 4 个 CellChat 对象:\n")
+cat(" - cellchat_Control_7types.rds（单样本 Control，7 型）\n")
+cat(" - cellchat_APAP24h_8types.rds（单样本 APAP_24h，8 型）\n")
+cat(" - cellchat_Control_8types_expanded.rds（零填充扩展，比较用）\n")
+cat(" - cellchat_merged_Control_vs_APAP24h.rds（合并比较对象）\n")
+cat("以及 2 个 L–R 表格 csv\n")
+```

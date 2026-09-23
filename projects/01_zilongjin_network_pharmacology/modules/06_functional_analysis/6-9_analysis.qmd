@@ -1,0 +1,721 @@
+---
+title: "紫龙金片网络药理学——基于 TCMNP 的多维综合分析流程"
+author: "Network Pharmacology Pipeline"
+date: "2026-08-26"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-fold: show
+    embed-resources: true
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
+params:
+  intersection_file: "input/IntersectionGenes.csv"
+  hct_file: "input/herb_compound_target_intersection.csv"
+  kegg_gmt: "input/kegg_human_full.gmt"
+  run_tcmnp_comp: true
+  run_tcmnp_net: true
+  run_ppi: true
+  run_enrichment: true
+  run_gsea: true
+  filter_disease_terms: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 8, fig.height = 6)
+```
+
+# 1. 背景与流程概述
+
+本分析模块严格参考《TCMNP 中药网络药理学 R 包使用指南》，衔接紫龙金 8 味药已知活性成分靶点（1,428 个）与结直肠癌肝转移（CRLM）疾病数据库靶点（424 个）取交集后得到的 **164 个核心候选治疗靶点**，构建集“**复方配伍性味归经 $\rightarrow$ 药材-成分-靶点网络 $\rightarrow$ PPI 核心蛋白拓扑 $\rightarrow$ GO/KEGG 纯信号通路 $\rightarrow$ C-T-P 四维桑基图/弦图 $\rightarrow$ GSEA 级联加权**”于一体的全景式网络药理学分析体系：
+
+1. **中药复方组成与四气五味归经可视化（TCMNP: `tcm_comp`, `tcm_compound`）**；
+2. **药材-成分-靶点多维网络与度数特征（TCMNP: `tcm_net`, `degree_plot`）**；
+3. **PPI 蛋白质相互作用网络拓扑分析与 Top 20 Hub 靶点识别**；
+4. **GO 功能富集与 KEGG 信号通路富集（ORA，过滤排除泛疾病标签）**；
+5. **“药材-成分-靶点-通路”（C-T-P）四维多级桑基流向图与弦图（TCMNP: `tcm_sankey`, `tcm_alluvial`）**；
+6. **GSEA 基因集富集分析（基于 PPI 连接度全局加权与山峦走势图）**；
+7. **CRLM 转移定植与信号调控机制深度解读**。
+
+---
+
+# 2. 环境初始化与数据载入
+
+```{r env_setup}
+options(stringsAsFactors = FALSE)
+dir.create("input", showWarnings = FALSE)
+dir.create("results", showWarnings = FALSE)
+
+library(TCMNP)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(data.table)
+library(openxlsx)
+library(knitr)
+library(igraph)
+library(ggraph)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(enrichplot)
+
+# 读取交集基因文件
+read_gene_file <- function(path) {
+  if (!file.exists(path)) stop("未找到交集文件：", path)
+  x <- tryCatch(read.csv(path, check.names = FALSE, stringsAsFactors = FALSE),
+                error = function(e) read.delim(path, check.names = FALSE, stringsAsFactors = FALSE))
+  gene_col <- intersect(c("Gene", "gene", "SYMBOL", "symbol"), names(x))
+  genes <- if (length(gene_col)) x[[gene_col[1]]] else x[[1]]
+  genes <- toupper(trimws(as.character(genes)))
+  genes <- unique(genes[nzchar(genes) & genes != "NA"])
+  if (length(genes) < 2) stop("交集文件中的有效基因少于 2 个")
+  return(sort(genes))
+}
+
+genes <- read_gene_file(params$intersection_file)
+cat("成功载入交集候选靶点数：", length(genes), "个\n")
+
+# 输出标准交集列表
+writeLines(genes, "results/IntersectionGenes.txt")
+write.csv(data.frame(Gene = genes), "results/IntersectionGenes.csv", row.names = FALSE, quote = FALSE)
+```
+
+---
+
+# 3. 中药复方组成与四气五味归经可视化（TCMNP 模块）
+
+紫龙金片由黄芪、当归、丹参、半枝莲、郁金、龙葵、白英、蛇莓 8 味中药配伍而成，具有“益气养血、清热解毒、理气化瘀”之功效。
+
+## 3.1 紫龙金复方药材配伍组成与剂量权重
+
+```{r fig_tcm_comp, fig.width=7, fig.height=6}
+if (isTRUE(params$run_tcmnp_comp)) {
+  comp_df <- data.frame(
+    herb = c("huang qi", "dang gui", "dan shen", "ban zhi lian", "yu jin", "long kui", "bai ying", "she mei"),
+    weight = c(30, 15, 15, 30, 15, 30, 30, 30),
+    property = c("mildly warm", "warm", "mildly warm", "cold", "cold", "cold", "mildly cold", "cold"),
+    flavor = c("sweet", "sweet,pungent", "bitter", "bitter,pungent", "bitter,pungent", "bitter,mildly sweet", "bitter", "sweet,bitter"),
+    meridian = c("lung,spleen", "liver,spleen,heart", "liver,heart", "lung,liver,kidney", "lung,liver,heart", "bladder,liver,kidney", "liver,gallbladder", "lung,liver,stomach"),
+    stringsAsFactors = FALSE
+  )
+  
+  # 调用 TCMNP tcm_comp 绘制复方组成图
+  tcm_comp(comp_df[, c("herb", "weight")])
+}
+```
+
+## 3.2 中药四气五味与归经分布多维展示
+
+```{r fig_tcm_compound, fig.width=8.5, fig.height=7.5}
+if (isTRUE(params$run_tcmnp_comp)) {
+  # 调用 TCMNP tcm_compound 绘制性味归经雷达/环形图
+  tcm_compound(comp_df)
+}
+```
+
+---
+
+# 4. 药材-成分-靶点多维网络与度数特征（TCMNP 模块）
+
+## 4.1 药材-成分-靶点三维拓扑网络图
+
+```{r fig_tcm_net, fig.width=9, fig.height=8}
+if (isTRUE(params$run_tcmnp_net)) {
+  hct <- read.csv(params$hct_file, stringsAsFactors = FALSE)
+  
+  # 选取代表性网络子集进行可视化展示
+  set.seed(123)
+  net_sample <- hct %>%
+    group_by(herb) %>%
+    slice_head(n = 8) %>%
+    ungroup() %>%
+    dplyr::select(herb, molecule, target) %>%
+    as.data.frame()
+  
+  tcm_net(net_sample, label.degree = 2, rem.dis.inter = TRUE, node.color = "Spectral")
+}
+```
+
+## 4.2 药材、核心成分、关键靶点连接度（Degree）分面排名图
+
+```{r fig_degree_plot, fig.width=9, fig.height=8}
+if (isTRUE(params$run_tcmnp_net)) {
+  # 调用 TCMNP degree_plot 绘制度数水平排名分面柱状图
+  degree_plot(hct[, c("herb", "molecule", "target")], plot.set = "horizontal")
+}
+```
+
+---
+
+# 5. PPI 蛋白质相互作用网络分析与 Cytoscape / CytoHubba 对接
+
+## 5.1 STRING 相互作用子网络提取与 Cytoscape 标准文件导出
+
+```{r ppi_analysis}
+if (isTRUE(params$run_ppi)) {
+  ppi_path <- "input/string_interactions_short.tsv"
+  if (!file.exists(ppi_path)) stop("缺少 input/string_interactions_short.tsv")
+  
+  ppi_raw <- data.table::fread(ppi_path, data.table = FALSE)
+  id_cols <- intersect(c("preferredName_A", "preferredName_B", "node1", "node2"), names(ppi_raw))
+  if (length(id_cols) < 2) stop("STRING 边表未识别到节点列")
+  
+  # 筛选两端均属于 164 个交集基因的相互作用边，并按中高置信度过滤 (score >= 0.400)
+  ppi <- ppi_raw[toupper(ppi_raw[[id_cols[1]]]) %in% genes & toupper(ppi_raw[[id_cols[2]]]) %in% genes, , drop = FALSE]
+  if ("score" %in% names(ppi)) {
+    ppi <- ppi[ppi$score >= 0.4, , drop = FALSE]
+  }
+  
+  write.csv(ppi, "results/PPI_edges_intersection.csv", row.names = FALSE, quote = FALSE)
+  
+  # 1. 导出 Cytoscape 标准边表 (Cytoscape_Edges.csv)
+  cyto_edges <- data.frame(
+    source = ppi[[id_cols[1]]],
+    target = ppi[[id_cols[2]]],
+    interaction = "interacts_with",
+    combined_score = ppi$score,
+    stringsAsFactors = FALSE
+  )
+  write.csv(cyto_edges, "results/Cytoscape_Edges.csv", row.names = FALSE, quote = FALSE)
+  
+  # 2. 导出 Cytoscape 节点表 (Cytoscape_Nodes.csv)
+  unique_nodes <- unique(c(cyto_edges$source, cyto_edges$target))
+  cyto_nodes <- data.frame(
+    Gene = unique_nodes,
+    stringsAsFactors = FALSE
+  )
+  write.csv(cyto_nodes, "results/Cytoscape_Nodes.csv", row.names = FALSE, quote = FALSE)
+  
+  # 构建基础 igraph 拓扑并记录基础度数供下游分析使用
+  edges_df <- data.frame(from = ppi[[id_cols[1]]], to = ppi[[id_cols[2]]], stringsAsFactors = FALSE)
+  g <- igraph::graph_from_data_frame(edges_df, directed = FALSE)
+  g <- igraph::simplify(g)
+  
+  deg_all <- igraph::degree(g)
+  topo_df <- data.frame(
+    Gene = names(deg_all),
+    Degree = as.numeric(deg_all),
+    stringsAsFactors = FALSE
+  )
+  topo_df <- topo_df[order(-topo_df$Degree), ]
+  
+  cat("===================================================\n")
+  cat("【PPI 互作网络统计】\n")
+  cat(" - 连通蛋白节点总数：", length(unique_nodes), "\n")
+  cat(" - 高置信度相互作用边数：", nrow(cyto_edges), "\n")
+  cat(" - Cytoscape 导入边表已保存至：results/Cytoscape_Edges.csv\n")
+  cat(" - Cytoscape 节点表已保存至：results/Cytoscape_Nodes.csv\n")
+  cat(" - Cytoscape 会话工程文件：results/PPI总文件.cys\n")
+  cat("===================================================\n")
+}
+```
+
+## 5.2 核心靶点 CytoHubba MCC 排名柱状图（Top 20 Hub Targets）
+
+```{r fig_hub_barplot, fig.width=9.5, fig.height=6.8}
+if (isTRUE(params$run_ppi)) {
+  # 1. 直接读取用户从 Cytoscape 导出的最新官方 Top 20 文件 MCCtop20.csv
+  if (file.exists("MCCtop20.csv")) {
+    # 兼容带首行标题注释的 Cytoscape Export 格式
+    first_line <- readLines("MCCtop20.csv", n = 1)
+    if (grepl("ranked by", first_line, ignore.case = TRUE)) {
+      df_mcc <- read.csv("MCCtop20.csv", skip = 1, header = TRUE, stringsAsFactors = FALSE)
+    } else {
+      df_mcc <- read.csv("MCCtop20.csv", header = TRUE, stringsAsFactors = FALSE)
+    }
+  } else {
+    stop("缺少 MCCtop20.csv 文件")
+  }
+  
+  df_mcc$Rank <- as.numeric(df_mcc$Rank)
+  df_mcc$Score <- as.numeric(df_mcc$Score)
+  df_mcc$Name <- factor(df_mcc$Name, levels = rev(df_mcc$Name))
+  
+  # 提取 Top 20 核心 Hub 靶点
+  top20_mcc <- head(df_mcc, 20)
+  
+  # 绘制 Top 20 MCC 核心靶点排名柱状图
+  ggplot(top20_mcc, aes(x = 21 - Rank, y = Name, fill = 21 - Rank)) +
+    geom_bar(stat = "identity", width = 0.72) +
+    geom_text(aes(label = paste0("Rank ", Rank, " (Score: ", sprintf("%.2e", Score), ")")), 
+              hjust = -0.05, size = 3.2, fontface = "bold") +
+    scale_fill_gradient(low = "#FF9900", high = "#CC0000", name = "MCC Priority") +
+    scale_x_continuous(expand = expansion(mult = c(0, 0.45))) +
+    labs(title = "Top 20 Hub Targets Ranked by CytoHubba (MCC Algorithm)", 
+         subtitle = "Directly calculated from Cytoscape official CytoHubba export (STAT3 is Rank 1)",
+         x = "MCC Relative Priority", y = "") +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      plot.subtitle = element_text(hjust = 0.5, size = 10, color = "grey40"),
+      axis.text.y = element_text(face = "bold", size = 10),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      legend.position = "none"
+    )
+}
+```
+
+## 5.3 PPI 相互作用网络拓扑图与 Top 20 核心子网络图
+
+### 5.3.1 全景 PPI 靶心多层同心圆拓扑图（Concentric Radial PPI Network）
+
+```{r fig_concentric_ppi, fig.width=10, fig.height=10}
+if (isTRUE(params$run_ppi)) {
+  # 构建 4 层靶心同心圆网络布局（中心深红核心 -> 外层淡黄边缘）
+  deg_all <- as.numeric(igraph::degree(g))
+  v_names <- as.character(igraph::V(g)$name)
+  
+  tier <- rep(4, length(v_names))
+  names(tier) <- v_names
+  
+  mcc_top6 <- df_mcc$Name[1:6]
+  mcc_top20 <- df_mcc$Name[7:20]
+  deg_sorted <- v_names[order(-deg_all)]
+  deg_rest <- setdiff(deg_sorted, df_mcc$Name)
+  
+  tier[v_names %in% mcc_top6] <- 1   # Tier 1 (靶心核心层): STAT3, TP53, HIF1A, CTNNB1, MYC, INS
+  tier[v_names %in% mcc_top20] <- 2  # Tier 2 (内层核心 Hub): PTEN, AKT1, NFKB1, ESR1, CDH1...
+  tier[v_names %in% deg_rest[1:45]] <- 3 # Tier 3 (中层骨干)
+                                         # Tier 4 (最外层边缘靶点)
+  
+  r_tier <- c("1" = 2.0, "2" = 4.6, "3" = 7.5, "4" = 10.5)
+  coords <- matrix(0, nrow = length(v_names), ncol = 2)
+  rownames(coords) <- v_names
+  
+  for (t in 1:4) {
+    nodes_t <- v_names[tier == t]
+    n_t <- length(nodes_t)
+    if (n_t > 0) {
+      angles <- seq(0, 2 * pi, length.out = n_t + 1)[1:n_t]
+      r <- r_tier[as.character(t)]
+      coords[nodes_t, 1] <- r * cos(angles)
+      coords[nodes_t, 2] <- r * sin(angles)
+    }
+  }
+  
+  g <- igraph::set_vertex_attr(g, "tier", value = as.numeric(tier))
+  
+  set.seed(42)
+  ggraph(g, layout = coords) +
+    geom_edge_link(alpha = 0.08, color = "grey55", linewidth = 0.35) +
+    geom_node_point(aes(color = tier, size = 12 - tier * 1.6), show.legend = FALSE) +
+    geom_node_text(aes(label = name), size = ifelse(tier <= 2, 3.4, 2.3), fontface = "bold", color = "black") +
+    scale_color_gradientn(colors = c("#A6001A", "#DE3831", "#FF9800", "#FFF2A8")) +
+    scale_size_identity() +
+    labs(title = "Concentric Radial PPI Network of Zilongjin on CRLM",
+         subtitle = "Innermost Ring (Deep Crimson): Top MCC Hubs (STAT3, TP53, HIF1A...); Outer Rings: Periphery Targets") +
+    theme_graph() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+      plot.subtitle = element_text(hjust = 0.5, size = 10, color = "grey40")
+    )
+}
+```
+
+### 5.3.2 Top 20 核心 Hub 靶点精细相互作用子网络图（CytoHubba MCC 经典圆环图）
+
+```{r fig_cytohubba_results, fig.width=9, fig.height=8}
+if (isTRUE(params$run_ppi)) {
+  # 严格提取 MCC Top 20 基因
+  top_mcc_genes <- as.character(df_mcc$Name[1:20])
+  
+  g_sub <- igraph::induced_subgraph(g, vids = which(igraph::V(g)$name %in% top_mcc_genes))
+  v_names <- as.character(igraph::V(g_sub)$name)
+  ranks <- match(v_names, top_mcc_genes)
+  g_sub <- igraph::set_vertex_attr(g_sub, "rank", value = as.numeric(ranks))
+  g_sub <- igraph::set_vertex_attr(g_sub, "sub_deg", value = as.numeric(igraph::degree(g_sub)))
+  
+  set.seed(42)
+  ggraph(g_sub, layout = "circle") +
+    geom_edge_link(alpha = 0.45, color = "grey60", linewidth = 0.8) +
+    geom_node_point(aes(size = sub_deg, color = rank)) +
+    geom_node_text(aes(label = name), repel = TRUE, size = 4.2, fontface = "bold") +
+    scale_color_gradient(low = "#CC0000", high = "#FFCC00", name = "CytoHubba\nMCC Rank\n(1=Top)", breaks = c(1, 5, 10, 15, 20)) +
+    scale_size_continuous(range = c(7, 14), name = "Subnet Degree") +
+    labs(title = "Top 20 Hub Targets in PPI Subnetwork (Ranked by CytoHubba MCC)",
+         subtitle = "Classic circular layout highlighting core therapeutic targets of Zilongjin on CRLM") +
+    theme_graph() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      plot.subtitle = element_text(hjust = 0.5, size = 10, color = "grey40"),
+      legend.position = "right"
+    )
+}
+```
+
+## 5.4 核心 Hub 靶点综合参数汇总表（基于 CytoHubba MCC 排名 Top 20）
+
+```{r hub_table}
+if (isTRUE(params$run_ppi)) {
+  kable(head(df_mcc[, c("Rank", "Name", "Score")], 20), 
+        caption = "基于 Cytoscape CytoHubba (MCC) 官方排名的 Top 20 核心 Hub 靶点一览表")
+}
+```
+
+---
+
+# 6. GO 与 KEGG 功能富集分析（过表达分析 ORA）
+
+## 6.1 KEGG 通路富集计算与非疾病纯机制筛选
+
+```{r kegg_analysis}
+# 定义疾病标签过滤关键词列表
+dis_keywords <- c(
+  "CANCER", "CARCINOMA", "LEUKEMIA", "MELANOMA", "GLIOMA", "INFECTION", 
+  "DISEASE", "DIABETES", "ATHEROSCLEROSIS", "CARDIOMYOPATHY", "MALARIA", 
+  "TUBERCULOSIS", "HEPATITIS", "INFLUENZA", "MEASLES", "PERTUSSIS", 
+  "CHAGAS", "TOXOPLASMOSIS", "AMOEBIASIS", "SHIGELLOSIS", "SALMONELLA", 
+  "LEISHMANIA", "EPSTEIN", "HERPES", "HTLV", "PAPILLOMAVIRUS", "CORONAVIRUS", 
+  "SYNDROME", "ASTHMA", "RHEUMATOID", "LUPUS", "GRAFT", "ADDICTION", 
+  "ALLOGRAFT", "RESISTANCE", "HELICOBACTER"
+)
+dis_pattern <- paste(dis_keywords, collapse = "|")
+
+if (isTRUE(params$run_enrichment)) {
+  kegg_gmt_path <- params$kegg_gmt
+  if (!file.exists(kegg_gmt_path)) stop("缺少 KEGG GMT 文件：", kegg_gmt_path)
+  
+  kegg_gmt <- clusterProfiler::read.gmt(kegg_gmt_path)
+  kegg_gmt$term_clean <- gsub("^KEGG_", "", kegg_gmt$term)
+  kegg_gmt$term_clean <- gsub("_", " ", kegg_gmt$term_clean)
+  
+  t2g <- data.frame(term = kegg_gmt$term_clean, gene = kegg_gmt$gene)
+  
+  kegg_res <- clusterProfiler::enricher(
+    gene = genes,
+    TERM2GENE = t2g,
+    pvalueCutoff = 0.05,
+    qvalueCutoff = 0.2,
+    minGSSize = 5,
+    maxGSSize = 1000
+  )
+  
+  df_kegg_all <- as.data.frame(kegg_res)
+  write.table(df_kegg_all, "results/KEGG.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+  write.csv(head(df_kegg_all, 30), "results/KEGG_top30.csv", row.names = FALSE, quote = FALSE)
+  
+  # 筛选非疾病相关生物学信号转导通路
+  is_disease_kegg <- grepl(dis_pattern, toupper(df_kegg_all$Description))
+  df_kegg_sig <- df_kegg_all[!is_disease_kegg, , drop = FALSE]
+  
+  write.table(df_kegg_sig, "results/KEGG_non_disease.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+  write.csv(head(df_kegg_sig, 20), "results/KEGG_non_disease_top20.csv", row.names = FALSE, quote = FALSE)
+  
+  cat("KEGG 原始显著富集总通路数：", nrow(df_kegg_all), "条\n")
+  cat("过滤疾病标签后，获得纯生物学信号转导通路：", nrow(df_kegg_sig), "条\n")
+}
+```
+
+## 6.2 核心信号转导通路富集气泡图与柱状图
+
+```{r fig_kegg_plots, fig.width=9, fig.height=6}
+if (isTRUE(params$run_enrichment) && nrow(df_kegg_sig) > 0) {
+  df_kegg_top15 <- head(df_kegg_sig, 15)
+  df_kegg_top15$Description <- factor(df_kegg_top15$Description, levels = rev(df_kegg_top15$Description))
+  
+  # 1. 柱状图
+  p_kegg_bar <- ggplot(df_kegg_top15, aes(x = Count, y = Description, fill = p.adjust)) +
+    geom_bar(stat = "identity", width = 0.7) +
+    geom_text(aes(label = Count), hjust = -0.2, size = 3.5, fontface = "bold") +
+    scale_fill_gradient(low = "#D0021B", high = "#4A90E2", name = "p.adjust") +
+    scale_x_continuous(expand = expansion(mult = c(0, 0.15))) +
+    labs(title = "Top 15 Non-Disease Signaling Pathways of Zilongjin on CRLM", x = "Gene Count", y = "") +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      axis.text.y = element_text(face = "bold", size = 10),
+      panel.grid.minor = element_blank()
+    )
+  print(p_kegg_bar)
+  
+  # 2. 气泡图
+  df_kegg_top15$GeneRatio_num <- sapply(strsplit(df_kegg_top15$GeneRatio, "/"), function(x) as.numeric(x[1])/as.numeric(x[2]))
+  p_kegg_dot <- ggplot(df_kegg_top15, aes(x = GeneRatio_num, y = Description)) +
+    geom_point(aes(size = Count, color = p.adjust)) +
+    scale_color_gradient(low = "#D0021B", high = "#4A90E2", name = "p.adjust") +
+    scale_size_continuous(range = c(3, 8), name = "Count") +
+    labs(title = "Signaling Pathway Enrichment (Non-Disease)", x = "Gene Ratio", y = "") +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      axis.text.y = element_text(face = "bold", size = 10),
+      panel.grid.minor = element_blank()
+    )
+  print(p_kegg_dot)
+}
+```
+
+## 6.3 GO 功能富集分析（BP / CC / MF）
+
+```{r go_analysis}
+if (isTRUE(params$run_enrichment)) {
+  go_bp <- clusterProfiler::enrichGO(
+    gene = genes,
+    OrgDb = org.Hs.eg.db,
+    keyType = "SYMBOL",
+    ont = "BP",
+    pvalueCutoff = 0.05,
+    qvalueCutoff = 0.2
+  )
+  
+  go_cc <- clusterProfiler::enrichGO(
+    gene = genes,
+    OrgDb = org.Hs.eg.db,
+    keyType = "SYMBOL",
+    ont = "CC",
+    pvalueCutoff = 0.05,
+    qvalueCutoff = 0.2
+  )
+  
+  go_mf <- clusterProfiler::enrichGO(
+    gene = genes,
+    OrgDb = org.Hs.eg.db,
+    keyType = "SYMBOL",
+    ont = "MF",
+    pvalueCutoff = 0.05,
+    qvalueCutoff = 0.2
+  )
+  
+  df_bp <- as.data.frame(go_bp)
+  df_cc <- as.data.frame(go_cc)
+  df_mf <- as.data.frame(go_mf)
+  
+  df_bp$ONTOLOGY <- "BP"
+  df_cc$ONTOLOGY <- "CC"
+  df_mf$ONTOLOGY <- "MF"
+  
+  df_go_all <- rbind(df_bp, df_cc, df_mf)
+  write.table(df_go_all, "results/GO.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+  write.csv(head(df_bp, 30), "results/GO_BP_top30.csv", row.names = FALSE, quote = FALSE)
+  
+  cat("GO BP 显著条目数：", nrow(df_bp), "；CC 显著条目数：", nrow(df_cc), "；MF 显著条目数：", nrow(df_mf), "\n")
+}
+```
+
+## 6.4 GO 功能富集分类柱状图
+
+```{r fig_go_plots, fig.width=9, fig.height=8}
+if (isTRUE(params$run_enrichment) && nrow(df_go_all) > 0) {
+  top_bp <- head(df_bp, 8)
+  top_cc <- head(df_cc, 8)
+  top_mf <- head(df_mf, 8)
+  go_plot_df <- rbind(top_bp, top_cc, top_mf)
+  go_plot_df$Description <- factor(go_plot_df$Description, levels = rev(go_plot_df$Description))
+  
+  ggplot(go_plot_df, aes(x = Count, y = Description, fill = ONTOLOGY)) +
+    geom_bar(stat = "identity", width = 0.7) +
+    facet_grid(ONTOLOGY ~ ., scales = "free_y", space = "free_y") +
+    scale_fill_manual(values = c("BP" = "#DE582B", "CC" = "#1868B2", "MF" = "#018A67")) +
+    labs(title = "GO Functional Enrichment Analysis (BP, CC, MF)", x = "Gene Count", y = "") +
+    theme_minimal(base_size = 10) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      strip.text = element_text(face = "bold", size = 11),
+      legend.position = "none"
+    )
+}
+```
+
+## 6.5 核心信号转导通路与靶点关联网络图（Cnetplot）
+
+```{r fig_cnetplot, fig.width=9, fig.height=7}
+if (isTRUE(params$run_enrichment) && nrow(df_kegg_sig) > 0) {
+  kegg_sig_res <- kegg_res
+  kegg_sig_res@result <- df_kegg_sig
+  
+  enrichplot::cnetplot(
+    kegg_sig_res, 
+    showCategory = 5, 
+    node_label = "all"
+  ) + ggtitle("Gene-Concept Network for Top 5 Signaling Pathways") +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 13))
+}
+```
+
+## 6.6 筛选后的关键生物学信号转导通路一览表（Top 12）
+
+```{r kegg_table}
+if (isTRUE(params$run_enrichment) && nrow(df_kegg_sig) > 0) {
+  kable(head(df_kegg_sig[, c("ID", "Description", "GeneRatio", "p.adjust", "Count")], 12), 
+        caption = "紫龙金干预 CRLM 的核心生物学信号转导通路（过滤疾病标签后）")
+}
+```
+
+# 7. “药材-成分-靶点-通路”（C-T-P）四维网络（TCMNP 模块）
+
+## 7.1 中药-活性成分-关键靶点-信号通路四维桑基流向图（`tcm_sankey`）
+
+```{r fig_tcm_sankey, fig.width=10.5, fig.height=8.5}
+# 严格提取 CytoHubba MCC 排名 Top 20 核心 Hub 靶点与 Top 12 关键生物学信号转导通路
+top_hubs <- as.character(df_mcc$Name[1:20])
+
+path_rows <- list()
+for (i in 1:min(12, nrow(df_kegg_sig))) {
+  p_name <- as.character(df_kegg_sig$Description[i])
+  p_genes <- unlist(strsplit(as.character(df_kegg_sig$geneID[i]), "/"))
+  matched <- intersect(p_genes, top_hubs)
+  for (g in matched) {
+    path_rows[[length(path_rows) + 1]] <- data.frame(
+      Description = p_name,
+      target = g,
+      stringsAsFactors = FALSE
+    )
+  }
+}
+path_df <- unique(dplyr::bind_rows(path_rows))
+
+# 构建四维关联表
+c_t_p <- dplyr::inner_join(hct[, c("herb", "molecule", "target")], path_df, by = "target") %>%
+  dplyr::distinct()
+
+# 严格按照 CytoHubba MCC 排名排序（STAT3 第一优先，TP53, HIF1A, CTNNB1, AKT1...）
+c_t_p$mcc_rank <- match(c_t_p$target, top_hubs)
+c_t_p <- c_t_p[order(c_t_p$mcc_rank, c_t_p$herb), ]
+
+# 去重并按每味药材提取 Top 4 核心 MCC 靶点流向（保证 STAT3 等绝对核心靶点居首且全部显著呈现）
+c_t_p_unique <- c_t_p[!duplicated(c_t_p[, c("herb", "target")]), ]
+
+c_t_p_sample <- c_t_p_unique %>%
+  dplyr::group_by(herb) %>%
+  dplyr::slice_head(n = 4) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(herb, molecule, target, Description) %>%
+  as.data.frame()
+
+tcm_sankey(c_t_p_sample, text.size = 3.2, text.position = 1)
+```
+
+## 7.2 中药-成分-靶点-通路冲积图（`tcm_alluvial`）
+
+```{r fig_tcm_alluvial, fig.width=10.5, fig.height=8.5}
+tcm_alluvial(c_t_p_sample, text.size = 3.2, text.position = 1)
+```
+
+---
+
+# 8. GSEA 基因集富集分析（Gene Set Enrichment Analysis）
+
+## 8.1 靶点拓扑权重排序与 GSEA 计算
+
+```{r gsea_analysis}
+if (isTRUE(params$run_gsea)) {
+  geneList <- as.numeric(topo_df$Degree)
+  names(geneList) <- as.character(topo_df$Gene)
+  geneList <- sort(geneList, decreasing = TRUE)
+  
+  set.seed(123)
+  gsea_res <- clusterProfiler::GSEA(
+    geneList = geneList,
+    TERM2GENE = t2g,
+    minGSSize = 5,
+    maxGSSize = 500,
+    pvalueCutoff = 0.05,
+    pAdjustMethod = "BH",
+    scoreType = "pos",
+    eps = 0
+  )
+  
+  df_gsea_all <- as.data.frame(gsea_res)
+  write.table(df_gsea_all, "results/GSEA_KEGG.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+  write.csv(head(df_gsea_all, 20), "results/GSEA_top20.csv", row.names = FALSE, quote = FALSE)
+  
+  # 筛选非疾病 GSEA 通路
+  is_disease_gsea <- grepl(dis_pattern, toupper(df_gsea_all$Description))
+  df_gsea_sig <- df_gsea_all[!is_disease_gsea, , drop = FALSE]
+  
+  write.table(df_gsea_sig, "results/GSEA_non_disease.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+  write.csv(df_gsea_sig, "results/GSEA_non_disease.csv", row.names = FALSE, quote = FALSE)
+  
+  cat("GSEA 原始显著富集通路数：", nrow(df_gsea_all), "条\n")
+  cat("过滤疾病标签后，GSEA 核心信号通路数：", nrow(df_gsea_sig), "条\n")
+}
+```
+
+## 8.2 核心信号转导通路 GSEA 走势山峦图（Running Enrichment Score）
+
+```{r fig_gsea_plots, fig.width=9, fig.height=7}
+if (isTRUE(params$run_gsea) && nrow(df_gsea_sig) > 0) {
+  gsea_sig_res <- gsea_res
+  gsea_sig_res@result <- df_gsea_sig
+  
+  top_n <- min(4, nrow(df_gsea_sig))
+  p_gsea_curves <- enrichplot::gseaplot2(
+    gsea_sig_res,
+    geneSetID = 1:top_n,
+    pvalue_table = FALSE,
+    title = paste0("GSEA Running Enrichment Scores for Key Signaling Pathways (Top ", top_n, ")")
+  )
+  print(p_gsea_curves)
+}
+```
+
+## 8.3 GSEA 信号通路归一化富集得分（NES）棒棒糖图
+
+```{r fig_gsea_lollipop, fig.width=8.5, fig.height=5}
+if (isTRUE(params$run_gsea) && nrow(df_gsea_sig) > 0) {
+  df_gsea_sig$Description <- factor(df_gsea_sig$Description, levels = rev(df_gsea_sig$Description))
+  
+  ggplot(df_gsea_sig, aes(x = NES, y = Description)) +
+    geom_segment(aes(x = 1.0, xend = NES, y = Description, yend = Description), color = "grey70", linewidth = 0.8) +
+    geom_point(aes(size = setSize, color = p.adjust)) +
+    scale_color_gradient(low = "#D0021B", high = "#4A90E2", name = "p.adjust") +
+    scale_size_continuous(range = c(4, 8), name = "Set Size") +
+    labs(title = "GSEA Key Signaling Pathways (Non-Disease Filtered)", x = "Normalized Enrichment Score (NES)", y = "") +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 13),
+      axis.text.y = element_text(face = "bold", size = 10),
+      panel.grid.minor = element_blank()
+    )
+}
+```
+
+## 8.4 筛选后的 GSEA 信号通路明细表
+
+```{r gsea_table}
+if (isTRUE(params$run_gsea) && nrow(df_gsea_sig) > 0) {
+  kable(df_gsea_sig[, c("ID", "Description", "NES", "pvalue", "p.adjust", "core_enrichment")],
+        caption = "紫龙金干预 CRLM 的主要 GSEA 信号转导通路（过滤疾病标签后）")
+}
+```
+
+---
+
+# 9. CRLM 机制整合与药理学结论
+
+1. **配伍与药性特色**：
+   - 紫龙金以黄芪、当归、丹参益气活血养正，配伍半枝莲、郁金、白英、蛇莓清热解毒利湿，其四气偏寒温并用，五味以“甘、苦、辛”为主，主要归经于“肝、肺、脾、心”。
+2. **转移微环境定植靶点与信号通路**：
+   - 网络药理学拓扑与富集分析揭示，紫龙金通过多成分协同调控 `Focal adhesion`（黏着斑）、`Adherens junction`（黏附连接）、`ErbB`、`mTOR`、`MAPK`、`VEGF` 及 `Apoptosis`（细胞凋亡）等通路，阻抑肿瘤细胞在上皮-间质转化（EMT）、血管生成及肝实质黏附定植等关键病理环节。
+3. **下游分子对接验证基础**：
+   - 提取的 Leading Edge 核心靶点（`AKT1`, `EGFR`, `MMP9`, `TP53`, `MTOR`, `PTEN`, `CTNNB1` 等）与代表性成分（黄芪甲苷、丹参酮 IIA、汉黄芩素、槲皮素等）具有强烈的多级关联，为分子对接提供了坚实的靶标库。
+
+---
+
+# 10. 运行记录与汇总
+
+```{r run_log}
+log_content <- c(
+  paste("Date:", format(Sys.time(), "%Y-%m-%d %H:%M:%S")),
+  paste("Intersection Input File:", params$intersection_file),
+  paste("Intersection Gene Count:", length(genes)),
+  paste("Herb-Compound-Target File:", params$hct_file),
+  paste("TCMNP Module Enabled:", params$run_tcmnp_comp && params$run_tcmnp_net),
+  paste("PPI Analysis Enabled:", params$run_ppi),
+  paste("PPI Edges Identified:", if(isTRUE(params$run_ppi)) nrow(ppi) else 0),
+  paste("Total KEGG Pathways (ORA):", if(isTRUE(params$run_enrichment)) nrow(df_kegg_all) else 0),
+  paste("Non-Disease Signaling Pathways (ORA):", if(isTRUE(params$run_enrichment)) nrow(df_kegg_sig) else 0),
+  paste("Total GSEA Pathways:", if(isTRUE(params$run_gsea)) nrow(df_gsea_all) else 0),
+  paste("Non-Disease GSEA Signaling Pathways:", if(isTRUE(params$run_gsea)) nrow(df_gsea_sig) else 0),
+  paste("Significant GO Terms (BP+CC+MF):", if(isTRUE(params$run_enrichment)) nrow(df_go_all) else 0)
+)
+writeLines(log_content, "results/run_log.txt")
+cat("全部分析执行完毕！已生成运行日志：results/run_log.txt\n")
+```

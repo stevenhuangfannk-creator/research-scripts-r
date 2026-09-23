@@ -1,0 +1,204 @@
+---
+title: "SPP1⁺ 巨噬细胞 vs 其余细胞通讯分析（CellChat，小鼠）"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## 概述
+
+本流程用 **CellChat v1.6.1**（Jin et al., Nat Commun 2021）+ **CellChatDB.mouse** 推断 **SPP1⁺ TREM2⁺ 巨噬细胞** 与 **其余所有细胞（Others）** 两组之间的配体-受体（L–R）通讯，与 [SPP1_vs_Others_cellphonedb.qmd](SPP1_vs_Others_cellphonedb.qmd)（LIANA/CellPhoneDB）互为印证。
+
+- **输入对象**：`whole_atlas_control_24h_seurat_annotated.rds`（含 `SPP1_group` 二分分组列）
+- **分析范围**：仅 **APAP_24h** 条件（SPP1⁺ 巨噬仅存在于 APAP_24h）→ **SPP1+ Macrophage（484）vs Others（APAP_24h 其余 4289）**
+- **数据库**：`CellChatDB.mouse`（小鼠）
+- **算法口径**：`computeCommunProb(triMean, population.size = TRUE)` → `filterCommunication(min.cells = 10)` → 通路聚合 → 网络汇总
+- **关键 caveat**：SPP1⁺ 巨噬仅存在于 APAP_24h，故本分析限定在 APAP_24h 子集内，"Others" 只含该条件其余细胞；`population.size = TRUE` 会按细胞数比例压低小群体的通讯概率（484 vs 4289），因此 SPP1 群的通讯强度被**保守低估**，与未校正的 CellPhoneDB `lr.mean` 直接数值不可比（详见方法学说明 §8）。
+
+## 1. 环境与数据加载
+
+```{r setup}
+suppressMessages({
+  library(Seurat)
+  library(CellChat)     # v1.6.1
+  library(ggplot2)
+  library(patchwork)
+  library(circlize)
+  library(dplyr)
+})
+set.seed(42)
+
+obj <- readRDS("whole_atlas_control_24h_seurat_annotated.rds")
+DefaultAssay(obj) <- "RNA"
+obj$SPP1_group <- factor(obj$SPP1_group, levels = c("SPP1+ Macrophage", "Others"))
+
+# 限定 APAP_24h 子集（SPP1⁺ 巨噬仅存在于该条件）
+obj <- subset(obj, subset = condition == "APAP_24h")
+obj$SPP1_group <- droplevels(obj$SPP1_group)
+
+cat("CellChat 版本:", as.character(packageVersion("CellChat")), "\n")
+cat("对象 (APAP_24h):", dim(obj), "\n")
+cat("=== SPP1_group 分布 ===\n")
+print(table(obj$SPP1_group))
+cat("\n=== SPP1_group x cell_type ===\n")
+print(table(obj$SPP1_group, obj$cell_type))
+```
+
+## 2. 创建 CellChat 对象与预处理
+
+```{r cc-build, cache = TRUE}
+# 提取归一化表达矩阵与元数据（barcode 顺序一致）
+data_input <- GetAssayData(obj, assay = "RNA", layer = "data")
+meta <- obj@meta.data
+meta$SPP1_group <- as.character(meta$SPP1_group)
+meta$SPP1_group <- factor(meta$SPP1_group, levels = c("SPP1+ Macrophage", "Others"))
+
+# 创建 CellChat 对象
+cc <- createCellChat(object = data_input[, rownames(meta)], meta = meta,
+                     group.by = "SPP1_group")
+cc@DB <- CellChatDB.mouse
+cc <- subsetData(cc)
+cc <- identifyOverExpressedGenes(cc)
+cc <- identifyOverExpressedInteractions(cc)
+cc <- computeCommunProb(cc, type = "triMean", population.size = TRUE)
+cc <- filterCommunication(cc, min.cells = 10)
+cc <- computeCommunProbPathway(cc)
+cc <- aggregateNet(cc)
+cc <- netAnalysis_computeCentrality(cc, slot.name = "netP")
+
+cat("分组:", paste(levels(cc@idents), collapse = " | "), "\n")
+cat("显著通路数:", length(cc@netP$pathways), "\n")
+```
+
+## 3. 通讯总体统计
+
+```{r cc-summary}
+cat("=== 总体通讯统计 ===\n")
+cat("互作总数:", sum(cc@net$count), "| 通讯强度:", round(sum(cc@net$weight), 3),
+    "| 通路数:", length(cc@netP$pathways), "\n\n")
+
+cat("=== 通讯数量矩阵 (count) ===\n")
+print(cc@net$count)
+cat("\n=== 通讯强度矩阵 (weight) ===\n")
+print(round(cc@net$weight, 4))
+```
+
+## 4. LR 层面结果提取
+
+```{r cc-lr}
+# 全部 LR 通讯
+df_lr <- subsetCommunication(cc)
+cat("LR 通讯行数:", nrow(df_lr), "\n")
+
+# SPP1+ Mac -> Others
+spp1_out <- df_lr %>% filter(source == "SPP1+ Macrophage", target == "Others") %>%
+  arrange(desc(prob))
+cat("\nSPP1+ Mac -> Others 通讯对数:", nrow(spp1_out), "\n")
+print(head(spp1_out, 20) %>% select(source, target, ligand, receptor, prob, pval, pathway_name))
+
+# Others -> SPP1+ Mac
+other_in <- df_lr %>% filter(source == "Others", target == "SPP1+ Macrophage") %>%
+  arrange(desc(prob))
+cat("\nOthers -> SPP1+ Mac 通讯对数:", nrow(other_in), "\n")
+print(head(other_in, 20) %>% select(source, target, ligand, receptor, prob, pval, pathway_name))
+```
+
+### 4.1 已知互作轴核查（与 LIANA/CellPhoneDB 对照）
+
+```{r cc-key}
+cat("=== Spp1 相关 LR 对 ===\n")
+print(df_lr %>% filter(ligand == "Spp1") %>% select(source, target, ligand, receptor, prob, pval, pathway_name))
+cat("\n=== App 相关 LR 对 ===\n")
+print(df_lr %>% filter(ligand == "App") %>% select(source, target, ligand, receptor, prob, pval, pathway_name))
+cat("\n=== Fn1 相关 LR 对 ===\n")
+print(df_lr %>% filter(ligand == "Fn1") %>% select(source, target, ligand, receptor, prob, pval, pathway_name))
+```
+
+## 5. 可视化
+
+### 5.1 通讯网络总览（圆形图）
+
+```{r vis-circle, fig.width = 10, fig.height = 5}
+groupSize <- as.numeric(table(cc@idents))
+par(mfrow = c(1, 2), xpd = TRUE)
+netVisual_circle(cc@net$count, vertex.weight = groupSize, weight.scale = TRUE,
+                 label.edge = TRUE, title.name = "Number of interactions")
+netVisual_circle(cc@net$weight, vertex.weight = groupSize, weight.scale = TRUE,
+                 label.edge = TRUE, title.name = "Interaction weights")
+```
+
+### 5.2 跨组 LR 气泡图（SPP1 → Others 与 Others → SPP1）
+
+```{r vis-bubble, fig.width = 12, fig.height = 8}
+p1 <- netVisual_bubble(cc, sources.use = "SPP1+ Macrophage", targets.use = "Others",
+                       remove.isolate = TRUE) +
+  ggtitle("SPP1+ Mac → Others")
+p2 <- netVisual_bubble(cc, sources.use = "Others", targets.use = "SPP1+ Macrophage",
+                       remove.isolate = TRUE) +
+  ggtitle("Others → SPP1+ Mac")
+p1 + p2
+```
+
+### 5.3 通路层面：跨组通讯强度
+
+```{r vis-pathway}
+df_pw <- subsetCommunication(cc, slot.name = "netP")
+spp1_out_pw <- df_pw %>% filter(source == "SPP1+ Macrophage", target == "Others") %>%
+  arrange(desc(prob))
+other_in_pw <- df_pw %>% filter(source == "Others", target == "SPP1+ Macrophage") %>%
+  arrange(desc(prob))
+cat("=== SPP1+ Mac -> Others 通路 TOP10 ===\n")
+print(head(spp1_out_pw, 10) %>% select(pathway_name, prob, pval))
+cat("\n=== Others -> SPP1+ Mac 通路 TOP10 ===\n")
+print(head(other_in_pw, 10) %>% select(pathway_name, prob, pval))
+```
+
+```{r vis-chord, fig.width = 10, fig.height = 8}
+# SPP1+ Mac -> Others 通路弦图（top 通路）
+top_pw_spp1out <- head(spp1_out_pw$pathway_name, 3)
+for (pw in top_pw_spp1out) {
+  cat("绘制通路:", pw, "\n")
+  netVisual_aggregate(cc, signaling = pw, layout = "chord",
+                      sources.use = "SPP1+ Macrophage", targets.use = "Others",
+                      signaling.name = paste0("SPP1+ Mac → Others: ", pw))
+}
+```
+
+### 5.4 信号角色分析（Sender / Receiver）
+
+```{r vis-role, fig.width = 6, fig.height = 5}
+netAnalysis_signalingRole_scatter(cc, label.size = 5)
+```
+
+## 6. 与 LIANA（CellPhoneDB）结果对照
+
+| 互作轴 | CellChat (prob) | CellPhoneDB/LIANA (lr.mean, p) |
+|--------|----------------|--------------------------------|
+| Spp1 → Cd44（SPP1→Others） | 见 §4.1 | 1.24, p<0.05 |
+| App → Cd74（Others→SPP1） | 见 §4.1 | 1.38, p<0.05 |
+| Fn1 → Cd44（Others→SPP1） | 见 §4.1 | 1.10, p<0.05 |
+
+> 两套算法对同一互作轴的命中情况（是否同时显著）在 §4.1 中核对。
+
+## 7. 保存结果
+
+```{r save}
+saveRDS(cc, "cellchat_SPP1_vs_Others.rds")
+write.csv(df_lr, "cellchat_SPP1_vs_Others_LR.csv", row.names = FALSE)
+write.csv(df_pw, "cellchat_SPP1_vs_Others_pathways.csv", row.names = FALSE)
+write.csv(spp1_out, "cellchat_SPP1_to_Others_LR.csv", row.names = FALSE)
+write.csv(other_in, "cellchat_Others_to_SPP1_LR.csv", row.names = FALSE)
+cat("已保存:\n- cellchat_SPP1_vs_Others.rds\n- cellchat_SPP1_vs_Others_LR.csv\n- cellchat_SPP1_vs_Others_pathways.csv\n- cellchat_SPP1_to_Others_LR.csv\n- cellchat_Others_to_SPP1_LR.csv\n")
+```
+
+## 8. 方法学说明
+
+> **分组设计**：与 LIANA 分析一致——SPP1⁺ TREM2⁺ 巨噬为第 1 组，其余细胞为第 2 组；本分析**限定在 APAP_24h 子集**内推断两组通讯。
+>
+> **Caveat（如实报告）**：
+> - **分析限定 APAP_24h**：SPP1⁺ 巨噬仅存在于 APAP_24h（Control = 0），故在 APAP_24h 子集（SPP1 484 + Others 4289 = 4773 细胞）内分析，"Others" 只含 APAP_24h 的其余细胞，不再混入 Control。
+> - **`population.size = TRUE` 导致 SPP1 群通讯被压低**：484 vs 4289 细胞，通讯概率按细胞数比例校正，因此 SPP1→Others 的 prob 数值偏保守；解读以"相对强弱/是否存在"为主，不与 CellPhoneDB 的 `lr.mean`（未校正）直接比数值。
+> - **仅两组分组**：CellChat 的配体-受体推断在同组内所有细胞上聚合，无法区分 Others 内部的细胞类型；如需细分 Others 内部（如 T/NK、Hep、Endo 等）与 SPP1 的互作，可另建多分组对象。
+> - **自分泌**：SPP1 → SPP1 自分泌通讯也被推断（如 Spp1→Cd44 在同组内亦显著），解读时注意区分自分泌与跨组互作。

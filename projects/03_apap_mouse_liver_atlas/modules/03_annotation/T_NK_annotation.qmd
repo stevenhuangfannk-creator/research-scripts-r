@@ -1,0 +1,245 @@
+---
+title: "T/NK 细胞亚群注释（基于 2025 国际 T 细胞命名共识）"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## 概述
+
+本流程对 `seurat_data/T_NK_control_24h_seurat.rds`（小鼠 T/NK 细胞，805 细胞）进行重新聚类与亚群注释。
+
+注释依据为 **《Guidelines for T cell nomenclature》**（Masopust et al., *Nature Reviews Immunology*, 2025；72 位免疫学家共识），所有亚群判定均使用共识定义的标记基因，不额外自定义亚群。
+
+## 1. 环境与数据加载
+
+```{r setup}
+suppressMessages({
+  library(Seurat)
+  library(ggplot2)
+  library(ggh4x)       # 分面条（strip）美化
+  library(RColorBrewer)
+  library(cowplot)     # 图例面板拼接
+  library(dplyr)
+  library(magrittr)
+})
+set.seed(42)   # 固定随机种子，保证结果可重复
+
+obj <- readRDS("seurat_data/T_NK_control_24h_seurat.rds")
+DefaultAssay(obj) <- "RNA"
+cat("细胞数 x 基因数:", dim(obj), "\n")
+cat("基因名示例:", head(rownames(obj), 5), "\n")
+```
+
+## 2. 标准聚类流程
+
+从原始归一化数据开始，重新执行标准 Seurat 流程（不沿用对象中已有的聚类结果）。
+
+```{r clustering, cache = TRUE}
+# 归一化 → 可变特征 → 标准化 → PCA
+obj <- NormalizeData(obj)
+obj <- FindVariableFeatures(obj, nfeatures = 2000)
+obj <- ScaleData(obj)
+obj <- RunPCA(obj, npcs = 30)
+
+# 查看主成分重要性，前 15 个 PC 已可代表主要变异
+print(ElbowPlot(obj, ndims = 20) + ggtitle("PCA Elbow"))
+
+# 建图聚类（取前 15 PC，分辨率 0.5）
+obj <- FindNeighbors(obj, dims = 1:15)
+obj <- FindClusters(obj, resolution = 0.5)
+obj <- RunUMAP(obj, dims = 1:15)
+
+cat("聚类数与细胞数:\n")
+print(table(Idents(obj)))
+```
+
+## 3. 官方 marker 整体评估（注释依据）
+
+> 注释不依赖单一基因或评分，而是用**大量官方权威 marker**，从整体表达量与特异性多角度综合判断。以下热图与阳性比例表展示了全部候选官方 marker 在各 cluster 的表达模式。
+
+### 3.1 全面官方 marker 整体表达热图
+
+```{r marker-heatmap, fig.width = 12, fig.height = 9, cache = TRUE}
+# 官方/经典权威 marker 全面面板（小鼠基因名）
+marker_groups <- list(
+  "谱系"          = c("Cd3d","Cd3e","Trac","Cd4","Cd8a","Cd8b1"),
+  "NK 谱系"       = c("Ncr1","Nkg7","Klrd1","Klrk1","Klrc1","Cd160","Xcl1","Fcer1g",
+                      "Tyrobp","Gzma","Prf1","Klrb1a","Klra4","S1pr5","Itgam","Eomes"),
+  "固有样γδ/iNKT" = c("Tcrg-C1","Tcrg-C2","Tcrg-C4","Trgv2","Trdc","Zbtb16"),
+  "初始/Tscm/记忆" = c("Sell","Ccr7","Tcf7","Lef1","Il7r","Cd27","Cd28","Cd44","Klrg1"),
+  "效应"          = c("Gzmb","Prf1","Ifng","Tbx21","Gzmk","Cx3cr1"),
+  "耗竭"          = c("Pdcd1","Ctla4","Lag3","Havcr2","Tox","Tnfrsf4","Slamf6"),
+  "Treg"          = c("Foxp3","Il2ra","Nrp1","Ikzf2","Tnfrsf18"),
+  "Tfh"           = c("Cxcr5","Bcl6","Icos"),
+  "活化/增殖"      = c("Mki67","Top2a","Pcna","Ube2c","Cd69")
+)
+marker_groups <- lapply(marker_groups, function(gs) gs[gs %in% rownames(obj)])
+markers_panel <- unique(unlist(marker_groups))
+
+# 只对标记基因做 z-score 标准化后画热图（不影响聚类）
+obj <- ScaleData(obj, features = markers_panel)
+DoHeatmap(obj, features = markers_panel, group.by = "RNA_snn_res.0.5",
+          size = 3, angle = 45) +
+  scale_fill_gradient2(low = "#3C5488", mid = "white", high = "#E64B35",
+                       midpoint = 0)
+```
+
+### 3.2 各 cluster 官方 marker 阳性比例（%）
+
+```{r marker-pct}
+exp <- GetAssayData(obj, assay = "RNA", layer = "data")
+pct_mat <- sapply(markers_panel, function(g) {
+  sapply(levels(Idents(obj)), function(cl) {
+    cells <- WhichCells(obj, idents = cl)
+    round(100 * mean(exp[g, cells] > 0), 1)
+  })
+})
+rownames(pct_mat) <- paste0("C", levels(Idents(obj)))
+print(pct_mat, digits = 3)
+```
+
+## 4. 按 2025 国际共识注释
+
+结合 3.1 热图与 3.2 阳性比例，从整体 marker 表达量+特异性多角度逐群判定：
+
+| Cluster | 官方 marker 整体特征（阳性比例%） | 注释 |
+|---------|---------------------------------|------|
+| C0 | Tcrg-C1 31%/Tcrg-C2 33%/Trgv2 41%/Mmp9 41%；Cd3d 97% 且 Cd4 25%/Cd8b1 5% 双低 | **γδ T** |
+| C1 | Sell 87%/Ccr7 70%/Tcf7 84%/Lef1 85%/Il7r 86%，Cd44 仅 22%，Gzmb 4%/Gzmk 1% 效应近零 | **Naive CD8 T (Tstr)** |
+| C2 | Pdcd1 40%/Ctla4 30%/Lag3 30%/Havcr2 24%/Tox 45% 共高，Cd8b1 51%，Gzmb 40% | **CD8 Tex** |
+| C3 | Ncr1 65%/Klrd1 84%/Klrk1 89%/Fcer1g 91%/Tyrobp 78%/Prf1 76%，Cd3d 仅 33% | **NK** |
+| C4 | Mki67 75%/Top2a 83%/Pcna 76%/Ube2c 51%，Cd3d 91% | **Activated T (Cycling)** |
+| C5 | Ncr1 84%/Klrd1 96%/Klrk1 99%/Fcer1g 97%/Tyrobp 100%/Eomes 74%/Klra4 42%/S1pr5 36%，Cd3d 仅 16% | **NK**（成熟 NK，与 C3 合并） |
+
+> 判定逻辑：先用**谱系**（Cd3d/Cd4/Cd8a/Cd8b1/Ncr1/Tcrg）区分 T/NK/γδ，再用**功能与分化 marker 组**（初始记忆/效应/耗竭/增殖）交叉印证，多个 marker 相互一致才定注释。Treg（Foxp3）与 Tfh（Cxcr5/Bcl6）在所有 cluster 均近零表达，故不存在。
+
+```{r annotate}
+new_ids <- c(
+  "0" = "γδ T",
+  "1" = "Naive CD8 T (Tstr)",
+  "2" = "CD8 Tex",
+  "3" = "NK",
+  "4" = "Activated T (Cycling)",
+  "5" = "NK"
+)
+obj$celltype <- unname(new_ids[as.character(Idents(obj))])
+obj$celltype <- factor(obj$celltype,
+                       levels = c("γδ T", "Naive CD8 T (Tstr)", "CD8 Tex",
+                                  "NK", "Activated T (Cycling)"))
+Idents(obj) <- obj$celltype
+
+cat("=== 注释结果分布 ===\n")
+print(table(obj$celltype))
+```
+
+## 5. 注释结果可视化
+
+```{r vis-umap}
+cols <- c("#E64B35", "#4DBBD5", "#F39B7F", "#3C5488", "#00A087")
+DimPlot(obj, reduction = "umap", label = TRUE, cols = cols, pt.size = 1.2) +
+  ggtitle("T/NK annotation (2025 consensus, res 0.5)")
+```
+
+> 说明：最终展示保留**官方权威的经典 marker**，即使其表达跨多个细胞类型也不舍弃——效应 marker 在多个相关细胞类型间共享本属预期生物学事实（如 Nkg7/Gzmb/Prf1 在所有细胞毒性淋巴细胞表达、Sell/Il7r 在 NK 与 γδT 也存在公认亚群表达），并不提示注释错误。
+
+```{r vis-dot, fig.width = 16, fig.height = 5.5}
+# 各注释细胞类型的官方权威经典 marker（保留跨群共享的效应 marker）
+sig_groups <- list(
+  "γδ T"                  = c("Trgv2","Tcrg-C1","Tcrg-C2","Tcrg-C4","Mmp9"),
+  "Naive CD8 T (Tstr)"    = c("Sell","Ccr7","Tcf7","Lef1","Il7r"),
+  "CD8 Tex"               = c("Pdcd1","Ctla4","Lag3","Havcr2","Tox","Gzmk"),
+  "NK"                    = c("Nkg7","Ncr1","Klrd1","Klrk1","Fcer1g","Gzmb","Prf1"),
+  "Activated T (Cycling)" = c("Mki67","Top2a","Pcna","Birc5","Ube2c")
+)
+sig_groups <- lapply(sig_groups, function(gs) gs[gs %in% rownames(obj)])
+
+p <- DotPlot(obj, features = sig_groups, cols = c("#ffffff", "firebrick3"))
+
+ct_order <- levels(obj$celltype)
+p$data$id <- factor(p$data$id, levels = ct_order)
+p$data$feature.groups2 <- factor(p$data$feature.groups, levels = names(sig_groups))
+
+strip <- strip_themed(
+  background_x = elem_list_rect(fill = cols)
+)
+
+p1 <- p$data %>%
+  ggplot(aes(x = features.plot, y = id)) +
+  geom_point(aes(size = pct.exp, color = avg.exp.scaled)) +
+  facet_wrap2(~feature.groups2, scales = "free_x", strip = strip, nrow = 1) +
+  theme_classic() + RotatedAxis() +
+  theme(strip.text.x = element_text(size = 11, color = "white"),
+        axis.text.x = element_text(color = "black", size = 10.5),
+        axis.title = element_blank(),
+        strip.background = element_rect(color = "white"),
+        panel.spacing = unit(1, "lines"),   # 加大分面间距，避免旋转标签互相遮挡
+        axis.text.y = element_blank()) +
+  scale_color_gradient2(low = "#ffffff", mid = "#ffffff", high = "firebrick3",
+                        midpoint = -1) +      # 从 -1（纯白）开始渐变，0 以下不再全白
+  scale_size(range = c(1, 7))
+
+# 细胞类型颜色图例面板（使用与 UMAP 相同的注释配色）
+df <- data.frame(x = 0, y = ct_order, stringsAsFactors = FALSE)
+df$y <- factor(df$y, levels = ct_order)
+p2 <- ggplot(df, aes(x, y, color = factor(y))) +
+  geom_point(size = 6, shape = 18, show.legend = FALSE) +
+  scale_color_manual(values = cols) +
+  scale_y_discrete(expand = expansion(add = 0.6)) +   # 防止长标签被裁切
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.margin = margin(r = 0, l = 1), axis.title = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_text(size = 12),
+        axis.ticks = element_blank(), axis.line = element_blank())
+
+plot_grid(p2, p1, align = "h", axis = "bt", rel_widths = c(2, 9))
+```
+
+```{r vis-feature, fig.width = 15, fig.height = 8.5}
+FeaturePlot(obj, features = c("Cd3d", "Ncr1", "Tcrg-C1", "Cd8a",
+                              "Sell", "Pdcd1", "Foxp3", "Mki67"),
+            ncol = 4, pt.size = 1.1)
+```
+
+## 6. 结果汇总
+
+```{r summary}
+cat("=== celltype x condition ===\n")
+print(table(obj$celltype, obj$condition))
+
+cat("\n=== celltype x condition_label ===\n")
+print(table(obj$celltype, obj$condition_label))
+```
+
+对照初始关注列表，最终注释结果如下：
+
+- **NK**：✅（常规 NK + 成熟 NK 合并，n = 161）
+- **Tstr**（初始/干细胞样 CD8 T）：✅（Naive CD8 T，n = 201）
+- **Tex**（耗竭 CD8 T）：✅（n = 103）
+- **Tfh / Tregs**：❌ 不存在（Foxp3 与 Cxcr5/Bcl6 全群近零表达，无独立 cluster）
+- **Teff / Tcm**：❌ 无独立 cluster（初始群 C1 表型为 naive，非 Tcm）
+
+另发现固有样 **γδ T**（n = 265）与 **Activated T (Cycling)**（n = 75，共识活化态 A）。
+
+## 7. 方法学说明（遵循共识建议）
+
+> 共识要求在任何分析/发表中明确亚群定义依据。本分析定义如下：
+>
+> - **γδ T**：Tcrg-C1/C2/C4 或 Trdc 阳性、Cd3 阳性且 Cd4/Cd8 双阴的细胞。
+> - **Naive CD8 T**：Cd8a/Cd8b1 阳性，且 Sell、Ccr7、Tcf7、Lef1、Il7r 高表达、Cd44 低表达的细胞。
+> - **CD8 Tex**：Cd8a/Cd8b1 阳性，且 Pdcd1、Ctla4、Lag3、Havcr2、Tox 共同高表达的细胞（含 Tcf7⁺ 的 Tpex 样亚群）。
+> - **NK**：Cd3 低表达且 Ncr1（NKp46）高表达的细胞。
+> - **Activated T (Cycling)**：Mki67、Top2a 及组蛋白基因高表达的周期细胞。按共识其对应活化态（A），为操作性标签，不作为正式独立亚群。
+>
+> **注释 caveat（如实报告，不构成本次修订）**：
+> - **Naive CD8 T** 群以 Cd8b1⁺ 为主（57.2%），但群内亦有 Cd4 低表达（19.9%），属 scRNA dropout 下非纯 CD8 群，注释仍按优势谱系 CD8 命名。
+> - **NK** 群内存在少量 TCR 相关基因表达（Tcrg-C4 29.2%、Trdc 21.1%、Cd3d 25.5%），提示可能有少量 γδ/NKT 样细胞混入；不影响 NK 主注释，下游解读时需注意。
+
+## 8. 保存结果
+
+```{r save}
+saveRDS(obj, "T_NK_control_24h_seurat_annotated.rds")
+cat("已保存: T_NK_control_24h_seurat_annotated.rds（含 celltype 列）\n")
+```

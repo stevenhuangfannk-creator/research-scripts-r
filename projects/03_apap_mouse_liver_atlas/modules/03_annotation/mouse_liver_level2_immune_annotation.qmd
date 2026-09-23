@@ -1,0 +1,496 @@
+---
+title: "小鼠肝脏免疫细胞二级注释（Myeloid + Lymphoid）"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本文档是**小鼠肝脏免疫细胞二级注释的唯一权威来源**，输入为一级注释 qmd 生成的 `integrated_immune_subset_seurat.rds`。所有标签、证据矩阵、图和输出对象均由此 qmd 从头生成；修改注释一律在本 qmd 中进行并重新渲染。
+:::
+
+## 1. 注释依据
+
+二级粒度按证据确定（中等粒度）：
+
+- **Ben-Moshe et al., Cell Stem Cell 2022**（PMID 35659879）：肝脏全图谱免疫分 KC / Macrophages / Monocytes / cDC / pDC / B / T+NK 七类；本注释沿用该命名，并按免疫专题分析惯例将 T+NK 拆为 T、NK；
+- **Guilliams et al., Cell 2022**（PMID 35021063）：KC（Timd4⁺/Clec4f⁺）与单核来源巨噬（Ly6c2/Ccr2/Spp1 相关）分开命名；
+- **Kolodziejczyk et al., Nat Med 2020**（PMID 33106666）与 APAP scRNA 文献：损伤模型需单独命名浸润中性粒；
+- **2025 T 细胞命名共识**（Masopust et al., Nat Rev Immunol 2025）：T/NK 亚群命名在三级进行；
+- Plasma、Basophil/Mast 为条件性类型：本数据证据不足则不命名，详见第 8 节。
+
+## 2. 数据加载
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(ggplot2)
+  library(dplyr)
+  library(RColorBrewer)
+  library(ggh4x)
+  library(cowplot)
+  library(magrittr)
+})
+set.seed(42)
+dir.create("level2_qmd_outputs", showWarnings = FALSE)
+```
+
+```{r load-data}
+obj <- readRDS("integrated_immune_subset_seurat.rds")
+DefaultAssay(obj) <- "RNA"
+cat("dim:", dim(obj), "\n")
+print(table(immune_clusters = obj$immune_clusters, condition = obj$condition))
+```
+
+## 3. 二级 marker 面板
+
+```{r marker-panels}
+l2_markers <- list(
+  KC          = c("Adgre1","C1qa","C1qb","C1qc","Timd4","Vsig4","Clec4f","Cd5l","Marco"),
+  Macrophages = c("Adgre1","Cd68","C1qa","Ly6c2","Ccr2","Spp1","Arg1","Fn1","Chil3","Mrc1","Trem2"),
+  Monocyte    = c("Ly6c2","Ccr2","Plac8","Ms4a6c","Fcnb","Sell","Cd14","Ifitm3","Cx3cr1","Nr4a1"),
+  Neutrophil  = c("S100a8","S100a9","Retnlg","Ly6g","Cxcr2","Csf3r","Mmp8","S100a6","Cxcl2","Il1b"),
+  cDC         = c("Flt3","Itgax","H2-Aa","H2-Ab1","H2-Eb1","Clec9a","Xcr1","Cd209a","Cd24a","Ccr7","Batf3"),
+  pDC         = c("Siglech","Bst2","Tcf4","Ccr9","Ly6d","Irf7"),
+  T           = c("Cd3d","Cd3e","Cd3g","Trbc1","Lat","Il7r","Cd4","Cd8a","Cd8b1",
+                  "Tcrg-C1","Tcrg-C2","Trdc","Zbtb16","Foxp3","Sell","Ccr7","Tcf7",
+                  "Pdcd1","Tox","Havcr2","Lag3","Gzmb","Ifng"),
+  NK          = c("Ncr1","Nkg7","Klrd1","Klrb1c","Klrk1","Gzma","Prf1","Xcl1","Eomes",
+                  "S1pr5","Fcer1g","Tyrobp","Klra4","Cd160"),
+  B           = c("Cd79a","Cd79b","Ms4a1","Cd19","Pax5","Ighm","Ighd","Cd22","Fcmr",
+                  "Sdc1","Jchain","Mzb1","Derl3","Xbp1","Igkc"),
+  Cycling     = c("Mki67","Top2a","Birc5","Ube2c","Pcna","Ccna2","Ccnb2")
+)
+all_genes <- rownames(obj)
+l2_markers <- lapply(l2_markers, function(gs) gs[gs %in% all_genes])
+cat("missing:", paste(setdiff(unique(unlist(l2_markers)), all_genes), collapse = ", "), "\n")
+print(sapply(l2_markers, length))
+```
+
+## 4. 证据矩阵（marker 阳性率 + 模块评分 + BenMoshe 参考标签）
+
+```{r evidence}
+Idents(obj) <- "immune_clusters"
+clusters <- levels(Idents(obj))
+panel <- unique(unlist(l2_markers))
+exp <- GetAssayData(obj, assay = "RNA", layer = "data")
+pct <- avg <- matrix(NA, nrow = length(clusters), ncol = length(panel),
+                     dimnames = list(paste0("IC", clusters), panel))
+for (g in panel) {
+  vals <- exp[g, ]
+  for (cl in clusters) {
+    cells <- WhichCells(obj, idents = cl)
+    pct[paste0("IC", cl), g] <- 100 * mean(vals[cells] > 0)
+    avg[paste0("IC", cl), g] <- mean(vals[cells])
+  }
+}
+write.csv(round(pct, 2), "level2_qmd_outputs/marker_pct_by_cluster.csv")
+write.csv(round(avg, 4), "level2_qmd_outputs/marker_avg_by_cluster.csv")
+
+for (nm in names(l2_markers)) {
+  obj <- AddModuleScore(obj, features = list(l2_markers[[nm]]), name = paste0("L2_", nm))
+}
+score_cols <- paste0("L2_", names(l2_markers), "1")
+score_cl <- obj@meta.data %>%
+  group_by(immune_clusters) %>%
+  summarise(across(all_of(score_cols), mean), n = n()) %>%
+  as.data.frame()
+score_out <- score_cl
+score_out[, score_cols] <- round(score_out[, score_cols, drop = FALSE], 3)
+write.csv(score_out, "level2_qmd_outputs/module_scores_by_cluster.csv", row.names = FALSE)
+
+ref_major <- obj@meta.data %>%
+  filter(!is.na(cell_type_2022)) %>%
+  group_by(immune_clusters) %>%
+  summarise(ref_majority = names(which.max(table(cell_type_2022))),
+            ref_n = n(),
+            ref_top_pct = round(100 * max(table(cell_type_2022)) / n(), 1)) %>%
+  as.data.frame()
+write.csv(ref_major, "level2_qmd_outputs/reference_majority_by_cluster.csv", row.names = FALSE)
+
+cat("### 模块评分（cluster 均值）\n")
+print(score_out, row.names = FALSE)
+cat("\n### BenMoshe2022 参考标签多数\n")
+print(ref_major, row.names = FALSE)
+```
+
+### 4.1 髓系 marker 特异性核对（BenMoshe2022 金标准 AUC）
+
+髓系细胞共享大量转录组，Cd68/Adgre1/C1qa/Fcer1g/Tyrobp/Ifitm3 等是**谱系共享 marker**，不适合区分髓系内部类型。下表用 BenMoshe2022 参考标签计算每个候选 marker 区分“目标类型 vs 其余参考髓系细胞”的 AUC、阳性率和平均表达（金标准：KC/Macrophages/Monocytes/cDC/pDC）。
+
+```{r myeloid-specificity}
+ref_myeloid <- which(!is.na(obj$cell_type_2022) & obj$cell_type_2022 %in%
+                     c("KC", "Macrophages", "Monocytes", "cDC", "pDC"))
+ref_labels <- as.character(obj$cell_type_2022[ref_myeloid])
+exp_ref <- GetAssayData(obj[, ref_myeloid], assay = "RNA", layer = "data")
+
+cand_spec <- list(
+  KC = c("Adgre1","Cd68","C1qa","C1qc","Timd4","Vsig4","Clec4f","Cd5l","Marco","Mrc1","Apoe"),
+  Macrophages = c("Adgre1","Cd68","C1qa","Ccr2","Spp1","Arg1","Fn1","Chil3","Mrc1","Trem2","Apoe","Cx3cr1"),
+  Monocyte = c("Ccr2","Ly6c2","Plac8","Ms4a6c","Fcnb","Sell","Cd14","Ifitm3","Cx3cr1"),
+  cDC = c("Flt3","H2-Aa","H2-Ab1","H2-Eb1","Clec9a","Xcr1","Cd209a","Cd24a","Ccr7","Btla","Batf3"),
+  pDC = c("Siglech","Bst2","Tcf4","Ccr9","Ly6d","Irf7","Klk1")
+)
+auc_vs_rest <- function(x, idx) {
+  n1 <- sum(idx); n0 <- sum(!idx)
+  if (n1 < 5 || n0 < 5) return(NA_real_)
+  r <- rank(x)
+  (sum(r[idx]) - n1 * (n1 + 1) / 2) / (n1 * n0)
+}
+spec_tab <- list()
+for (grp in names(cand_spec)) {
+  tg <- ifelse(grp == "Monocyte", "Monocytes", grp)
+  genes <- cand_spec[[grp]][cand_spec[[grp]] %in% rownames(obj)]
+  idx <- ref_labels == tg
+  df <- data.frame(group = grp, marker = genes)
+  df$AUC <- sapply(genes, function(g) auc_vs_rest(as.numeric(exp_ref[g, ]), idx))
+  df$pct_target <- sapply(genes, function(g) 100 * mean(exp_ref[g, idx] > 0))
+  df$pct_other <- sapply(genes, function(g) 100 * mean(exp_ref[g, !idx] > 0))
+  df$mean_target <- sapply(genes, function(g) mean(exp_ref[g, idx]))
+  df$mean_other <- sapply(genes, function(g) mean(exp_ref[g, !idx]))
+  df$verdict <- ifelse(df$AUC >= 0.85 & df$pct_other <= 20, "specific",
+                       ifelse(df$AUC >= 0.7, "moderate", "shared"))
+  spec_tab[[grp]] <- df[order(-df$AUC), ]
+}
+spec_out <- do.call(rbind, spec_tab)
+spec_out[, c("AUC","pct_target","pct_other","mean_target","mean_other")] <-
+  round(spec_out[, c("AUC","pct_target","pct_other","mean_target","mean_other")], 3)
+write.csv(spec_out, "level2_qmd_outputs/myeloid_marker_specificity.csv", row.names = FALSE)
+print(spec_out, row.names = FALSE)
+```
+
+**结论**：真正的类型特异 marker 是——KC：Clec4f/Cd5l/Timd4/Vsig4；Monocyte：Ccr2/Ly6c2（Ms4a6c/Plac8 为辅助）；cDC：Flt3/Xcr1/Clec9a/Btla（H2 家族在 cDC 高但 B 也高）；pDC：Siglech/Ccr9/Ly6d（Bst2/Tcf4/Irf7 为 IFN 相关共享）；**Macrophages（MoMac）没有任何单一高特异 marker**，其命名采用“组合定义”：Adgre1/Cd68 阳性 + KC 特异 marker（Clec4f/Timd4）阴性 + Ccr2/Ly6c2/Spp1/Trem2/Arg1 等单核来源/状态特征，这与 Guilliams et al. Cell 2022 的 KC vs MoMac 命名逻辑一致。
+
+## 5. 注释决策表
+
+判定规则：**BenMoshe 参考多数标签 + 模块评分最强组 + 关键 marker 阳性率**三方一致才定名；冲突或双胞嫌疑标 Low confidence；Cycling 为状态标签，不单独成类型。
+
+```{r decision-table}
+decision <- data.frame(
+  immune_cluster = 0:23,
+  ref_majority = c("Monocytes(52%)","KC(99%)","-","Monocytes(94%)","KC(90%)",
+                   "Macrophages(60%)","B(100%)","T+NK(100%)","KC(98%)","-",
+                   "T+NK(99%)","cDC(53%)","pDC(90%)","KC(34%,混杂)","T+NK(100%)",
+                   "cDC(96%)","T+NK(100%)","Endo(11个)","KC(2个)","KC(4个)",
+                   "Monocytes(68%)","-","-","-"),
+  key_evidence = c(
+    "Cd68 99/Ccr2 76/Apoe 97/Fn1 84; MoMac 评分最高",
+    "Cd5l/Clec4f/C1qa/Timd4 94-100",
+    "S100a8 96/S100a9 94/Il1b 97/Csf3r 83",
+    "Plac8 98/Ms4a6c 96/Ccr2 83/Ly6c2 62",
+    "Cd5l 96/Clec4f 93/Vsig4 90",
+    "Cd68 96/Ccr2 84/Apoe 93/Ms4a6c 95",
+    "Cd79a 99/Ms4a1 79/Ighm 97/Mzb1 57",
+    "Cd3d 91/Cd3g 94/Nkg7 80",
+    "Cd5l 100/Clec4f 97; Top2a 24",
+    "S100a8 99/S100a9 100/Retnlg 89/Cxcr2 81",
+    "Cd3d 94/Tcf7 78/Sell 68/Ccr7 73/Cd8b1 52",
+    "H2-Aa/Ab1/Eb1 94/Flt3 48/Cd209a 42",
+    "Siglech 99/Tcf4 100/Ccr9 97/Ly6d 94",
+    "Top2a 92/Mki67 84; Clec4f 71/C1qc 71",
+    "Nkg7 98/Xcl1 96/Ncr1 68; Cd3g 74/Trbc1 75",
+    "Flt3 87/Xcr1 84/Clec9a 85/Batf3 87",
+    "Nkg7 99/Ncr1 82/Gzma 94/Klrd1 94",
+    "Cd5l 90/Clec4f 88/C1qa 90/Adgre1 86",
+    "KC marker 全高, 但 Cd3d 57/Nkg7 63",
+    "Cd79a 89/Ms4a1 82; Cd5l 82/C1qc 81",
+    "Plac8 56/S100a8 40/Cxcr2 36; Fcer1a 17/Mcpt8 12",
+    "Adgre1/C1q/Cd5l 100/Fn1 100",
+    "Cd79a 95/Ighm 97; S100a8 97/S100a9 95",
+    "Siglech 96/Tcf4 100/Ccr9 100; Cd5l 100/Timd4 95"),
+  celltype_l2 = c("Macrophages","KC","Neutrophil","Monocyte","KC","Macrophages",
+                  "B","T","KC","Neutrophil","T","cDC","pDC","KC",
+                  "NK","cDC","NK","KC","KC","B","Neutrophil",
+                  "KC","B","pDC"),
+  confidence = c("High","High","High","High","High","High","High","High","High","High",
+                 "High","High","High","High","High","High","High","High",
+                 "Low","Low","Low","High","Low","Low"),
+  note = c("单核来源巨噬","","","","","","Mzb1+ 浆样 B 子集留三级",
+           "含 γδ/NKT 子集，留三级","增殖 KC 子集","活化中性粒","naive CD8 样 T，留三级",
+           "cDC2 样为主，留三级","","Cycling 状态","含 NKT 样子集，留三级",
+           "cDC1 为主，留三级","","由原 C2/C4/C15 等髓系簇重聚而来（与原全局 C17 无关）",
+           "T 信号污染/双胞嫌疑","髓系污染/双胞嫌疑(主要来自原全局 C23)",
+           "未成熟/混合粒细胞，Baso-Mast 证据不足","Fn1-high KC 子集",
+           "B-中性粒双胞嫌疑(主要来自原全局 C23)","pDC-KC 双胞嫌疑(主要来自原全局 C14)"),
+  stringsAsFactors = FALSE
+)
+print(decision, row.names = FALSE)
+write.csv(decision, "level2_qmd_outputs/level2_cluster_annotation.csv", row.names = FALSE)
+```
+
+> **cluster 编号说明**：`immune_clusters` 是免疫亚集重新聚类得到的新编号（0–23），与原全局 `seurat_clusters`（0–25）是两套编号，数字相同不代表同一群。原全局 C17（Endothelial, Low confidence, 504 细胞）未进入免疫亚集；免疫 IC17 主要来自原全局 C2/C4/C15 等 KC 样髓系簇。
+
+## 6. 写入二级标签
+
+```{r assign-labels}
+l2_levels <- c("KC", "Macrophages", "Monocyte", "Neutrophil", "cDC", "pDC",
+               "T", "NK", "B")
+l2_map <- setNames(decision$celltype_l2, as.character(decision$immune_cluster))
+obj$celltype_l2 <- factor(unname(l2_map[as.character(obj$immune_clusters)]),
+                          levels = l2_levels)
+obj$celltype_l2_confidence <- ifelse(
+  as.character(obj$immune_clusters) %in% c("18","19","20","22","23"), "Low", "High")
+obj$cellstate_cycling <- ifelse(
+  as.character(obj$immune_clusters) %in% c("8","13"), "Cycling", NA_character_)
+Idents(obj) <- "celltype_l2"
+
+cat("### celltype_l2 x condition\n")
+print(table(obj$celltype_l2, obj$condition))
+cat("\n### celltype_l2 x dataset\n")
+print(table(obj$celltype_l2, obj$dataset))
+```
+
+## 7. 结果图
+
+```{r figures}
+cols_l2 <- c(
+  "KC" = "#D62728", "Macrophages" = "#FF7F0E", "Monocyte" = "#BCBD22",
+  "Neutrophil" = "#8C564B", "cDC" = "#2CA02C", "pDC" = "#17BECF",
+  "T" = "#1F77B4", "NK" = "#9467BD", "B" = "#E377C2"
+)
+
+p_l2 <- DimPlot(obj, reduction = "umap", group.by = "celltype_l2",
+                label = TRUE, repel = TRUE, cols = cols_l2, pt.size = 0.4) +
+  ggtitle("Immune Level 2 annotation")
+print(p_l2)
+ggsave("level2_qmd_outputs/UMAP_celltype_l2.png", p_l2,
+       width = 9, height = 6, dpi = 300)
+
+p_l2_split <- DimPlot(obj, reduction = "umap", group.by = "celltype_l2",
+                      split.by = "condition", ncol = 2, cols = cols_l2,
+                      pt.size = 0.4)
+print(p_l2_split)
+ggsave("level2_qmd_outputs/UMAP_celltype_l2_by_condition.png", p_l2_split,
+       width = 12, height = 6, dpi = 300)
+
+p_cl <- DimPlot(obj, reduction = "umap", group.by = "immune_clusters",
+                label = TRUE, repel = TRUE) + NoLegend() +
+  ggtitle("Immune clusters (res 0.5)")
+print(p_cl)
+ggsave("level2_qmd_outputs/UMAP_immune_clusters.png", p_cl,
+       width = 8, height = 6, dpi = 300)
+
+p_cyc <- FeaturePlot(obj, features = c("Mki67", "Top2a"), reduction = "umap",
+                     ncol = 2, pt.size = 0.4) &
+  scale_colour_gradientn(colours = c("lightgrey", "blue", "red"))
+print(p_cyc)
+ggsave("level2_qmd_outputs/FeaturePlot_cycling.png", p_cyc,
+       width = 11, height = 5, dpi = 300)
+
+comp <- obj@meta.data %>%
+  count(condition, celltype_l2) %>%
+  group_by(condition) %>%
+  mutate(freq = 100 * n / sum(n)) %>%
+  ungroup()
+p_bar <- ggplot(comp, aes(x = condition, y = freq, fill = celltype_l2)) +
+  geom_col(position = "fill", width = 0.6) +
+  scale_fill_manual(values = cols_l2, name = "celltype_l2") +
+  labs(y = "Proportion", x = NULL) +
+  theme_classic(base_size = 13)
+print(p_bar)
+ggsave("level2_qmd_outputs/Barplot_composition.png", p_bar,
+       width = 6, height = 6, dpi = 300)
+write.csv(comp, "level2_qmd_outputs/composition_by_condition.csv", row.names = FALSE)
+```
+
+```{r dotplot-beautify}
+#| fig-width: 20
+#| fig-height: 7
+#| out-width: "100%"
+#| fig-align: center
+# 美化版 DotPlot（dotplot-beautify skill）：DotPlot()$data + ggplot2 重绘
+# 展示面板：谱系共享 marker 单列一组；类型内只用特异性/辅助 marker（见 4.1 核对）
+l2_dot_markers <- list(
+  Myeloid_shared = c("Cd68","Adgre1","C1qa","Fcer1g","Tyrobp"),
+  KC          = c("Timd4","Clec4f","Cd5l","Vsig4"),
+  Macrophages = c("Trem2","Spp1","Arg1","Fn1","Chil3"),
+  Monocyte    = c("Ccr2","Ly6c2","Plac8","Ms4a6c"),
+  Neutrophil  = c("S100a8","S100a9","Retnlg","Cxcr2"),
+  cDC         = c("Flt3","Xcr1","Clec9a","Cd24a"),
+  pDC         = c("Siglech","Ccr9","Ly6d","Tcf4"),
+  T           = c("Cd3d","Cd4","Cd8a","Trdc","Pdcd1"),
+  NK          = c("Ncr1","Nkg7","Klrd1","Gzma"),
+  B           = c("Cd79a","Ms4a1","Ighm","Mzb1"),
+  Cycling     = c("Mki67","Top2a")
+)
+l2_dot_markers <- lapply(l2_dot_markers, function(gs) gs[gs %in% rownames(obj)])
+p_dot_raw <- DotPlot(obj, features = l2_dot_markers, group.by = "celltype_l2",
+                     assay = "RNA", cols = c("#ffffff", "firebrick3"))
+dot_data <- p_dot_raw$data
+dot_data$id <- factor(dot_data$id, levels = l2_levels)
+dot_data$feature.groups2 <- factor(dot_data$feature.groups,
+                                   levels = names(l2_dot_markers))
+strip_fill <- brewer.pal(12, "Paired")[seq_along(l2_dot_markers)]
+dot_strip <- strip_themed(background_x = elem_list_rect(fill = strip_fill))
+
+p_dot_main <- dot_data %>%
+  ggplot(aes(x = features.plot, y = id)) +
+  geom_point(aes(size = pct.exp, color = avg.exp.scaled)) +
+  scale_size_continuous(range = c(0.5, 8), name = "Percent expressed") +
+  scale_colour_gradient(low = "#f7f7f7", high = "firebrick3",
+                        name = "Average expression") +
+  facet_wrap2(~feature.groups2, scales = "free_x",
+              strip = dot_strip, nrow = 1) +
+  theme_classic(base_size = 11) +
+  theme(strip.text.x = element_text(size = 9, color = "black", face = "bold"),
+        strip.background = element_rect(color = "white"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1,
+                                   color = "black", size = 9),
+        axis.text.y = element_blank(),
+        axis.title = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        legend.position = "bottom")
+
+legend_df <- data.frame(x = 0, y = l2_levels, stringsAsFactors = FALSE)
+legend_df$y <- factor(legend_df$y, levels = l2_levels)
+p_dot_legend <- ggplot(legend_df, aes(x, y, color = y)) +
+  geom_point(size = 6, shape = 18, show.legend = FALSE) +
+  scale_color_manual(values = cols_l2) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.margin = margin(r = 0),
+        axis.title = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 11),
+        axis.ticks = element_blank(),
+        axis.line = element_blank())
+
+p_dot <- plot_grid(p_dot_legend, p_dot_main, align = "h", axis = "bt",
+                   rel_widths = c(1.1, 8.9))
+print(p_dot)
+ggsave("level2_qmd_outputs/DotPlot_level2_markers.png", p_dot,
+       width = 20, height = 7, dpi = 300)
+```
+
+### 7.1 广谱 marker 筛查面板（人工筛选用）
+
+在定稿前铺开更多候选 marker。颜色为**每个基因在 9 个二级类型间的 z-score**（蓝=相对低，红=相对高）：真正特异的 marker 只在目标类型红色，共享 marker 会多列同时红，便于人工剔除坏 marker。
+
+```{r screening-panels}
+screen_myeloid <- list(
+  Myeloid_shared = c("Cd68","Adgre1","Csf1r","Fcer1g","Tyrobp","Ifitm3","Apoe","Itgam"),
+  KC          = c("Timd4","Clec4f","Cd5l","Vsig4","Marco","C1qa","C1qb","C1qc","Mrc1","Cd163","Fcna"),
+  Macrophages = c("Ccr2","Ly6c2","Spp1","Arg1","Trem2","Fn1","Chil3","Ccl2","Il1b","Gpnmb","Mmp12","Apoe","Cx3cr1"),
+  Monocyte    = c("Ccr2","Ly6c2","Plac8","Ms4a6c","Fcnb","Sell","Cd14","Ifitm3","Cx3cr1","Nr4a1","Ccl2","Ace"),
+  Neutrophil  = c("S100a8","S100a9","Retnlg","Ly6g","Cxcr2","Csf3r","Mmp8","Mmp9","S100a6","Il1b","Cxcl2","Fpr1"),
+  cDC         = c("Flt3","Itgax","H2-Aa","H2-Ab1","H2-Eb1","Clec9a","Xcr1","Cd209a","Cd24a","Ccr7","Btla","Batf3","Cd74"),
+  pDC         = c("Siglech","Tcf4","Ccr9","Ly6d","Bst2","Irf7","Klk1","Irf8","Spib")
+)
+screen_lymphoid <- list(
+  T       = c("Cd3d","Cd3e","Cd3g","Trbc1","Lat","Il7r","Cd4","Cd8a","Cd8b1",
+              "Tcrg-C1","Tcrg-C2","Trdc","Zbtb16","Foxp3","Sell","Ccr7","Tcf7",
+              "Lef1","Pdcd1","Tox","Lag3","Havcr2","Ctla4","Gzmb","Gzmk","Ifng","Cd69"),
+  NK      = c("Ncr1","Nkg7","Klrd1","Klrb1c","Klrk1","Gzma","Prf1","Xcl1","Eomes",
+              "S1pr5","Fcer1g","Tyrobp","Klra4","Cd160","Gzmb","Ifng","Il7r"),
+  B       = c("Cd79a","Cd79b","Ms4a1","Cd19","Pax5","Ighm","Ighd","Cd22","Fcmr",
+              "Bank1","Fcer2a","Ly6d","Mzb1","Jchain","Sdc1","Derl3","Xbp1","Igkc"),
+  Cycling = c("Mki67","Top2a","Birc5","Ube2c","Pcna","Ccna2","Ccnb2")
+)
+
+Idents(obj) <- "celltype_l2"
+exp <- GetAssayData(obj, assay = "RNA", layer = "data")
+
+# marker x celltype 阳性率/平均表达矩阵（供人工筛选勾选）
+broad_all <- unique(unlist(c(screen_myeloid, screen_lymphoid)))
+broad_all <- broad_all[broad_all %in% rownames(obj)]
+pct_wide <- sapply(l2_levels, function(ct) {
+  cells <- WhichCells(obj, idents = ct)
+  as.numeric(100 * Matrix::rowMeans(exp[broad_all, cells, drop = FALSE] > 0))
+})
+avg_wide <- sapply(l2_levels, function(ct) {
+  cells <- WhichCells(obj, idents = ct)
+  as.numeric(Matrix::rowMeans(exp[broad_all, cells, drop = FALSE]))
+})
+rownames(pct_wide) <- rownames(avg_wide) <- broad_all
+write.csv(round(pct_wide, 1), "level2_qmd_outputs/marker_screening_pct_by_celltype.csv")
+write.csv(round(avg_wide, 3), "level2_qmd_outputs/marker_screening_avg_by_celltype.csv")
+write.csv(data.frame(
+  marker = broad_all,
+  panel = ifelse(broad_all %in% unlist(screen_myeloid), "Myeloid", "Lymphoid"),
+  stringsAsFactors = FALSE),
+  "level2_qmd_outputs/marker_screening_panel.csv", row.names = FALSE)
+
+screen_dotplot <- function(groups, strip_fill) {
+  rows <- list()
+  for (grp in names(groups)) {
+    genes <- groups[[grp]][groups[[grp]] %in% rownames(obj)]
+    for (ct in l2_levels) {
+      cells <- WhichCells(obj, idents = ct)
+      m <- exp[genes, cells, drop = FALSE]
+      rows[[length(rows) + 1]] <- data.frame(
+        group = grp, gene = genes, id = ct,
+        pct = as.numeric(100 * Matrix::rowMeans(m > 0)),
+        avg = as.numeric(Matrix::rowMeans(m)))
+    }
+  }
+  dat <- bind_rows(rows)
+  dat <- dat %>%
+    group_by(group, gene) %>%
+    mutate(avg_scaled = as.numeric(scale(avg))) %>%
+    ungroup()
+  dat$id <- factor(dat$id, levels = l2_levels)
+  dat$group <- factor(dat$group, levels = names(groups))
+  ggplot(dat, aes(x = gene, y = id)) +
+    geom_point(aes(size = pct, color = avg_scaled)) +
+    scale_size_continuous(range = c(0.3, 7), name = "Percent expressed") +
+    scale_colour_gradient2(low = "#4575B4", mid = "#F7F7F7", high = "#D73027",
+                           midpoint = 0, name = "Scaled avg expr") +
+    facet_wrap2(~group, scales = "free_x", nrow = 1,
+                strip = strip_themed(background_x = elem_list_rect(fill = strip_fill))) +
+    theme_classic(base_size = 11) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 8),
+          axis.text.y = element_text(size = 10),
+          axis.title = element_blank(),
+          strip.text.x = element_text(size = 8, color = "black", face = "bold"),
+          strip.background = element_rect(color = "white"),
+          panel.spacing = unit(0.4, "lines"),
+          legend.position = "bottom")
+}
+```
+
+```{r screening-dotplots}
+#| fig-width: 26
+#| fig-height: 8
+#| out-width: "100%"
+#| fig-align: center
+strip_mye <- brewer.pal(12, "Paired")[seq_along(screen_myeloid)]
+p_screen_mye <- screen_dotplot(screen_myeloid, strip_mye)
+print(p_screen_mye)
+ggsave("level2_qmd_outputs/DotPlot_screening_myeloid.png", p_screen_mye,
+       width = 26, height = 8, dpi = 300)
+
+strip_lym <- brewer.pal(12, "Paired")[seq_along(screen_lymphoid)]
+p_screen_lym <- screen_dotplot(screen_lymphoid, strip_lym)
+print(p_screen_lym)
+ggsave("level2_qmd_outputs/DotPlot_screening_lymphoid.png", p_screen_lym,
+       width = 22, height = 8, dpi = 300)
+```
+
+**使用方法**：打开上述两张筛查图，按“目标类型红色且其余类型蓝/白”为合格 marker，标出你认为坏掉的 marker；同时可用 `level2_qmd_outputs/marker_screening_pct_by_celltype.csv` 核对数值。筛选完成后回来改本 qmd 的 `l2_dot_markers` 即可。
+
+## 8. 保存对象与注释要点
+
+```{r save-object}
+saveRDS(obj, "integrated_immune_subset_l2_annotated.rds")
+cat("已保存：integrated_immune_subset_l2_annotated.rds\n")
+cat("celltype_l2 levels：", paste(levels(obj$celltype_l2), collapse = " | "), "\n")
+```
+
+- **Plasma 未单独命名**：Jchain 在所有 cluster 均低（≤5%），Mzb1⁺ 细胞与 B 共聚（IC6），无独立浆细胞群；按 BenMoshe2022 合并为 B，三级再处理 Mzb1⁺ 子集。
+- **Basophil/Mast 未命名**：IC20 的 Fcer1a/Mcpt8 阳性率仅 12–17%，证据不足；暂归 Neutrophil（Low confidence），三级或独立验证后再定。
+- **髓系 marker 分层**：Cd68/Adgre1/C1qa/Fcer1g/Tyrobp 为谱系共享 marker，只用于确认髓系身份；类型判定使用 4.1 节核对的特异 marker（KC: Clec4f/Timd4/Cd5l/Vsig4；Monocyte: Ccr2/Ly6c2；cDC: Flt3/Xcr1/Clec9a；pDC: Siglech/Ccr9/Ly6d），Macrophages 用“KC 特异 marker 阴性 + 单核来源/状态特征”组合定义。
+- **NKT**：IC14 有 Cd3g/Trbc1 与 NK marker 共表达（NKT 样子集），一级方案中 NKT 属三级，故二级先归 NK，三级再拆。
+- **Low confidence clusters**：IC18、IC19、IC20、IC22、IC23（双胞/污染嫌疑），下游比例与 DEG 分析应排除或做敏感性分析。
+- **与既往注释衔接**：IC10 对应 T_NK 注释中的 Naive CD8 T(Tstr)；IC14/IC16 对应 NK；IC7 对应 γδ T/NKT 混合；IC8/IC13 为增殖 KC；Macrophages 的 SPP1⁺/M1-M2 状态与 `macrophages_final_M1M2_annotated.rds` 在三级对齐。
+
+```{r session-info}
+sessionInfo()
+```

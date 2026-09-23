@@ -1,0 +1,459 @@
+---
+title: "细胞通讯分析（CellChat + CellPhoneDB）：SPP1⁺ 巨噬 × 二级注释细胞类型"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本 qmd 在**服务器**上运行（本地内存不足）。输入为唯一整合对象 `integrated_liver_final_seurat.rds`。
+
+**细胞分组规则**（按用户要求）：
+- 巨噬细胞只保留 **SPP1⁺ TREM2⁺ macrophage**（`macrophage_l3 == "SPP1+ TREM2+ macrophage"`），标记为 **`SPP1+ Mac`**；
+- 其余免疫细胞使用 **二级注释** `celltype_l2`（KC、Monocyte、Neutrophil、cDC、pDC、T、NK、B）；
+- 非免疫细胞使用一级注释 `celltype_l1`（Hepatocyte、Cholangiocyte、Endothelial、HSC_Mesenchymal）；
+- 其余巨噬细胞（Ccr2⁺ inflammatory、IFN-stimulated）**不参与**本次通讯分析。
+:::
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(CellChat)     # 推荐 v1.6.1（与既往分析一致）；v2.x 也可运行
+  library(liana)        # LIANA 中的 CellPhoneDB v2 重实现
+  library(ggplot2)
+  library(patchwork)
+  library(circlize)
+  library(dplyr)
+  library(cowplot)
+})
+set.seed(42)
+dir.create("ccc_outputs", showWarnings = FALSE)
+dir.create("cellphonedb_inputs", showWarnings = FALSE)
+```
+
+## 1. 构建通讯用细胞类型
+
+```{r build-celltype-comm}
+obj <- readRDS("integrated_liver_final_seurat.rds")
+DefaultAssay(obj) <- "RNA"
+
+comm_levels <- c("SPP1+ Mac", "KC", "Monocyte", "Neutrophil", "cDC", "pDC",
+                 "T", "NK", "B",
+                 "Hepatocyte", "Cholangiocyte", "Endothelial", "HSC_Mesenchymal")
+
+obj$celltype_comm <- as.character(NA)
+
+# 免疫细胞：二级注释
+immune <- !is.na(obj$celltype_l2)
+obj$celltype_comm[immune] <- as.character(obj$celltype_l2[immune])
+
+# 巨噬细胞：只保留 SPP1+ TREM2+ macrophage
+mac_spp1 <- immune & obj$celltype_l2 == "Macrophages" &
+            !is.na(obj$macrophage_l3) &
+            obj$macrophage_l3 == "SPP1+ TREM2+ macrophage"
+obj$celltype_comm[immune & obj$celltype_l2 == "Macrophages" & !mac_spp1] <- NA
+obj$celltype_comm[mac_spp1] <- "SPP1+ Mac"
+
+# 非免疫细胞：一级注释
+obj$celltype_comm[is.na(obj$celltype_l2)] <- as.character(obj$celltype_l1[is.na(obj$celltype_l2)])
+
+obj$celltype_comm <- factor(obj$celltype_comm, levels = comm_levels)
+
+cat("=== celltype_comm x condition ===\n")
+print(table(obj$celltype_comm, obj$condition, useNA = "always"))
+```
+
+## 2. CellChat（Control vs APAP_24h）
+
+### 2.1 兼容性补丁（CellChat 1.6.1 + igraph 2.x）
+
+```{r cellchat-patch}
+fix_diffInteraction <- function() {
+  f <- get("netVisual_diffInteraction", envir = asNamespace("CellChat"))
+  b <- deparse(body(f))
+  idx_if <- grep("if \\(sum\\(edge.start", b)
+  b2 <- append(b, "        igraph::E(g)$loop.angle <- rep(0, length(igraph::E(g)))", after = idx_if)
+  parse(text = b2)[[1]]
+}
+netVisual_diffInteraction_fixed <- function(object, comparison = c(1, 2),
+    measure = c("count", "weight", "count.merged", "weight.merged"),
+    color.use = NULL, color.edge = c("#b2182b", "#2166ac"), title.name = NULL,
+    sources.use = NULL, targets.use = NULL, remove.isolate = FALSE, top = 1,
+    weight.scale = FALSE, vertex.weight = 20, vertex.weight.max = NULL,
+    vertex.size.max = 15, vertex.label.cex = 1, vertex.label.color = "black",
+    edge.weight.max = NULL, edge.width.max = 8, alpha.edge = 0.6,
+    label.edge = FALSE, edge.label.color = "black", edge.label.cex = 0.8,
+    edge.curved = 0.2, shape = "circle", layout = igraph::in_circle(),
+    margin = 0.2, arrow.width = 1, arrow.size = 0.2) {
+  eval(fix_diffInteraction(), envir = environment())
+}
+```
+
+### 2.2 各条件独立推断
+
+```{r cellchat-run}
+data_input <- GetAssayData(obj, assay = "RNA", layer = "data")
+
+run_cc <- function(cond) {
+  meta <- obj@meta.data[obj$condition == cond & !is.na(obj$celltype_comm), , drop = FALSE]
+  meta$celltype_comm <- droplevels(meta$celltype_comm)
+  cc <- createCellChat(object = data_input[, rownames(meta)], meta = meta,
+                       group.by = "celltype_comm")
+  cc@DB <- CellChatDB.mouse
+  cc <- subsetData(cc)
+  cc <- identifyOverExpressedGenes(cc)
+  cc <- identifyOverExpressedInteractions(cc)
+  cc <- computeCommunProb(cc, type = "triMean", population.size = TRUE)
+  cc <- filterCommunication(cc, min.cells = 10)
+  cc <- computeCommunProbPathway(cc)
+  cc <- aggregateNet(cc)
+  cc <- netAnalysis_computeCentrality(cc, slot.name = "netP")
+  cc
+}
+
+cc_ctrl <- run_cc("Control")
+cc_apap <- run_cc("APAP_24h")
+
+cat("Control 类型:", paste(levels(cc_ctrl@idents), collapse = " | "), "\n")
+cat("APAP_24h 类型:", paste(levels(cc_apap@idents), collapse = " | "), "\n")
+if (!identical(levels(cc_ctrl@idents), levels(cc_apap@idents))) {
+  stop("两条件 idents 层级不一致，无法 mergeCellChat；请检查 celltype_comm 分组")
+}
+
+saveRDS(cc_ctrl, "ccc_outputs/cellchat_Control.rds")
+saveRDS(cc_apap, "ccc_outputs/cellchat_APAP24h.rds")
+```
+
+### 2.3 通讯统计
+
+```{r cellchat-summary}
+for (nm in c("Control", "APAP_24h")) {
+  cc <- get(paste0("cc_", ifelse(nm == "Control", "ctrl", "apap")))
+  cat("=== ", nm, " ===\n", sep = "")
+  cat("互作总数:", sum(cc@net$count), " 通讯强度:", round(sum(cc@net$weight), 3),
+      " 通路数:", length(cc@netP$pathways), "\n")
+  df_pw <- subsetCommunication(cc, slot.name = "netP")
+  agg <- aggregate(prob ~ pathway_name, df_pw, sum)
+  agg <- agg[order(-agg$prob), ]
+  cat("通路 Top10:\n")
+  print(head(agg, 10), row.names = FALSE)
+}
+```
+
+### 2.4 双条件差异比较
+
+```{r cellchat-compare}
+object.list <- list(Control = cc_ctrl, APAP_24h = cc_apap)
+cc_merged <- mergeCellChat(object.list, add.names = names(object.list))
+saveRDS(cc_merged, "ccc_outputs/cellchat_merged_Control_vs_APAP24h.rds")
+
+g1 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2))
+g2 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2), measure = "weight")
+g1 + g2 + plot_annotation(title = "Total number & strength of interactions (Control vs APAP_24h)")
+```
+
+```{r cellchat-diff-network, fig.width = 12, fig.height = 6}
+par(mfrow = c(1, 2), xpd = TRUE)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE, measure = "weight")
+```
+
+```{r cellchat-diff-heatmap, fig.width = 12, fig.height = 5}
+gg1 <- netVisual_heatmap(cc_merged)
+gg2 <- netVisual_heatmap(cc_merged, measure = "weight")
+gg1 + gg2 + plot_annotation(title = "Differential interactions (Control vs APAP_24h)")
+```
+
+```{r cellchat-circle, fig.width = 12, fig.height = 6}
+weight.max <- getMaxWeight(object.list, attribute = c("idents", "count"))
+par(mfrow = c(1, 2), xpd = TRUE)
+for (i in 1:length(object.list)) {
+  netVisual_circle(object.list[[i]]@net$count,
+                   weight.scale = TRUE, label.edge = FALSE,
+                   edge.weight.max = weight.max[2], edge.width.max = 12,
+                   title.name = paste0("Number of interactions - ", names(object.list)[i]))
+}
+```
+
+### 2.5 SPP1+ Mac 的关键互作
+
+```{r cellchat-spp1}
+df_apap <- subsetCommunication(cc_apap)
+df_sp <- df_apap[df_apap$source == "SPP1+ Mac",
+                 c("source","target","ligand","receptor","pathway_name","prob","pval")]
+df_sp <- df_sp[order(-df_sp$prob), ]
+write.csv(df_sp, "ccc_outputs/cellchat_SPP1Mac_outgoing_LR.csv", row.names = FALSE)
+cat("SPP1+ Mac 作为发送方的显著互作:", nrow(df_sp), "条\n")
+print(head(df_sp, 25), row.names = FALSE)
+
+df_to_sp <- df_apap[df_apap$target == "SPP1+ Mac",
+                    c("source","target","ligand","receptor","pathway_name","prob","pval")]
+df_to_sp <- df_to_sp[order(-df_to_sp$prob), ]
+write.csv(df_to_sp, "ccc_outputs/cellchat_to_SPP1Mac_LR.csv", row.names = FALSE)
+cat("\nSPP1+ Mac 作为接收方的显著互作:", nrow(df_to_sp), "条\n")
+print(head(df_to_sp, 25), row.names = FALSE)
+```
+
+```{r cellchat-spp1-bubble, fig.width = 11, fig.height = 9}
+other_types <- setdiff(levels(cc_apap@idents), "SPP1+ Mac")
+netVisual_bubble(cc_apap,
+                 sources.use = "SPP1+ Mac",
+                 targets.use = other_types,
+                 remove.isolate = FALSE, font.size = 8) +
+  ggtitle("SPP1+ Mac -> other cell types (APAP_24h)")
+```
+
+```{r cellchat-signaling-changes, fig.width = 12, fig.height = 10}
+p1 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "SPP1+ Mac",
+                                           signaling.exclude = "MIF")
+p2 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "T",
+                                           signaling.exclude = "MIF")
+p3 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "NK",
+                                           signaling.exclude = "MIF")
+p4 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "KC",
+                                           signaling.exclude = "MIF")
+(p1 | p2) / (p3 | p4)
+```
+
+## 3. CellPhoneDB（LIANA R 实现，MouseConsensus）
+
+按既往流程使用 LIANA 的 `cellphonedb` 方法（CellPhoneDB v2 算法重实现）。默认只在 **APAP_24h** 内推断（SPP1+ Mac 在 Control 仅 3 个细胞）；如需 Control，把 `run_control_cpdb <- TRUE`。
+
+```{r liana-patch}
+patch_liana_prep <- function() {
+  ns <- asNamespace("liana")
+  new_f <- function(sce, idents_col = NULL, verbose = TRUE, assay = NULL,
+                    min_cells = 0, ...) {
+    if (is.null(assay)) assay <- SeuratObject::DefaultAssay(sce)
+    message(stringr::str_glue("Expression from the `{assay}` assay will be used"))
+    idents <- .format_idents(metadata = sce@meta.data,
+                             active_idents = SeuratObject::Idents(sce),
+                             idents_col = idents_col,
+                             object_class = class(sce)[[1]],
+                             verbose = verbose)
+    sce <- SingleCellExperiment::SingleCellExperiment(
+      list(counts = SeuratObject::GetAssayData(object = sce, assay = assay, layer = "counts"),
+           logcounts = SeuratObject::GetAssayData(object = sce, assay = assay, layer = "data")),
+      metadata = sce@meta.data)
+    SingleCellExperiment::colLabels(sce) <- idents
+    sce@int_metadata$base <- exp(1)
+    return(.filter_sce(sce, min_cells, verbose))
+  }
+  environment(new_f) <- ns
+  if (bindingIsLocked("liana_prep.Seurat", ns)) {
+    unlockBinding("liana_prep.Seurat", ns)
+    on.exit(lockBinding("liana_prep.Seurat", ns), add = TRUE)
+  }
+  assign("liana_prep.Seurat", new_f, envir = ns)
+  invisible(TRUE)
+}
+patch_liana_prep()
+cat("liana 版本:", as.character(packageVersion("liana")), "\n")
+```
+
+```{r cpdb-run}
+run_cpdb <- function(sub) {
+  res <- liana_wrap(sub,
+                    method = "cellphonedb",
+                    resource = "MouseConsensus",
+                    expr_prop = 0.1,
+                    perm_n = 1000,
+                    seed = 42)
+  if (is.list(res) && !is.data.frame(res) && "cellphonedb" %in% names(res)) {
+    res <- res$cellphonedb
+  }
+  res
+}
+
+# ---- 第一部分：全细胞类型版（13 类逐一区分，所有 pairwise）----
+sub_apap <- subset(obj, subset = condition == "APAP_24h" & !is.na(celltype_comm))
+sub_apap$celltype_comm <- droplevels(sub_apap$celltype_comm)
+Idents(sub_apap) <- "celltype_comm"
+
+cpdb_full_apap <- run_cpdb(sub_apap)
+cpdb_full_apap <- cpdb_full_apap %>%
+  mutate(pvalue = ifelse(pvalue == 0, 0.001, pvalue)) %>%
+  arrange(pvalue, desc(lr.mean))
+saveRDS(cpdb_full_apap, "ccc_outputs/cellphonedb_APAP24h_full13types.rds")
+write.csv(cpdb_full_apap, "ccc_outputs/cellphonedb_APAP24h_full13types_all_pairs.csv",
+          row.names = FALSE)
+
+cpdb_full_sig <- cpdb_full_apap %>% filter(pvalue < 0.05)
+write.csv(cpdb_full_sig, "ccc_outputs/cellphonedb_APAP24h_full13types_significant.csv",
+          row.names = FALSE)
+cat("=== 第一部分：全 13 类型 CellPhoneDB ===\n")
+cat("评估互作对数:", nrow(cpdb_full_apap), " | 显著(p<0.05):", nrow(cpdb_full_sig), "\n")
+cat("各方向显著互作数:\n")
+print(table(source = cpdb_full_sig$source, target = cpdb_full_sig$target))
+cat("\n全类型显著互作 TOP15:\n")
+print(head(cpdb_full_sig, 15) %>%
+        select(source, target, ligand, receptor, lr.mean, pvalue))
+```
+
+```{r cpdb-spp1-run}
+# ---- 第二部分：SPP1+ Mac vs Others 二分类版 ----
+sub_spp1 <- subset(obj, subset = condition == "APAP_24h" & !is.na(celltype_comm))
+sub_spp1$SPP1_group <- ifelse(sub_spp1$celltype_comm == "SPP1+ Mac",
+                              "SPP1+ Mac", "Others")
+sub_spp1$SPP1_group <- factor(sub_spp1$SPP1_group, levels = c("SPP1+ Mac", "Others"))
+Idents(sub_spp1) <- "SPP1_group"
+
+cpdb_spp1_apap <- run_cpdb(sub_spp1)
+cpdb_spp1_apap <- cpdb_spp1_apap %>%
+  mutate(pvalue = ifelse(pvalue == 0, 0.001, pvalue)) %>%
+  arrange(pvalue, desc(lr.mean))
+saveRDS(cpdb_spp1_apap, "ccc_outputs/cellphonedb_APAP24h_SPP1vsOthers.rds")
+write.csv(cpdb_spp1_apap, "ccc_outputs/cellphonedb_APAP24h_SPP1vsOthers_all_pairs.csv",
+          row.names = FALSE)
+
+cpdb_spp1_sig <- cpdb_spp1_apap %>% filter(pvalue < 0.05)
+write.csv(cpdb_spp1_sig, "ccc_outputs/cellphonedb_APAP24h_SPP1vsOthers_significant.csv",
+          row.names = FALSE)
+cat("\n=== 第二部分：SPP1+ Mac vs Others CellPhoneDB ===\n")
+cat("评估互作对数:", nrow(cpdb_spp1_apap), " | 显著(p<0.05):", nrow(cpdb_spp1_sig), "\n")
+print(table(source = cpdb_spp1_sig$source, target = cpdb_spp1_sig$target))
+```
+
+```{r cpdb-spp1}
+sp_out <- cpdb_spp1_sig %>% filter(source == "SPP1+ Mac", target == "Others") %>%
+  arrange(desc(lr.mean), pvalue)
+sp_in  <- cpdb_spp1_sig %>% filter(target == "SPP1+ Mac", source == "Others") %>%
+  arrange(desc(lr.mean), pvalue)
+cat("=== SPP1+ Mac -> Others TOP20 ===\n")
+print(head(sp_out, 20) %>% select(source, target, ligand, receptor, lr.mean, pvalue))
+cat("\n=== Others -> SPP1+ Mac TOP20 ===\n")
+print(head(sp_in, 20) %>% select(source, target, ligand, receptor, lr.mean, pvalue))
+
+key <- cpdb_spp1_sig %>%
+  filter(source != target, grepl("^(Spp1|App|Fn1)$", ligand)) %>%
+  select(source, target, ligand, receptor, lr.mean, pvalue)
+cat("\n=== Spp1 / App / Fn1 关键轴（二分类版）===\n")
+print(key)
+```
+
+```{r cpdb-full-dot, fig.width = 14, fig.height = 8}
+# 全 13 类型版：显著互作 TOP30 总览（source -> target）
+full_top <- head(cpdb_full_sig, 30) %>%
+  mutate(label = paste0(source, " -> ", target, ": ", ligand, " -> ", receptor),
+         pval_disp = ifelse(pvalue == 0, 0.001, pvalue))
+full_top$label <- factor(full_top$label, levels = unique(full_top$label))
+
+ggplot(full_top, aes(x = label, y = 1)) +
+  geom_point(aes(size = -log10(pval_disp), color = lr.mean)) +
+  scale_color_gradient(low = "#FFFFCC", high = "#B2182B", name = "LR mean (log1p)") +
+  scale_size(range = c(2, 8), name = "-log10(p)") +
+  theme_bw(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 8),
+        axis.title = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "bottom", legend.box = "horizontal") +
+  ggtitle("Full 13 cell types: top 30 significant LR pairs (CellPhoneDB, APAP_24h)")
+```
+
+```{r cpdb-dot, fig.width = 14, fig.height = 7}
+plot_df <- bind_rows(
+  head(sp_out, 25) %>% mutate(direction = "SPP1+ Mac -> Others"),
+  head(sp_in, 25)  %>% mutate(direction = "Others -> SPP1+ Mac")
+) %>%
+  mutate(label = paste0(ligand, " -> ", receptor),
+         pval_disp = ifelse(pvalue == 0, 0.001, pvalue))
+plot_df$direction <- factor(plot_df$direction,
+                            levels = c("SPP1+ Mac -> Others", "Others -> SPP1+ Mac"))
+plot_df$label <- factor(plot_df$label, levels = unique(plot_df$label))
+
+ggplot(plot_df, aes(x = label, y = direction)) +
+  geom_point(aes(size = -log10(pval_disp), color = lr.mean)) +
+  scale_color_gradient(low = "#FFFFCC", high = "#B2182B", name = "LR mean (log1p)") +
+  scale_size(range = c(2, 8), name = "-log10(p)") +
+  facet_grid(~direction, scales = "free_x", space = "free_x") +
+  theme_bw(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 9),
+        axis.title = element_blank(),
+        strip.text = element_text(size = 12, face = "bold"),
+        panel.spacing = unit(1, "lines"),
+        legend.position = "bottom", legend.box = "horizontal") +
+  ggtitle("Top 25 significant LR pairs (CellPhoneDB / MouseConsensus, APAP_24h)")
+```
+
+## 4. 原生 Python CellPhoneDB（可选，服务器执行）
+
+以下代码**默认不执行**（`eval: false`）。需要原生 CellPhoneDB 时，在服务器终端运行：
+
+```{bash}
+#| eval: false
+# 全 13 类型版
+mkdir -p cellphonedb_outputs_apap_full13
+cellphonedb method statistical_analysis \
+  --counts-data gene_name \
+  --output-path cellphonedb_outputs_apap_full13 \
+  cellphonedb_inputs/apap24h_meta_full13.txt \
+  cellphonedb_inputs/apap24h_counts.txt
+
+# SPP1+ Mac vs Others 二分类版
+mkdir -p cellphonedb_outputs_apap_spp1vsothers
+cellphonedb method statistical_analysis \
+  --counts-data gene_name \
+  --output-path cellphonedb_outputs_apap_spp1vsothers \
+  cellphonedb_inputs/apap24h_meta_spp1vsothers.txt \
+  cellphonedb_inputs/apap24h_counts.txt
+```
+
+配套输入文件在服务器上可由以下 R 代码生成（数据量大，仅按需执行）：
+
+```{r export-cpdb-inputs}
+#| eval: false
+for (cond in c("APAP_24h", "Control")) {
+  cells <- colnames(obj)[obj$condition == cond & !is.na(obj$celltype_comm)]
+  # 全 13 类型 meta
+  meta_full <- data.frame(Cell = cells,
+                          cell_type = as.character(obj$celltype_comm[cells]))
+  write.table(meta_full, paste0("cellphonedb_inputs/",
+                                tolower(cond), "_meta_full13.txt"),
+              sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
+  # SPP1+ Mac vs Others meta
+  meta_spp1 <- data.frame(Cell = cells,
+                          cell_type = ifelse(obj$celltype_comm[cells] == "SPP1+ Mac",
+                                             "SPP1+ Mac", "Others"))
+  write.table(meta_spp1, paste0("cellphonedb_inputs/",
+                                tolower(cond), "_meta_spp1vsothers.txt"),
+              sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
+  # counts（两种分组共用）
+  cnt <- as.matrix(GetAssayData(obj, assay = "RNA", layer = "counts")[, cells])
+  write.table(cnt, paste0("cellphonedb_inputs/",
+                          tolower(cond), "_counts.txt"),
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = TRUE)
+}
+```
+
+## 5. 保存与说明
+
+```{r save-summary}
+if (exists("cc_ctrl")) saveRDS(cc_ctrl, "ccc_outputs/cellchat_Control.rds")
+if (exists("cc_apap")) saveRDS(cc_apap, "ccc_outputs/cellchat_APAP24h.rds")
+if (exists("cc_merged")) saveRDS(cc_merged, "ccc_outputs/cellchat_merged_Control_vs_APAP24h.rds")
+cat("CellChat 对象已保存到 ccc_outputs/\n")
+cat("CellPhoneDB 表已保存到 ccc_outputs/\n")
+```
+
+::: {.callout-note}
+**方法学与 caveat**
+- CellChat：每条件独立运行相同参数（`CellChatDB.mouse`、`type="triMean"`、`population.size=TRUE`、`filterCommunication(min.cells=10)`），随后 `mergeCellChat` 做 Control vs APAP_24h 比较。
+- Control 中 SPP1+ Mac 仅 3 个细胞（< min.cells=10），其相关互作在 Control 被过滤，差异图中体现为“APAP 新出现”的通讯。
+- CellPhoneDB（LIANA 的 `cellphonedb` 方法，CellPhoneDB v2 重实现；`MouseConsensus` 数据库，`expr_prop=0.1`、`perm_n=1000`；显著阈值 p<0.05）分两部分：
+  1. **全 13 细胞类型版**：以 `celltype_comm` 为 idents，逐一区分所有类型，输出所有 pairwise 结果；
+  2. **SPP1+ Mac vs Others 二分类版**：将除 SPP1+ Mac 外的所有细胞合并为 Others，对应既往 SPP1 专项分析。
+- 原生 Python CellPhoneDB 同样提供全类型与二分类两套 meta 输入（§4）。
+- 若服务器 CellChat 为 v2.x，`netVisual_diffInteraction_fixed` 补丁不生效也可直接用官方 `netVisual_diffInteraction`。
+- `future::plan("multisession", workers = N)` 可在服务器上按核数开启，加速 `computeCommunProb`。
+:::
+
+```{r session-info}
+sessionInfo()
+```

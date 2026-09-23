@@ -1,0 +1,387 @@
+---
+title: "小鼠肝脏 T & NK 细胞三级细分注释（2025 T 细胞命名共识：8 核心亚群定稿版）"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本文档对 `integrated_liver_final_seurat.rds` 中全部 T 与 NK 细胞（`celltype_l2 %in% c("T", "NK")`，共 2,954 个细胞）进行三级细分注释升级（**方案 1：经典 8 核心亚群体系**）。
+
+**本次修订核心策略**：
+1. **$\gamma\delta$ T 细胞完整召回**：将 Cluster 10（129 个 $\gamma\delta T_{17}$）与 Cluster 8 中的 $\gamma\delta$ 细胞毒性细胞（83 个）**统一合并为完整的 `gamma-delta T`（共 212 细胞）**，恢复其丰满规模，全面涵盖促炎与细胞毒两类 $\gamma\delta$ T 细胞。
+2. **NKT 复合群功能分型**：将原本统称为 NKT 的主要 cluster 依据转录因子与细胞因子表达细分为 **`NKT1`**（C0、C4、C6 及 C8 的 $\alpha\beta$ 杀伤组分，共 920 细胞，$Tbx21^+ / Ifng^+ / Cxcr6^+ / Klrb1c^+$）与 **`NKT2`**（C7，205 细胞，$Zbtb16^{hi} / Gata3^+ / Il4^+ / Ly6a^+$）。
+3. **8 大核心功能亚群**：形成 `Naive CD8 T (Tstr)`、`CD8 Tex`、`gamma-delta T`、`NKT1`、`NKT2`、`Naive CD4 T (Tstr)`、`CD4 Treg`、`NK` 共 8 个定义严谨、适合发表与下游 CellChat 通讯分析的核心细胞类型。
+4. **低质量/双细胞群规范标识**：将 C13（B-T 双细胞）、C14（中性粒-T 双细胞）、C15（肝实质细胞背景污染）、C12（高 UMI 杂质群）如实列出并规范标识。
+5. **点图与可视化全面升级**：对齐 `dotplot-beautify` 规范，展示 8 大核心亚群的高分辨率分组分面点图与 UMAP。
+:::
+
+## 1. 注释策略与 2025 共识命名体系
+
+依据 2025 国际共识（Masopust et al., *Nat Rev Immunol* 2025）与小鼠肝脏免疫学特征，构建 8 大核心亚群三级注释体系：
+
+| T_l3 注释名称 | 包含 Cluster | 细胞数 | 2025 共识模块符号 | 细胞定义与生物学特征 | 核心特异 Marker |
+|---|---|---|---|---|---|
+| **Naive CD8 T (Tstr)** | C2 | 305 | $\text{CD8}^+ S_u N$ | 初始/干细胞样 CD8 T | Cd8a / Cd8b1 / Sell / Ccr7 / Tcf7 / Lef1 |
+| **CD8 Tex** | C9 | 149 | $\text{CD8}^+ T_D X^+$ | CD8 耗竭 T 细胞谱系（含 Tpex 与 Tex-term） | Cd8b1 / Pdcd1 / Tox / Lag3 / Havcr2 / Gzmk |
+| **gamma-delta T** | C10 + C8 ($\gamma\delta$) | **212** | $\gamma\delta^+ T_{17} / T_1$ | 肝脏 γδ T 细胞（含促炎 gdT17 与细胞毒 gdT1） | Trdc / Tcrg-C1 / Tcrg-C2 / Cd163l1 / Blk / Il17a / Gzmb |
+| **NKT1** | C0, C4, C6 + C8 ($\alpha\beta$) | **920** | $\text{NKT1 } D_R M$ | 肝脏优势常驻/杀伤 iNKT（稳态、活化与 CTL 表型） | Cd3g / Zbtb16 / Klrb1c / Cxcr6 / Ifng / Xcl1 / P2rx7 / Gzmb |
+| **NKT2** | C7 | **205** | $\text{NKT2 } D_R M$ | Th2 偏向/产生 IL-4 的 iNKT 亚群 | Zbtb16(PLZF) / Gata3 / Il4 / Ly6a(Sca-1) / Srm / Odc1 |
+| **Naive CD4 T (Tstr)** | C3 | 290 | $\text{CD4}^+ S_u N$ | 初始/干细胞样 CD4 T | Cd4 / Sell / Ccr7 / Tcf7 / Lef1 / Il7r（Foxp3⁻） |
+| **CD4 Treg** | C11 | 128 | $\text{CD4}^+ T_{reg}$ | Treg-like 调节性 T 细胞 | Cd4 / Foxp3 / Ikzf2 / Ctla4 / Nrp1 / Icos |
+| **NK** | C1, C5 | 562 | $\text{NK}$ | 自然杀伤细胞（常规 cNK 与成熟 Ly49⁺ NK） | Ncr1 / Klrd1 / Klrc1 / Klra4 / S1pr5 / Gzmb（Cd3⁻） |
+| **NKT-like (transit)** | C12 | 60 | *Transition* | 高 UMI 髓系-T 过渡群 | Clec4a1 / Chil3 / Lyz2 / Cd8a |
+| **Doublet (B-T)** | C13 | 49 | *Doublet (B-T)* | B 细胞 / B-T 双细胞 | Cd79a / Cd19 / Fcmr / Fcer2a |
+| **Doublet (Neu-T)** | C14 | 38 | *Doublet (Neu-T)* | 中性粒/髓系-T 双细胞（APAP 损伤相关） | S100a8 / S100a9 / Clec4d / Slpi |
+| **Debris (Hep-contam)** | C15 | 36 | *Debris* | 肝实质细胞游离 mRNA 背景污染 | Alb / Apoa1 / Apoc4 / Fgb / Saa1/2 |
+| **Cycling（状态标签）** | 跨群状态 | — | 活化态 A 操作标签 | 周期增殖状态（跨亚群标记） | Mki67 / Top2a |
+
+## 2. 数据加载与联合重聚类
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(harmony)
+  library(ggplot2)
+  library(dplyr)
+  library(RColorBrewer)
+  library(ggh4x)
+  library(cowplot)
+  library(magrittr)
+})
+set.seed(42)
+dir.create("T_l3_qmd_outputs", showWarnings = FALSE)
+```
+
+```{r subset-recluster}
+obj <- readRDS("integrated_liver_final_seurat.rds")
+DefaultAssay(obj) <- "RNA"
+tnk_cells <- which(!is.na(obj$celltype_l2) & obj$celltype_l2 %in% c("T", "NK"))
+tnk <- obj[, tnk_cells]
+cat("T + NK 细胞集维度：", dim(tnk), "\n")
+
+tnk <- FindVariableFeatures(tnk, nfeatures = 2000, verbose = FALSE)
+tnk <- ScaleData(tnk, features = VariableFeatures(tnk), verbose = FALSE)
+tnk <- RunPCA(tnk, npcs = 30, verbose = FALSE)
+tnk <- RunHarmony(tnk, group.by.vars = "sample", reduction.use = "pca",
+                  reduction.save = "harmony", verbose = FALSE)
+tnk <- FindNeighbors(tnk, reduction = "harmony", dims = 1:20, verbose = FALSE)
+tnk <- FindClusters(tnk, resolution = 1.2, verbose = FALSE)
+tnk <- RunUMAP(tnk, reduction = "harmony", dims = 1:20, verbose = FALSE)
+Idents(tnk) <- "RNA_snn_res.1.2"
+cat("res 1.2 聚类数：", length(levels(Idents(tnk))), "\n")
+```
+
+## 3. 三级注释映射与 C8 拆分算法
+
+```{r decision}
+exp <- GetAssayData(tnk, assay = "RNA", layer = "data")
+
+# 基础 cluster 映射
+l3_base_map <- c(
+  "0"  = "NKT1",
+  "1"  = "NK",
+  "2"  = "Naive CD8 T (Tstr)",
+  "3"  = "Naive CD4 T (Tstr)",
+  "4"  = "NKT1",
+  "5"  = "NK",
+  "6"  = "NKT1",
+  "7"  = "NKT2",
+  "8"  = "C8_split",
+  "9"  = "CD8 Tex",
+  "10" = "gamma-delta T",
+  "11" = "CD4 Treg",
+  "12" = "NKT-like (transit)",
+  "13" = "Doublet (B-T)",
+  "14" = "Doublet (Neu-T)",
+  "15" = "Debris (Hep-contam)"
+)
+
+# C8 单细胞水平 TCR 链精准拆分：
+# Trdc+ / Tcrg+ 判定为 gamma-delta T；Trac+ / Trbc+ 判定为 NKT1 (杀伤组分)
+c8_cells <- WhichCells(tnk, idents = "8")
+c8_assign <- sapply(c8_cells, function(bc) {
+  trdc_exp <- exp["Trdc", bc]
+  trac_exp <- exp["Trac", bc]
+  tcrg_exp <- max(exp[c("Tcrg-C1", "Tcrg-C2", "Tcrg-C4"), bc])
+  trbc_exp <- max(exp[c("Trbc1", "Trbc2"), bc])
+  
+  if (trdc_exp > 0 && trac_exp == 0) {
+    return("gamma-delta T")
+  } else if (trac_exp > 0 && trdc_exp == 0) {
+    return("NKT1")
+  } else if (trdc_exp > 0 && trac_exp > 0) {
+    if (trdc_exp >= trac_exp || tcrg_exp > trbc_exp) {
+      return("gamma-delta T")
+    } else {
+      return("NKT1")
+    }
+  } else {
+    if (tcrg_exp > 0 && trbc_exp == 0) {
+      return("gamma-delta T")
+    } else {
+      return("NKT1")
+    }
+  }
+})
+
+l3_vec <- unname(l3_base_map[as.character(Idents(tnk))])
+names(l3_vec) <- colnames(tnk)
+l3_vec[names(c8_assign)] <- c8_assign
+
+l3_levels <- c(
+  "Naive CD8 T (Tstr)", "CD8 Tex", "gamma-delta T",
+  "NKT1", "NKT2", "Naive CD4 T (Tstr)", "CD4 Treg", "NK",
+  "NKT-like (transit)", "Doublet (B-T)", "Doublet (Neu-T)", "Debris (Hep-contam)"
+)
+
+cluster_confidence <- c(
+  "0" = "High", "1" = "High", "2" = "High", "3" = "High",
+  "4" = "High", "5" = "High", "6" = "High", "7" = "High",
+  "8" = "High", "9" = "Moderate", "10" = "High", "11" = "Moderate",
+  "12" = "Moderate", "13" = "QC-Doublet", "14" = "QC-Doublet", "15" = "QC-Debris"
+)
+
+decision <- data.frame(
+  cluster = 0:15,
+  cell_count = as.numeric(table(Idents(tnk))),
+  consensus_module = c(
+    "NKT1 (Homeostatic)", "NK (cNK)", "CD8+ SuN", "CD4+ SuN",
+    "NKT1 (Activated Tnf+)", "NK (Mature Ly49+)", "NKT1 (Resident P2rx7+)", "NKT2 (Il4+ Gata3+)",
+    "Cytotoxic split: gdT (83) / NKT1-CTL (101)", "CD8+ TD X+ (Tex)", "gamma-delta T (gdT17)", "CD4+ Treg-like",
+    "NKT-like (transit/doublet)", "Doublet (B-T)", "Doublet (Neu-T)", "Debris (Hep-contam)"
+  ),
+  key_evidence = c(
+    "Cd3g 98.5/Zbtb16 26.0/Klrb1c 54.0/Cxcr6 85.0/Ifng 48.4/Xcl1 69.3",
+    "Ncr1 89.3/Nkg7 98.0/Klrd1 93.2/Klrc1 64.2/Gzmb 80.1 (Cd3低)",
+    "Cd8b1 96.7/Cd8a 81.6/Sell 77.7/Ccr7 80.3/Tcf7 78.0/Lef1 78.4",
+    "Cd4 40.0/Sell 63.4/Ccr7 70.3/Tcf7 80.0/Lef1 85.9/Foxp3 2.4",
+    "Cd3g 81.2/Tnf 50.2/Ifng 48.7/Mmp9 29.5/Cxcr6 83.5",
+    "Ncr1 82.0/Klra4 46.3/S1pr5 31.0/Itgam 35.7/Eomes 67.8",
+    "Cd3g 98.6/P2rx7 51.1/Art2b 56.2/Klrb1c 68.5/Trac 86.8/Trdc 5.9",
+    "Ly6a 74.6/Il4 29.3/Zbtb16 34.6/Gata3 36.1/Srm 40.0/Isg15 39.5",
+    "Cd3g 99.5/Gzmb 95.1/Cd160 92.9/Klrd1 92.9 (Trdc+ 83, Trac+ 101)",
+    "Cd8b1 57.0/Cd8a 53.7/Tox 30.9/Pdcd1 14.8/Lag3 20.1/Gzmk 26.8",
+    "Trdc 70.5/Tcrg-C1 81.4/Cd163l1 66.7/Blk 63.6/Il17a 31.8/Rorc 34.1",
+    "Cd4 58.6/Foxp3 21.9/Ikzf2 39.8/Ctla4 42.2/Nrp1 34.4/Icos 59.4",
+    "Clec4a1 38.3/Lyz2 80.0/Chil3 28.3 (mean nCount 5803)",
+    "Cd79a 100/Fcmr 73.5/Cd19 67.3/Fcer2a 59.2",
+    "S100a8 92.1/S100a9 94.7/Clec4d 76.3/Slpi 76.3",
+    "Alb 86.1/Apoa1 83.3/Apoc4 36.1/Fgb 61.1"
+  ),
+  confidence = unname(cluster_confidence[as.character(0:15)]),
+  stringsAsFactors = FALSE
+)
+print(decision, row.names = FALSE)
+write.csv(decision, "T_l3_qmd_outputs/T_l3_cluster_annotation.csv", row.names = FALSE)
+```
+
+## 4. 写入标签并回写 final 对象
+
+```{r assign}
+tnk$T_l3 <- factor(l3_vec, levels = l3_levels)
+tnk$T_l3_confidence <- ifelse(tnk$T_l3 %in% c("Doublet (B-T)", "Doublet (Neu-T)", "Debris (Hep-contam)"),
+                              "Low-QC", "High")
+tnk$T_state_cycling <- ifelse(exp["Mki67", ] > 0 & exp["Top2a", ] > 0,
+                              "Cycling", NA_character_)
+Idents(tnk) <- "T_l3"
+
+cat("### T_l3 全亚群细胞数量统计\n")
+print(table(tnk$T_l3))
+
+cat("\n### 8 核心亚群细胞数量统计\n")
+print(table(tnk$T_l3[tnk$T_l3 %in% l3_levels[1:8]]))
+
+cat("\n### T_l3 x condition 交叉表\n")
+print(table(tnk$T_l3, tnk$condition))
+
+# 回写至全局 final 对象
+final <- obj
+final$T_l3 <- factor(rep(NA_character_, ncol(final)), levels = l3_levels)
+final$T_l3_confidence <- rep(NA_character_, ncol(final))
+final$T_state_cycling <- rep(NA_character_, ncol(final))
+
+bc <- colnames(tnk)
+final$T_l3[bc] <- tnk$T_l3
+final$T_l3_confidence[bc] <- tnk$T_l3_confidence
+final$T_state_cycling[bc] <- tnk$T_state_cycling
+```
+
+## 5. 结果可视化
+
+```{r figures}
+cols_l3 <- c(
+  "Naive CD8 T (Tstr)"  = "#1F77B4",
+  "CD8 Tex"             = "#D62728",
+  "gamma-delta T"       = "#2CA02C",
+  "NKT1"                = "#FF7F0E",
+  "NKT2"                = "#FFBB78",
+  "Naive CD4 T (Tstr)"  = "#9467BD",
+  "CD4 Treg"            = "#E377C2",
+  "NK"                  = "#17BECF",
+  "NKT-like (transit)"  = "#BCBD22",
+  "Doublet (B-T)"       = "#8C564B",
+  "Doublet (Neu-T)"     = "#7F7F7F",
+  "Debris (Hep-contam)" = "#C7C7C7"
+)
+
+# 1) UMAP 亚群分布
+p_umap <- DimPlot(tnk, reduction = "umap", group.by = "T_l3",
+                  label = TRUE, repel = TRUE, cols = cols_l3, pt.size = 0.6) +
+  ggtitle("T & NK cell Level 3 annotation (8 Core Subsets)")
+print(p_umap)
+ggsave("T_l3_qmd_outputs/UMAP_T_l3.png", p_umap, width = 10.5, height = 6.5, dpi = 300)
+
+# 2) UMAP 按条件拆分
+p_split <- DimPlot(tnk, reduction = "umap", group.by = "T_l3",
+                    split.by = "condition", ncol = 2, cols = cols_l3, pt.size = 0.6)
+print(p_split)
+ggsave("T_l3_qmd_outputs/UMAP_T_l3_by_condition.png", p_split,
+       width = 14.5, height = 6.5, dpi = 300)
+
+# 3) UMAP 聚类簇号
+p_cl <- DimPlot(tnk, reduction = "umap", group.by = "RNA_snn_res.1.2",
+                label = TRUE, repel = TRUE) + NoLegend() +
+  ggtitle("T & NK clusters (res 1.2)")
+print(p_cl)
+ggsave("T_l3_qmd_outputs/UMAP_T_clusters.png", p_cl, width = 8, height = 6, dpi = 300)
+
+# 4) 特征 Marker FeaturePlot
+p_feat <- FeaturePlot(tnk, features = c("Cd8b1","Pdcd1","Trdc","Tcrg-C1","Cd163l1",
+                                        "Cd3g","Klrb1c","Zbtb16","Gzmb","Mki67"),
+                      ncol = 5, pt.size = 0.6) &
+  scale_colour_gradientn(colours = c("lightgrey", "blue", "red"))
+print(p_feat)
+ggsave("T_l3_qmd_outputs/FeaturePlot_T_l3_markers.png", p_feat,
+       width = 16, height = 6.5, dpi = 300)
+
+# 5) 条件亚群构成比（针对 8 核心亚群）
+comp_core <- tnk@meta.data %>%
+  filter(T_l3 %in% l3_levels[1:8]) %>%
+  count(condition, T_l3) %>%
+  group_by(condition) %>%
+  mutate(freq = 100 * n / sum(n)) %>%
+  ungroup()
+p_bar <- ggplot(comp_core, aes(x = condition, y = freq, fill = T_l3)) +
+  geom_col(position = "fill", width = 0.6) +
+  scale_fill_manual(values = cols_l3, name = "T_l3 (Core)") +
+  labs(y = "Proportion", x = NULL, title = "Core 8 Subsets Composition by Condition") +
+  theme_classic(base_size = 12)
+print(p_bar)
+ggsave("T_l3_qmd_outputs/Barplot_T_l3_composition.png", p_bar,
+       width = 8, height = 6, dpi = 300)
+write.csv(comp_core, "T_l3_qmd_outputs/composition_by_condition.csv", row.names = FALSE)
+```
+
+### 5.1 8 大核心亚群特异 Marker 点图（对齐 `dotplot-beautify` 规范）
+
+展示 8 大核心功能亚群最特异的共识标志基因：
+
+```{r dotplot-beautify}
+#| fig-width: 18
+#| fig-height: 6.5
+#| out-width: "100%"
+#| fig-align: center
+
+core_subtypes <- c(
+  "Naive CD8 T (Tstr)", "CD8 Tex", "gamma-delta T",
+  "NKT1", "NKT2", "Naive CD4 T (Tstr)", "CD4 Treg", "NK"
+)
+
+subtype_markers <- list(
+  "Naive CD8 T" = c("Cd8a", "Cd8b1", "Sell", "Ccr7", "Tcf7", "Lef1"),
+  "CD8 Tex" = c("Pdcd1", "Tox", "Lag3", "Havcr2", "Entpd1", "Gzmk"),
+  "gamma-delta T" = c("Trdc", "Tcrg-C1", "Tcrg-C2", "Cd163l1", "Blk", "Il17a", "Rorc"),
+  "NKT1" = c("Cd3g", "Klrb1c", "Cxcr6", "Xcl1", "Ifng", "P2rx7", "Gzmb"),
+  "NKT2" = c("Zbtb16", "Gata3", "Il4", "Ly6a", "Srm", "Odc1"),
+  "Naive CD4 T" = c("Cd4", "Il7r", "Cd27", "Cd28", "Igfbp4"),
+  "CD4 Treg" = c("Foxp3", "Il2ra", "Ikzf2", "Ctla4", "Nrp1", "Icos"),
+  "NK" = c("Ncr1", "Klrd1", "Klrc1", "Klra4", "Klra8", "S1pr5", "Eomes")
+)
+subtype_markers <- lapply(subtype_markers, function(gs) gs[gs %in% rownames(tnk)])
+
+Idents(tnk) <- "T_l3"
+p_dot_test <- DotPlot(subset(tnk, idents = core_subtypes),
+                      features = subtype_markers, cols = c("#F3F5F7", "#B2182B"), dot.scale = 5.5)
+p_dot_test$data$id <- factor(p_dot_test$data$id, levels = core_subtypes)
+p_dot_test$data$feature.groups2 <- factor(p_dot_test$data$feature.groups, levels = names(subtype_markers))
+
+strip_fill <- c("#1F77B4", "#D62728", "#2CA02C", "#FF7F0E", "#FFBB78", "#9467BD", "#E377C2", "#17BECF")
+dot_strip <- strip_themed(background_x = elem_list_rect(fill = strip_fill[seq_along(subtype_markers)]))
+
+p_main <- p_dot_test$data %>%
+  ggplot(aes(x = features.plot, y = id)) +
+  geom_point(aes(size = pct.exp, color = avg.exp.scaled), stroke = 0) +
+  scale_size_continuous(range = c(0.7, 7.5), limits = c(0, 100),
+                        breaks = c(0, 25, 50, 75, 100), name = "Percent expressed") +
+  scale_colour_gradient2(low = "#3B4CC0", mid = "#F7F7F7", high = "#B40426",
+                         midpoint = 0, name = "Scaled average expression") +
+  facet_wrap2(~feature.groups2, scales = "free_x", strip = dot_strip, nrow = 1) +
+  theme_classic(base_size = 11) +
+  theme(strip.text.x = element_text(size = 9.5, color = "white", face = "bold"),
+        strip.background = element_rect(color = "white"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1,
+                                   color = "black", size = 9),
+        axis.text.y = element_blank(),
+        axis.title = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        legend.position = "bottom")
+
+leg_df <- data.frame(x = 0, y = core_subtypes, stringsAsFactors = FALSE)
+leg_df$y <- factor(leg_df$y, levels = core_subtypes)
+p_leg <- ggplot(leg_df, aes(x, y, color = y)) +
+  geom_point(size = 6, shape = 18, show.legend = FALSE) +
+  scale_color_manual(values = cols_l3) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.margin = margin(r = 0),
+        axis.title = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 10.5),
+        axis.ticks = element_blank(),
+        axis.line = element_blank())
+
+p_dot_final <- plot_grid(p_leg, p_main, align = "h", axis = "bt", rel_widths = c(2.8, 9.2))
+print(p_dot_final)
+ggsave("T_l3_qmd_outputs/DotPlot_T_l3_markers.png", p_dot_final,
+       width = 18, height = 6.5, dpi = 300)
+```
+
+## 6. 保存 final 对象
+
+```{r save}
+saveRDS(final, "integrated_liver_final_seurat.rds")
+cat("已安全回写并保存 integrated_liver_final_seurat.rds\n")
+cat("T_l3 levels：", paste(levels(final$T_l3), collapse = " | "), "\n")
+cat("T_l3 非空细胞数：", sum(!is.na(final$T_l3)), "（应为 2954）\n")
+```
+
+## 7. 方法学说明与共识解读（遵循 2025 共识建议）
+
+> 依据 **Masopust et al., *Nature Reviews Immunology*, 2025** 国际共识，在单细胞分析报告中明确各亚群的生物学定义依据：
+
+1. **CD8 耗竭 T 细胞谱系（CD8 Tex, n = 149；Control 113, APAP 36）**：
+   - 由 Cluster 9 构成。共表达 $Cd8a/Cd8b1$、$Pdcd1$、$Tox$、$Lag3$、$Havcr2$ 及 $Gzmb$，涵盖了从前体耗竭（Tpex）到终末耗竭（Tex-term）的多阶段耗竭谱系。
+2. **$\gamma\delta$ T 细胞完整谱系（总 n = 212；APAP 116, Control 96）**：
+   - 包含 C10（经典促炎型 $\gamma\delta T_{17}$，129 细胞，$Trdc^+ Tcrg-C1^+ Cd163l1^+ Blk^+ Il17a^+$）与从 C8 拆解出的细胞毒型 $\gamma\delta T_1$（83 细胞，$Trdc^+ Tcrg-C2^+ Gzmb^+ Cd160^+$），完整恢复了肝脏中 γδ T 的实际规模与功能双重性。
+3. **NKT1 细胞（n = 920）与 NKT2 细胞（n = 205）**：
+   - **NKT1**（C0、C4、C6 及 C8 的 $\alpha\beta$ CTL 组分）构成肝脏 iNKT 的绝对优势主体（~66.2%），共表达 $Cd3g$、$Klrb1c$（NK1.1）、$Cxcr6$、$Ifng$、$Xcl1$ 与 $P2rx7$。
+   - **NKT2**（C7）特异高表达 $Zbtb16^{hi}$、$Gata3$、$Il4$ 与 $Ly6a$（Sca-1），呈现典型的 Th2 样细胞因子分泌表型。
+4. **NK 细胞（n = 562）**：
+   - $Cd3$ 阴性，合并了常规 NK 与成熟 NK（C1、C5），特异表达 $Ncr1$（85.9%）、$Klrd1$（93.6%）、$Klrc1$（50.0%）与成熟分子 $Klra4$（Ly49）。
+5. **Naive CD8 T (Tstr, n = 305) & Naive CD4 T (Tstr, n = 290)**：
+   - 维持 $Sell^+$, $Ccr7^+$, $Tcf7^+$, $Lef1^+$ 干细胞样初始状态。
+6. **CD4 Treg 调节性 T 细胞（n = 128）**：
+   - 由 C11 构成。共表达 $Cd4$、$Foxp3$（21.9%）、$Ikzf2$（39.8%）、$Ctla4$（42.2%）与 $Nrp1$。
+
+```{r session-info}
+sessionInfo()
+```

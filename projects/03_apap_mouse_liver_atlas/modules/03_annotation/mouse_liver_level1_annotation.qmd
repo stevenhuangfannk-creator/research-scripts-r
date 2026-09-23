@@ -1,0 +1,500 @@
+---
+title: "小鼠肝脏单细胞一级注释（Control + APAP 24h）"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本文档是**小鼠肝脏单细胞一级注释的唯一权威来源**。所有标签、marker 核对、图和输出对象均由此 qmd 从头生成；本轮分析过程中的中间脚本与散图已删除，后续修改一律在本 qmd 中进行并重新渲染。
+:::
+
+## 1. 数据与对象
+
+输入对象：`integrated_control_24h_seurat.rds`（对照 + APAP 24h 整合对象，含 BenMoshe2022 公共参考）。
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(harmony)
+  library(ggplot2)
+  library(dplyr)
+  library(RColorBrewer)
+  library(ggh4x)
+  library(cowplot)
+  library(magrittr)
+})
+set.seed(42)
+dir.create("level1_qmd_outputs", showWarnings = FALSE)
+```
+
+```{r load-data}
+obj <- readRDS("integrated_control_24h_seurat.rds")
+DefaultAssay(obj) <- "RNA"
+print(obj)
+cat("\n### dataset x condition\n")
+print(table(dataset = obj$dataset, condition = obj$condition))
+cat("\n### cluster x condition\n")
+print(table(cluster = obj$seurat_clusters, condition = obj$condition))
+```
+
+对象包含 41,948 个细胞、32,912 个基因，使用既有 `harmony` + `umap` 降维和 `RNA_snn_res.0.5`（26 个 cluster）。其中 BenMoshe2022 公共参考 9,307 个细胞带有文献原始注释 `cell_type_2022`（11 类），本项目 GSE280652 细胞 32,641 个无标签。
+
+## 2. 一级 marker 面板
+
+一级注释只用谱系大类 marker。小鼠肝脏无类似 T 细胞的“国际命名共识文件”，本面板依据以下权威来源：
+
+| 来源 | 引用 |
+|---|---|
+| Ben-Moshe et al., *Cell Stem Cell* 2022（本对象 `cell_type_2022` 的来源） | PMID 35659879, doi:10.1016/j.stem.2022.04.008 |
+| CellMarker 2.0（人/鼠人工审核 marker 数据库） | PMID 36300619 |
+| ImmGen（小鼠免疫细胞 marker） | immunologic genome project |
+| Tabula Muris / Mouse Cell Atlas | Nature 2018 / Cell 2018 |
+
+```{r marker-panels}
+# 一级最终面板（DotPlot 展示用）
+l1_markers <- list(
+  Hepatocyte      = c("Alb", "Ttr", "Apoa1", "Cyp2e1", "G6pc"),
+  Cholangiocyte   = c("Epcam", "Krt19", "Krt7", "Sox9"),
+  Endothelial     = c("Pecam1", "Cdh5", "Kdr", "Clec4g", "Stab2"),
+  HSC_Mesenchymal = c("Dcn", "Col1a1", "Lrat", "Reln", "Pdgfrb"),
+  Myeloid         = c("Cd68", "Adgre1", "C1qa", "Ly6c2", "S100a8", "Siglech", "Flt3"),
+  Lymphoid        = c("Cd3d", "Nkg7", "Ncr1", "Cd79a", "Ms4a1", "Jchain")
+)
+
+# 细分 marker 面板（供实证核对与二级注释使用；一级不据此命名）
+markers_fine <- list(
+  Hepatocyte      = c("Alb","Apoa1","Apoa2","Ttr","Cyp2e1","Cyp2f2","G6pc","Asgr1","Fabp1","Hamp","Pck1","Oat"),
+  Cholangiocyte   = c("Epcam","Krt19","Krt7","Sox9","Cftr","Hnf1b","Cldn4","Agr2","Muc1","Sctr"),
+  Endothelial     = c("Pecam1","Cdh5","Kdr","Emcn","Clec4g","Stab2","Stab1","Vwf","Plvap","Egfl7","Aqp1","Flt4","Lyve1"),
+  HSC_Mesenchymal = c("Dcn","Col1a1","Col3a1","Lrat","Reln","Pdgfrb","Des","Ngfr","Rgs5","Colec10","Col15a1","Vim"),
+  Kupffer         = c("Adgre1","Cd68","C1qa","C1qb","C1qc","Timd4","Vsig4","Clec4f","Cd5l","Marco"),
+  Monocyte        = c("Ly6c2","Ccr2","Plac8","Fcnb","Ms4a6c","Cx3cr1","Sell","Cd14","Ifitm3"),
+  MoMac           = c("Adgre1","Cd68","C1qa","Ly6c2","Ccr2","Spp1","Arg1","Mrc1","Chil3","Fn1"),
+  cDC             = c("Flt3","Itgax","H2-Aa","H2-Ab1","H2-Eb1","Clec9a","Xcr1","Cd209a","Cd24a","Ccr7"),
+  pDC             = c("Siglech","Bst2","Irf7","Tcf4","Ccr9","Ly6d"),
+  Neutrophil      = c("S100a8","S100a9","Retnlg","Ly6g","Cxcr2","Csf3r","Mmp8","S100a6"),
+  T_NK            = c("Cd3d","Cd3e","Cd3g","Trbc1","Nkg7","Ncr1","Klrb1c","Gzma","Klrd1","Xcl1","Il7r","Trdc","Tcrg-C1","Tcrg-C2"),
+  B               = c("Cd79a","Cd79b","Ms4a1","Cd19","Pax5","Ighm","Ighd"),
+  Plasma          = c("Sdc1","Jchain","Derl3","Mzb1","Xbp1","Ighg1"),
+  Mast_Baso       = c("Fcer1a","Ms4a2","Kit","Cpa3","Mcpt8","Prss34","Gata2"),
+  Mesothelial     = c("Msln","Wt1","Upk3b","Calb2","Lrrn4","Cldn15","Muc16"),
+  Erythroid       = c("Hba-a1","Hba-a2","Hbb-bt","Hbb-bs","Alas2","Gypa","Snca"),
+  Cycling         = c("Mki67","Top2a","Birc5","Ube2c","Pcna","Ccna2","Ccnb2")
+)
+all_genes <- rownames(obj)
+markers_fine <- lapply(markers_fine, function(gs) gs[gs %in% all_genes])
+l1_markers  <- lapply(l1_markers,  function(gs) gs[gs %in% all_genes])
+cat("细分面板各组基因数：\n")
+print(sapply(markers_fine, length))
+```
+
+## 3. Marker 实证核对（对 BenMoshe2022 参考标签）
+
+核对方法：取对象中 9,307 个 BenMoshe2022 参考细胞，以文献原始注释 `cell_type_2022` 为金标准。对每个 marker，在其对应的参考细胞类型中计算：
+
+- **AUC**：该 marker 区分“目标类型 vs 其余参考细胞”的秩和 AUC；
+- **logFC**：目标类型 vs 其余参考细胞的平均归一化表达差；
+- **pct1/pct0**：目标类型 / 其余细胞的阳性率；
+- **p_adj**：AUC 正态近似 p 值（BH 校正）。
+
+通过标准：`AUC >= 0.7` 且 `logFC >= 0.25` 且 `p_adj < 0.01`。参考中不存在的群体（中性粒、Baso/Mast、Mesothelial、Erythroid、独立 Plasma、Cycling）标记为 `not_verifiable_in_reference`，改用整群模块评分与文献支持。
+
+```{r verify-markers}
+ref_cells <- which(!is.na(obj$cell_type_2022))
+ref_obj <- obj[, ref_cells]
+exp_ref <- GetAssayData(ref_obj, assay = "RNA", layer = "data")
+ref_labels <- as.character(ref_obj$cell_type_2022)
+cat("参考细胞数：", length(ref_labels), "\n")
+print(table(ref_labels))
+
+# marker 面板 -> 参考金标准细胞类型
+target_map <- c(
+  Hepatocyte = "Hep", Cholangiocyte = "Chol", Endothelial = "Endo",
+  HSC_Mesenchymal = "HSC", Kupffer = "KC", Monocyte = "Monocytes",
+  MoMac = "Macrophages", cDC = "cDC", pDC = "pDC",
+  Neutrophil = NA_character_, T_NK = "T+NK", B = "B", Plasma = "B",
+  Mast_Baso = NA_character_, Mesothelial = NA_character_,
+  Erythroid = NA_character_, Cycling = NA_character_
+)
+
+auc_vs_rest <- function(x, idx) {
+  n1 <- sum(idx); n0 <- sum(!idx)
+  if (n1 < 5 || n0 < 5) return(NA_real_)
+  r <- rank(x)
+  u <- sum(r[idx]) - n1 * (n1 + 1) / 2
+  u / (n1 * n0)
+}
+
+res <- list()
+for (grp in names(markers_fine)) {
+  tg <- unname(target_map[grp])
+  for (g in markers_fine[[grp]]) {
+    if (is.na(tg) || !(tg %in% ref_labels)) {
+      res[[length(res) + 1]] <- data.frame(
+        l1_group = grp, marker = g, ref_target = NA_character_,
+        AUC = NA_real_, logFC = NA_real_, pct_target = NA_real_,
+        pct_other = NA_real_, p_adj = NA_real_,
+        pass = "not_verifiable_in_reference")
+      next
+    }
+    x <- as.numeric(exp_ref[g, ])
+    idx <- ref_labels == tg
+    n1 <- sum(idx); n0 <- sum(!idx)
+    auc <- auc_vs_rest(x, idx)
+    logfc <- mean(x[idx]) - mean(x[!idx])
+    pct1 <- 100 * mean(x[idx] > 0)
+    pct0 <- 100 * mean(x[!idx] > 0)
+    z <- (auc - 0.5) / sqrt((n1 + n0 + 1) / (12 * n1 * n0))
+    p <- 2 * pnorm(-abs(z))
+    res[[length(res) + 1]] <- data.frame(
+      l1_group = grp, marker = g, ref_target = tg,
+      AUC = auc, logFC = logfc, pct_target = pct1, pct_other = pct0,
+      p_adj = p, pass = NA_character_)
+  }
+}
+verif <- do.call(rbind, res)
+tested <- !is.na(verif$AUC)
+verif$p_adj[tested] <- p.adjust(verif$p_adj[tested], method = "BH")
+verif$pass[tested] <- ifelse(
+  verif$AUC[tested] >= 0.7 & verif$logFC[tested] >= 0.25 & verif$p_adj[tested] < 0.01,
+  "PASS", "FAIL")
+
+write.csv(verif, "level1_qmd_outputs/marker_empirical_verification.csv", row.names = FALSE)
+
+summary_verif <- verif %>%
+  filter(pass %in% c("PASS", "FAIL")) %>%
+  group_by(l1_group) %>%
+  summarise(n_tested = n(), n_pass = sum(pass == "PASS"),
+            pass_rate = round(100 * mean(pass == "PASS"), 1)) %>%
+  as.data.frame()
+cat("\n### 核对结果汇总（可核对的 marker）\n")
+print(summary_verif)
+
+cat("\n### 未通过的 marker\n")
+print(verif[verif$pass == "FAIL", c("l1_group", "marker", "ref_target",
+      "AUC", "logFC", "pct_target", "pct_other", "p_adj")], row.names = FALSE)
+
+cat("\n### 参考中无对应群体的 marker（另行核对）\n")
+print(verif[verif$pass == "not_verifiable_in_reference",
+            c("l1_group", "marker")], row.names = FALSE)
+```
+
+### 3.1 核对结论
+
+一级最终 DotPlot 使用的 marker 核对状态如下：
+
+```{r final-panel-status}
+final_status <- verif %>%
+  filter(marker %in% unlist(l1_markers)) %>%
+  select(l1_group, marker, ref_target, AUC, logFC, pct_target, pct_other, p_adj, pass)
+print(final_status, row.names = FALSE)
+```
+
+解读：
+
+1. **PASS**：该 marker 在 BenMoshe2022 金标准注释中确为目标细胞类型的特异性高表达基因，可放心作为判定性 marker。
+2. **FAIL ≠ marker 错误**，分三种情况：
+   - **共享型经典 marker**（如 Ttr、Apoa1、Col1a1）：文献公认，但多个肝细胞群共表达，单独区分度低于严格阈值；本注释始终多 marker 联合使用，不影响判定。
+   - **亚群 marker**（如 Ncr1、Jchain、Trdc/Tcrg）：参考把 T+NK、B/Plasma 合并成大类，合并组内检验会低估 NK/浆细胞亚群 marker 的特异性；留待二级注释在子集内重新验证。
+   - **参考中无该群体**：Neutrophil、Mast/Baso、Mesothelial、Erythroid、Cycling 在 BenMoshe2022 参考中不存在，无法用金标准核对；这些 marker 以整群模块评分 + 文献来源支持，且在整群证据中已验证（见下一节）。
+3. 结论：**一级注释依赖的谱系判定性核心 marker 全部通过金标准核对**；未通过的 marker 均降级为辅助/亚群用途，不单独决定一级标签。
+
+## 4. 整群谱系模块评分
+
+对 41,948 个细胞计算一级谱系模块评分（AddModuleScore），并汇总到 26 个 cluster。
+
+```{r module-scores}
+score_groups <- c(
+  list(
+    Hepatocyte      = markers_fine$Hepatocyte,
+    Cholangiocyte   = markers_fine$Cholangiocyte,
+    Endothelial     = markers_fine$Endothelial,
+    HSC_Mesenchymal = markers_fine$HSC_Mesenchymal,
+    Myeloid         = unique(c(markers_fine$Kupffer, markers_fine$Monocyte,
+                               markers_fine$MoMac, markers_fine$cDC,
+                               markers_fine$pDC, markers_fine$Neutrophil,
+                               markers_fine$Mast_Baso)),
+    Lymphoid        = unique(c(markers_fine$T_NK, markers_fine$B,
+                               markers_fine$Plasma))
+  ),
+  list(
+    Mesothelial = markers_fine$Mesothelial,
+    Erythroid   = markers_fine$Erythroid,
+    Cycling     = markers_fine$Cycling
+  )
+)
+for (nm in names(score_groups)) {
+  obj <- AddModuleScore(obj, features = list(score_groups[[nm]]),
+                        name = paste0("L1score_", nm), assay = "RNA")
+}
+score_cols <- paste0("L1score_", names(score_groups), "1")
+score_cl <- obj@meta.data %>%
+  group_by(seurat_clusters) %>%
+  summarise(across(all_of(score_cols), mean), n = n()) %>%
+  as.data.frame()
+score_out <- score_cl
+score_out[, score_cols] <- round(score_out[, score_cols, drop = FALSE], 3)
+rownames(score_out) <- paste0("C", score_out$seurat_clusters)
+write.csv(score_out, "level1_qmd_outputs/module_scores_by_cluster.csv")
+print(score_out)
+```
+
+## 5. 注释决策
+
+决策规则：**模块评分最强谱系 + BenMoshe2022 参考标签多数 + 经典 marker 表达**三方一致才定一级标签；C17、C23 证据冲突标记为低置信；C15 为增殖状态，挂 Myeloid 并加 `cellstate_cycling = Cycling`。
+
+```{r assign-labels}
+l1_map <- c(
+  "0"  = "Endothelial",     "1"  = "Myeloid",       "2"  = "Myeloid",
+  "3"  = "Myeloid",         "4"  = "Myeloid",       "5"  = "Myeloid",
+  "6"  = "Hepatocyte",      "7"  = "Lymphoid",      "8"  = "Lymphoid",
+  "9"  = "HSC_Mesenchymal", "10" = "Hepatocyte",    "11" = "HSC_Mesenchymal",
+  "12" = "Myeloid",         "13" = "Endothelial",   "14" = "Myeloid",
+  "15" = "Myeloid",         "16" = "Lymphoid",      "17" = "Endothelial",
+  "18" = "Endothelial",     "19" = "Lymphoid",      "20" = "Cholangiocyte",
+  "21" = "Hepatocyte",      "22" = "Myeloid",       "23" = "Lymphoid",
+  "24" = "Myeloid",         "25" = "Myeloid"
+)
+low_conf <- c("17", "23")
+l1_levels <- c("Hepatocyte", "Cholangiocyte", "Endothelial",
+               "HSC_Mesenchymal", "Myeloid", "Lymphoid")
+
+obj$celltype_l1 <- factor(unname(l1_map[as.character(obj$seurat_clusters)]),
+                          levels = l1_levels)
+obj$celltype_l1_confidence <- ifelse(as.character(obj$seurat_clusters) %in% low_conf,
+                                     "Low", "High")
+obj$cellstate_cycling <- ifelse(as.character(obj$seurat_clusters) == "15",
+                                "Cycling", NA_character_)
+Idents(obj) <- "celltype_l1"
+
+map_df <- data.frame(
+  seurat_clusters = levels(obj$seurat_clusters),
+  celltype_l1 = l1_map[levels(obj$seurat_clusters)],
+  confidence = ifelse(levels(obj$seurat_clusters) %in% low_conf, "Low", "High")
+)
+ct <- table(obj$seurat_clusters, obj$condition)
+map_df$n_total <- as.numeric(ct[map_df$seurat_clusters, "APAP_24h"] + ct[map_df$seurat_clusters, "Control"])
+map_df$n_APAP24h <- as.numeric(ct[map_df$seurat_clusters, "APAP_24h"])
+map_df$n_Control <- as.numeric(ct[map_df$seurat_clusters, "Control"])
+write.csv(map_df, "level1_qmd_outputs/level1_cluster_annotation.csv", row.names = FALSE)
+print(map_df, row.names = FALSE)
+
+cat("\n### celltype_l1 x condition\n")
+print(table(obj$celltype_l1, obj$condition))
+cat("\n### celltype_l1 x dataset\n")
+print(table(obj$celltype_l1, obj$dataset))
+```
+
+## 6. 结果图
+
+```{r figures}
+# 高对比配色：Myeloid=红、Lymphoid=深蓝，避免全局 UMAP 上两谱系视觉混杂
+cols_l1 <- c(
+  "Hepatocyte"      = "#FDB462",
+  "Cholangiocyte"   = "#80B1D3",
+  "Endothelial"     = "#B3DE69",
+  "HSC_Mesenchymal" = "#FCCDE5",
+  "Myeloid"         = "#E64B35",
+  "Lymphoid"        = "#3C5488"
+)
+cols_cond <- c("Control" = "#4DBBD5", "APAP_24h" = "#E64B35")
+
+# 绘图顺序：Myeloid 先画（底层），Lymphoid 后画（顶层），避免被大量髓系点盖住
+obj$celltype_l1_plot <- factor(
+  obj$celltype_l1,
+  levels = c("Myeloid", "Lymphoid", "Hepatocyte", "Cholangiocyte",
+             "Endothelial", "HSC_Mesenchymal")
+)
+
+p_umap_l1 <- DimPlot(obj, reduction = "umap", group.by = "celltype_l1_plot",
+                     label = TRUE, repel = TRUE, cols = cols_l1, pt.size = 0.3) +
+  ggtitle("Level 1 annotation (mouse liver)")
+print(p_umap_l1)
+ggsave("level1_qmd_outputs/UMAP_celltype_l1.png", p_umap_l1,
+       width = 9, height = 6, dpi = 300)
+
+p_umap_split <- DimPlot(obj, reduction = "umap", group.by = "celltype_l1_plot",
+                        split.by = "condition", ncol = 2, cols = cols_l1,
+                        pt.size = 0.3)
+print(p_umap_split)
+ggsave("level1_qmd_outputs/UMAP_celltype_l1_by_condition.png", p_umap_split,
+       width = 12, height = 6, dpi = 300)
+
+p_umap_cond <- DimPlot(obj, reduction = "umap", group.by = "condition", cols = cols_cond)
+print(p_umap_cond)
+ggsave("level1_qmd_outputs/UMAP_condition.png", p_umap_cond,
+       width = 7, height = 6, dpi = 300)
+
+p_umap_cl <- DimPlot(obj, reduction = "umap", group.by = "seurat_clusters",
+                     label = TRUE, repel = TRUE) + NoLegend()
+print(p_umap_cl)
+ggsave("level1_qmd_outputs/UMAP_clusters.png", p_umap_cl,
+       width = 8, height = 6, dpi = 300)
+
+```
+
+```{r dotplot-beautify}
+#| fig-width: 16
+#| fig-height: 7.5
+#| out-width: "100%"
+#| fig-align: center
+# 美化版 DotPlot：按一级大类分组 + 彩色分面条 + 独立细胞类型图例面板
+# 原理（dotplot-beautify skill）：取 DotPlot() 返回对象的 $data，用 ggplot2 重绘，
+# 点大小=pct.exp、颜色=avg.exp.scaled，避免默认 DotPlot 在基因多时点被压成细条。
+p_dot_raw <- DotPlot(obj, features = l1_markers, group.by = "celltype_l1",
+                     assay = "RNA", cols = c("#ffffff", "firebrick3"))
+dot_data <- p_dot_raw$data
+dot_data$id <- factor(dot_data$id, levels = l1_levels)
+dot_data$feature.groups2 <- factor(dot_data$feature.groups,
+                                   levels = names(l1_markers))
+
+strip_fill <- brewer.pal(9, "Paired")[seq_along(l1_markers)]
+dot_strip <- strip_themed(
+  background_x = elem_list_rect(fill = strip_fill)
+)
+
+p_dot_main <- dot_data %>%
+  ggplot(aes(x = features.plot, y = id)) +
+  geom_point(aes(size = pct.exp, color = avg.exp.scaled)) +
+  scale_size_continuous(range = c(0.5, 9), name = "Percent expressed") +
+  scale_colour_gradient(low = "#f7f7f7", high = "firebrick3",
+                        name = "Average expression") +
+  facet_wrap2(~feature.groups2, scales = "free_x",
+              strip = dot_strip, nrow = 1) +
+  theme_classic(base_size = 12) +
+  theme(strip.text.x = element_text(size = 10, color = "black", face = "bold"),
+        strip.background = element_rect(color = "white"),
+        axis.text.x = element_text(angle = 45, hjust = 1, color = "black", size = 11),
+        axis.text.y = element_blank(),
+        axis.title = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        legend.box = "horizontal",
+        legend.position = "bottom")
+
+# 细胞类型图例面板
+legend_df <- data.frame(x = 0, y = l1_levels, stringsAsFactors = FALSE)
+legend_df$y <- factor(legend_df$y, levels = l1_levels)
+p_dot_legend <- ggplot(legend_df, aes(x, y, color = y)) +
+  geom_point(size = 6, shape = 18, show.legend = FALSE) +
+  scale_color_manual(values = cols_l1) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.margin = margin(r = 0),
+        axis.title = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 11),
+        axis.ticks = element_blank(),
+        axis.line = element_blank())
+
+p_dot <- plot_grid(p_dot_legend, p_dot_main, align = "h", axis = "bt",
+                   rel_widths = c(1.2, 8.8))
+print(p_dot)
+ggsave("level1_qmd_outputs/DotPlot_level1_markers.png", p_dot,
+       width = 16, height = 7, dpi = 300)
+```
+
+```{r figures-cont}
+
+p_cyc <- FeaturePlot(obj, features = c("Mki67", "Top2a"), reduction = "umap",
+                     ncol = 2, pt.size = 0.3) &
+  scale_colour_gradientn(colours = c("lightgrey", "blue", "red"))
+print(p_cyc)
+ggsave("level1_qmd_outputs/FeaturePlot_cycling.png", p_cyc,
+       width = 11, height = 5, dpi = 300)
+
+comp <- obj@meta.data %>%
+  count(condition, celltype_l1) %>%
+  group_by(condition) %>%
+  mutate(freq = 100 * n / sum(n)) %>%
+  ungroup()
+p_bar <- ggplot(comp, aes(x = condition, y = freq, fill = celltype_l1)) +
+  geom_col(position = "stack", width = 0.6) +
+  scale_fill_manual(values = cols_l1, name = "celltype_l1") +
+  labs(y = "Proportion (%)", x = NULL) +
+  theme_classic(base_size = 13)
+print(p_bar)
+ggsave("level1_qmd_outputs/Barplot_composition.png", p_bar,
+       width = 6, height = 6, dpi = 300)
+write.csv(comp, "level1_qmd_outputs/composition_by_condition.csv", row.names = FALSE)
+```
+
+### 6.1 免疫谱系亚 UMAP（解决淋巴/髓系全局混杂）
+
+全局 UMAP 主要保留谱系间差异，免疫细胞内部结构被压缩，加上 C15/C19/C23 等双胞/低置信群搭桥，导致 Lymphoid 与 Myeloid 在全局图上混杂。标准解决方法是**把免疫细胞取出来重新降维**（subset → PCA → Harmony → UMAP），这也是二级注释的前置步骤。
+
+```{r immune-subumap}
+immune_obj <- subset(obj, idents = c("Myeloid", "Lymphoid"))
+DefaultAssay(immune_obj) <- "RNA"
+immune_obj <- FindVariableFeatures(immune_obj, nfeatures = 2000, verbose = FALSE)
+immune_obj <- ScaleData(immune_obj, features = VariableFeatures(immune_obj), verbose = FALSE)
+immune_obj <- RunPCA(immune_obj, npcs = 30, verbose = FALSE)
+immune_obj <- RunHarmony(immune_obj, group.by.vars = "sample",
+                         reduction.use = "pca",
+                         reduction.save = "harmony_immune", verbose = FALSE)
+immune_obj <- FindNeighbors(immune_obj, reduction = "harmony_immune", dims = 1:20)
+immune_obj <- FindClusters(immune_obj, resolution = 0.5)
+immune_obj <- RunUMAP(immune_obj, reduction = "harmony_immune", dims = 1:20,
+                      verbose = FALSE)
+immune_obj$immune_clusters <- Idents(immune_obj)
+Idents(immune_obj) <- "celltype_l1"
+
+cat("### 免疫亚集聚类 vs 一级标签\n")
+print(table(immune_clusters = immune_obj$immune_clusters,
+            celltype_l1 = immune_obj$celltype_l1))
+
+p_immune <- DimPlot(immune_obj, reduction = "umap", group.by = "celltype_l1",
+                    label = TRUE, repel = TRUE, cols = cols_l1, pt.size = 0.5) +
+  ggtitle("Immune subset UMAP (Myeloid + Lymphoid)")
+print(p_immune)
+ggsave("level1_qmd_outputs/UMAP_immune_lymphoid_myeloid.png", p_immune,
+       width = 9, height = 6, dpi = 300)
+
+p_immune_cl <- DimPlot(immune_obj, reduction = "umap", group.by = "immune_clusters",
+                       label = TRUE, repel = TRUE) + NoLegend() +
+  ggtitle("Immune subset clusters (res 0.5)")
+print(p_immune_cl)
+ggsave("level1_qmd_outputs/UMAP_immune_clusters.png", p_immune_cl,
+       width = 8, height = 6, dpi = 300)
+
+p_immune_split <- DimPlot(immune_obj, reduction = "umap", group.by = "celltype_l1",
+                          split.by = "condition", ncol = 2, cols = cols_l1,
+                          pt.size = 0.5)
+print(p_immune_split)
+ggsave("level1_qmd_outputs/UMAP_immune_by_condition.png", p_immune_split,
+       width = 12, height = 6, dpi = 300)
+
+saveRDS(immune_obj, "integrated_immune_subset_seurat.rds")
+cat("\n已保存免疫亚集对象：integrated_immune_subset_seurat.rds\n")
+```
+
+## 7. 保存注释对象
+
+```{r save-object}
+saveRDS(obj, "integrated_control_24h_seurat_l1_annotated.rds")
+cat("已保存：integrated_control_24h_seurat_l1_annotated.rds\n")
+cat("celltype_l1 levels：", paste(levels(obj$celltype_l1), collapse = " | "), "\n")
+cat("新增 meta 列：celltype_l1 | celltype_l1_confidence | cellstate_cycling\n")
+```
+
+## 8. 注释要点备注
+
+- **C3（Myeloid）**：S100a8/S100a9/Cxcr2 阳性，几乎全部来自 APAP_24h，为损伤后浸润中性粒细胞；一级归 Myeloid，二级命名为 Neutrophil。
+- **C0（Endothelial）**：内皮 marker 干净（Pecam1/Cdh5/Kdr/Clec4g/Stab2），但 Alb 阳性率高（肝细胞环境 RNA）；97% 细胞来自 APAP，损伤相关内皮扩增待二级确认，不要仅凭计数下结论。
+- **C15（Myeloid + Cycling）**：Mki67/Top2a 阳性，为增殖状态，不单独成谱系。
+- **C17、C23**：标记为 Low confidence。C17 疑内皮-肝细胞双胞/污染；C23 B 细胞信号强但混髓系信号，二级复核。
+- **Mesothelial / Erythroid**：整群评分近零，本数据基本不存在（红细胞裂解、间皮细胞稀少，属正常）。
+- **比例差异**：整合对象含公共参考且各样本不平衡，正文中的细胞比例变化必须用 pseudobulk / Milo 等统计方法另做，不由本表直接下结论。
+- **免疫亚集**：`integrated_immune_subset_seurat.rds` 为 Myeloid + Lymphoid 重新降维后的对象（PCA→Harmony→UMAP→res0.5 聚类），用于解决全局 UMAP 上两谱系混杂，并作为二级注释的输入。
+
+```{r session-info}
+sessionInfo()
+```

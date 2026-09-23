@@ -1,0 +1,302 @@
+---
+title: "巨噬细胞亚群 × 中性粒细胞通讯分析（CellChat，Control vs APAP_24h，5 型）"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本 qmd 读取同目录 `run_cellchat_mac_neutro.R` 生成的 CellChat 对象（参数与既往分析完全一致：CellChat v1.6.1、`CellChatDB.mouse`、`type="triMean"`、`population.size=TRUE`、`filterCommunication(min.cells=10)`、`computeCommunProbPathway`、`aggregateNet`、`netAnalysis_computeCentrality`）。分组为 **5 型**：4 个巨噬细胞亚群（**KC、SPP1+ TREM2+ Mac、Ccr2+ Mac、IFN-stimulated Mac**，来自 `macrophage_l3` 三级注释）+ **Neutrophil**（`celltype_l2`）。按用户要求：**Control 中 SPP1+ TREM2+ 巨噬仅 3 个细胞（< min.cells=10），其通讯认定为 0**，以零填充方式纳入 5 型比较；APAP 中 IFN-stimulated Mac 仅 4 个细胞，同样零填充。
+:::
+
+## 1. 环境与数据加载
+
+```{r setup}
+suppressMessages({
+  library(CellChat)     # v1.6.1
+  library(ggplot2)
+  library(patchwork)
+  library(circlize)
+  library(dplyr)
+  library(cowplot)
+})
+set.seed(42)
+
+# ⚠️ 兼容性修复：CellChat 1.6.1 与 igraph 2.x 的 netVisual_diffInteraction 已知不兼容
+fix_diffInteraction <- function() {
+  f <- get('netVisual_diffInteraction', envir = asNamespace('CellChat'))
+  b <- deparse(body(f))
+  idx_if <- grep('if \\(sum\\(edge.start', b)
+  b2 <- append(b, "        igraph::E(g)$loop.angle <- rep(0, length(igraph::E(g)))", after = idx_if)
+  parse(text = b2)[[1]]
+}
+netVisual_diffInteraction_fixed <- function(object, comparison = c(1, 2),
+    measure = c("count", "weight", "count.merged", "weight.merged"),
+    color.use = NULL, color.edge = c("#b2182b", "#2166ac"), title.name = NULL,
+    sources.use = NULL, targets.use = NULL, remove.isolate = FALSE, top = 1,
+    weight.scale = FALSE, vertex.weight = 20, vertex.weight.max = NULL,
+    vertex.size.max = 15, vertex.label.cex = 1, vertex.label.color = "black",
+    edge.weight.max = NULL, edge.width.max = 8, alpha.edge = 0.6,
+    label.edge = FALSE, edge.label.color = "black", edge.label.cex = 0.8,
+    edge.curved = 0.2, shape = "circle", layout = igraph::in_circle(),
+    margin = 0.2, arrow.width = 1, arrow.size = 0.2) {
+  eval(fix_diffInteraction(), envir = environment())
+}
+```
+
+```{r load}
+cc_ctrl   <- readRDS("macrophage_neutrophil_cellchat_files/cellchat_Control_5types_expanded.rds")
+cc_apap   <- readRDS("macrophage_neutrophil_cellchat_files/cellchat_APAP24h_5types_expanded.rds")
+cc_merged <- readRDS("macrophage_neutrophil_cellchat_files/cellchat_merged_Control_vs_APAP24h.rds")
+object.list <- list(Control = cc_ctrl, APAP_24h = cc_apap)
+
+cat("Control 5 型:", paste(levels(cc_ctrl@idents), collapse = " | "), "\n")
+cat("APAP_24h 5 型:", paste(levels(cc_apap@idents), collapse = " | "), "\n")
+```
+
+## 2. 各条件通讯统计概览
+
+```{r summary}
+for (nm in c("Control", "APAP_24h")) {
+  cc <- get(ifelse(nm == "Control", "cc_ctrl", "cc_apap"))
+  cat("\n=== ", nm, " ===\n", sep = "")
+  cat("互作总数:", sum(cc@net$count), " 通讯强度:", round(sum(cc@net$weight), 3),
+      " 通路数:", length(cc@netP$pathways), "\n")
+  cat("通讯数量矩阵:\n"); print(cc@net$count)
+}
+```
+
+## 3. 双条件总体比较（模仿论文 Fig 5A）
+
+```{r compare-total}
+g1 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2))
+g2 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2), measure = "weight")
+g1 + g2 + plot_annotation(title = "Total number & strength of interactions (Control vs APAP_24h)")
+```
+
+## 4. 差异网络与热图
+
+```{r diff-net, fig.width = 12, fig.height = 6}
+par(mfrow = c(1, 2), xpd = TRUE)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE, measure = "weight")
+```
+
+```{r diff-heatmap, fig.width = 12, fig.height = 4}
+gg1 <- netVisual_heatmap(cc_merged)
+gg2 <- netVisual_heatmap(cc_merged, measure = "weight")
+gg1 + gg2 + plot_annotation(title = "Differential interactions (Control vs APAP_24h)")
+```
+
+> 红色 = APAP_24h 增强，蓝色 = 减弱。SPP1+ TREM2+ Mac 相关行/列在 Control 为 0（零填充），APAP 中其互作全部为"新增"（红色）。
+
+## 5. 各条件独立网络图（统一刻度）
+
+```{r circle-both, fig.width = 12, fig.height = 6}
+weight.max <- getMaxWeight(object.list, attribute = c("idents", "count"))
+par(mfrow = c(1, 2), xpd = TRUE)
+for (i in 1:length(object.list)) {
+  netVisual_circle(object.list[[i]]@net$count,
+                   weight.scale = TRUE, label.edge = FALSE,
+                   edge.weight.max = weight.max[2], edge.width.max = 12,
+                   title.name = paste0("Number of interactions - ", names(object.list)[i]))
+}
+```
+
+## 6. 巨噬亚群 ↔ 中性粒 定向通讯（APAP_24h 主结果）
+
+### 6.1 各巨噬亚群 → 中性粒 的 L–R 气泡图
+
+```{r bubble-mac2neu, fig.width = 14, fig.height = 13}
+mac_groups <- c("KC", "SPP1+ TREM2+ Mac", "Ccr2+ Mac", "IFN-stimulated Mac")
+netVisual_bubble(cc_apap,
+                 sources.use = mac_groups,
+                 targets.use = "Neutrophil",
+                 remove.isolate = FALSE, font.size = 16, font.size.title = 16,
+                 angle.x = 90) +
+  ggtitle("Macrophage subsets -> Neutrophil (APAP_24h)") +
+  theme(plot.title = element_text(size = 18, face = "bold"),
+        axis.text = element_text(size = 16),
+        axis.title = element_text(size = 16),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14))
+```
+
+### 6.2 中性粒 → 各巨噬亚群 的 L–R 气泡图
+
+```{r bubble-neu2mac, fig.width = 14, fig.height = 11}
+netVisual_bubble(cc_apap,
+                 sources.use = "Neutrophil",
+                 targets.use = mac_groups,
+                 remove.isolate = FALSE, font.size = 16, font.size.title = 16,
+                 angle.x = 90) +
+  ggtitle("Neutrophil -> Macrophage subsets (APAP_24h)") +
+  theme(plot.title = element_text(size = 18, face = "bold"),
+        axis.text = element_text(size = 16),
+        axis.title = element_text(size = 16),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14))
+```
+
+### 6.3 SPP1+ TREM2+ 巨噬 与 中性粒 的定向轴（APAP 特异性）
+
+SPP1+ TREM2+ 巨噬在 Control 认定为 0（3 个细胞），其与中性粒的通讯是 APAP 损伤后**新出现**轴。
+
+```{r spp1-neu}
+df_apap <- subsetCommunication(cc_apap)
+df_sp <- df_apap[df_apap$source == "SPP1+ TREM2+ Mac" & df_apap$target == "Neutrophil",
+                 c("source","target","ligand","receptor","pathway_name","prob","pval")]
+df_sp <- df_sp[order(-df_sp$prob), ]
+cat("SPP1+ TREM2+ Mac -> Neutrophil 显著互作:", nrow(df_sp), "条\n")
+print(head(df_sp, 25), row.names = FALSE)
+
+df_ns <- df_apap[df_apap$source == "Neutrophil" & df_apap$target == "SPP1+ TREM2+ Mac",
+                 c("source","target","ligand","receptor","pathway_name","prob","pval")]
+df_ns <- df_ns[order(-df_ns$prob), ]
+cat("\nNeutrophil -> SPP1+ TREM2+ Mac 显著互作:", nrow(df_ns), "条\n")
+print(head(df_ns, 25), row.names = FALSE)
+```
+
+```{r spp1-neu-chord, fig.width = 11, fig.height = 8, out.width = "100%"}
+key_pw <- c("SPP1", "MIF", "FN1", "APP", "CCL", "GALECTIN", "MHC-II", "COMPLEMENT", "TGFb", "THY1")
+key_pw <- key_pw[key_pw %in% cc_apap@netP$pathways]
+for (pw in key_pw) {
+  netVisual_aggregate(cc_apap, signaling = pw, layout = "chord",
+                      sources.use = "SPP1+ TREM2+ Mac", targets.use = "Neutrophil")
+}
+```
+
+### 6.4 其他巨噬亚群 ↔ 中性粒（Control 即存在的轴）
+
+```{r other-mac-neu}
+df_ctrl <- subsetCommunication(cc_ctrl)
+for (src in c("KC", "Ccr2+ Mac", "IFN-stimulated Mac")) {
+  sub <- df_ctrl[df_ctrl$source == src & df_ctrl$target == "Neutrophil", ]
+  sub <- sub[order(-sub$prob), ]
+  cat(sprintf("\n### %s -> Neutrophil (Control)：%d 条\n", src, nrow(sub)))
+  print(head(sub, 10) %>% select(ligand, receptor, pathway_name, prob, pval), row.names = FALSE)
+}
+```
+
+## 7. 通路信息流对比（模仿论文 Fig 5D）
+
+```{r pathway-info-flow, fig.width = 13, fig.height = 11}
+p_rel <- rankNet(cc_merged, mode = "comparison", stacked = TRUE, do.stat = FALSE,
+                 font.size = 10, color.use = c("#FF4B87", "#3DFFB2"),
+                 title = "Relative information flow") +
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        legend.position = "none")
+
+gb <- ggplot_build(p_rel)
+df_ctrl <- subsetCommunication(cc_ctrl, slot.name = "netP")
+df_apap <- subsetCommunication(cc_apap, slot.name = "netP")
+flow_ctrl <- aggregate(prob ~ pathway_name, df_ctrl, sum)
+flow_apap <- aggregate(prob ~ pathway_name, df_apap, sum)
+colnames(flow_ctrl)[2] <- "Control"
+colnames(flow_apap)[2] <- "APAP_24h"
+flow_all <- merge(flow_ctrl, flow_apap, by = "pathway_name", all = TRUE)
+flow_all[is.na(flow_all)] <- 0
+flow_all <- flow_all[order(-flow_all$Control), ]
+flow_all <- flow_all[flow_all$Control > 1e-5 | flow_all$APAP_24h > 1e-5, ]
+pathway_levels <- rev(flow_all$pathway_name)
+
+col_ctrl <- "#FF4B87"; col_apap <- "#3DFFB2"
+max_abs <- max(c(flow_all$Control, flow_all$APAP_24h)) * 1.05
+p_abs <- ggplot(flow_all, aes(y = factor(pathway_name, levels = pathway_levels))) +
+  geom_col(aes(x = APAP_24h), fill = col_apap, width = 0.85) +
+  geom_col(aes(x = Control), fill = col_ctrl, width = 0.85) +
+  labs(x = "Information flow", y = NULL, title = "Information flow") +
+  xlim(0, max_abs) +
+  theme_classic(base_size = 10) +
+  theme(axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 10, color = "black"),
+        axis.title.x = element_text(size = 11, face = "bold", margin = margin(t=8)),
+        axis.line.y = element_blank(), axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5))
+
+p_leg <- ggplot(data.frame(group = factor(c("Control", "APAP_24h"), levels = c("Control", "APAP_24h")),
+                           x = 1:2, y = 1), aes(x = x, y = y, fill = group)) +
+  geom_col(width = 0.7) +
+  scale_fill_manual(values = c("Control" = col_ctrl, "APAP_24h" = col_apap)) +
+  theme_void() + theme(legend.position = "bottom", legend.title = element_blank(),
+                       legend.text = element_text(size = 11, face = "bold"))
+
+p_combined <- plot_grid(p_rel, p_abs, nrow = 1, rel_widths = c(1.2, 1))
+plot_grid(p_combined, get_legend(p_leg), ncol = 1, rel_heights = c(10, 0.5))
+
+cat("=== 通路信息流统计 ===\n")
+flow_all$Control_ratio <- flow_all$Control / (flow_all$Control + flow_all$APAP_24h)
+cat("Control 主导通路 Top8:\n")
+print(head(flow_all[flow_all$Control_ratio > 0.5, c("pathway_name","Control","APAP_24h","Control_ratio")], 8), row.names = FALSE)
+cat("\nAPAP 主导/特有通路 Top10:\n")
+print(head(flow_all[flow_all$Control_ratio < 0.5, ][order(-flow_all$APAP_24h),
+      c("pathway_name","Control","APAP_24h","Control_ratio")], 10), row.names = FALSE)
+```
+
+## 8. 信号角色分析与通路热图
+
+```{r role-scatter, fig.width = 12, fig.height = 5}
+num.link <- sapply(object.list, function(x) {
+  rowSums(x@net$count) + colSums(x@net$count) - diag(x@net$count)
+})
+weight.MinMax <- c(min(num.link), max(num.link))
+gg <- list()
+for (i in 1:length(object.list)) {
+  gg[[i]] <- netAnalysis_signalingRole_scatter(object.list[[i]],
+                                               title = names(object.list)[i],
+                                               weight.MinMax = weight.MinMax)
+}
+patchwork::wrap_plots(plots = gg)
+```
+
+```{r signaling-changes, fig.width = 12, fig.height = 10}
+p1 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "SPP1+ TREM2+ Mac", signaling.exclude = "MIF")
+p2 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "KC", signaling.exclude = "MIF")
+p3 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "Neutrophil", signaling.exclude = "MIF")
+p4 <- netAnalysis_signalingChanges_scatter(cc_merged, idents.use = "Ccr2+ Mac", signaling.exclude = "MIF")
+(p1 | p2) / (p3 | p4)
+```
+
+```{r pathway-heatmap, fig.width = 12, fig.height = 10}
+p1 <- netAnalysis_signalingRole_heatmap(cc_apap, pattern = "outgoing",
+                                        signaling = NULL, font.size = 4,
+                                        title = "APAP_24h outgoing (Sender)")
+p2 <- netAnalysis_signalingRole_heatmap(cc_apap, pattern = "incoming",
+                                        signaling = NULL, font.size = 4,
+                                        title = "APAP_24h incoming (Receiver)")
+p1 + p2
+```
+
+## 9. 结果表导出
+
+```{r export}
+cat("输出文件：\n")
+for (f in list.files("macrophage_neutrophil_cellchat_files", full.names = FALSE)) {
+  cat(" - ", f, "\n", sep = "")
+}
+```
+
+## 10. 方法学说明
+
+> **分组设计**：5 型 = 4 个巨噬亚群（`macrophage_l3`：KC、SPP1+ TREM2+、Ccr2+ recruited、IFN-stimulated）+ 中性粒（`celltype_l2`）。源对象为唯一整合对象 `integrated_liver_final_seurat.rds`（41,948 细胞）。
+>
+> **零填充规则（按用户要求）**：Control 中 SPP1+ TREM2+ 巨噬仅 3 个细胞（< `min.cells=10`），其通讯认定为 0，以全 0 行/列零填充纳入 5 型比较；APAP 中 IFN-stimulated Mac 仅 4 个细胞，同样零填充。差异图（§4）中红色即代表该轴在 APAP 中**新出现**的通讯；不改变任何已算结果。
+>
+> **Caveat（如实报告）**：
+> - **`population.size = TRUE`**：通讯概率依赖群体构成，APAP 中巨噬亚群大量扩增（SPP1+ 3,391）会放大其相对权重；对比时注意。
+> - **APAP 中 IFN-stimulated Mac 仅 4 细胞（零填充）**，该亚群的通讯在 APAP 未纳入推断，其与中性粒的轴在 Control 中展示（426 细胞）。
+> - **兼容性**：CellChat 1.6.1 与 igraph ≥2.0 的 `netVisual_diffInteraction` 已知不兼容（GitHub issue #456），本分析在 setup 中重建该函数（§1）。
+> - **自分泌**：同型内（如 Neutrophil→Neutrophil）自分泌通讯也被推断，解读时注意区分。
+
+## 11. 输出文件清单
+
+```{r output-list}
+cat(paste(list.files("macrophage_neutrophil_cellchat_files", full.names = FALSE), collapse = "\n"), "\n")
+```

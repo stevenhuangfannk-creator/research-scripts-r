@@ -1,0 +1,302 @@
+---
+title: "SPP1⁺ 巨噬细胞 vs 其余细胞通讯分析（cellphonedb，LIANA + MouseConsensus）"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## 概述
+
+本流程将注释好的 **SPP1⁺ TREM2⁺ 巨噬细胞**整合进全图谱对象，按用户要求分为两组——**SPP1+ Macrophage** vs **其余所有细胞（Others）**——然后用 **CellPhoneDB 算法**（LIANA 包中的 R 重实现，即 CellPhoneDB v2 置换检验）推断两组之间的配体-受体（L–R）互作。
+
+- **输入对象**：
+  - `whole_atlas_control_24h_seurat.rds`：全图谱（10271 细胞，10 大类：B/cDC/Chol/Endo/Hep/HSC/KC/Macrophages/Monocytes/pDC/T+NK）
+  - `macrophages_final_M1M2_annotated.rds`：巨噬 3 亚群注释（`macrophage_subtype`），其中 **Cluster1 (SPP1⁺ TREM2⁺)** 484 细胞
+- **分析范围**：仅 **APAP_24h** 条件（SPP1⁺ 巨噬仅存在于 APAP_24h）→ **SPP1+ Macrophage（484）vs Others（APAP_24h 其余 4289）**
+- **物种**：小鼠 → 使用 LIANA 的 **MouseConsensus** 数据库（小鼠共识 L–R 库，3998 条互作）
+- **算法**：`liana_wrap(method = "cellphonedb")` —— CellPhoneDB 算法在 R 中的完整重实现（表达均值 + 表达细胞比例 + 置换检验 p 值，perm_n = 1000）
+- 注：此前的版本在合并对象（Control + APAP_24h）上分析，"Others" 混有两条件细胞；本次按用户要求**只保留 APAP_24h** 的互作配受体对。
+
+## 1. 环境与数据加载
+
+```{r setup}
+suppressMessages({
+  library(Seurat)
+  library(liana)        # 0.1.14（GitHub saezlab/liana）
+  library(ggplot2)
+  library(dplyr)
+  library(cowplot)
+})
+set.seed(42)
+
+# ⚠️ 兼容性修复：liana 0.1.14 的 liana_prep.Seurat 使用 GetAssayData(slot=)，
+# 该参数在 SeuratObject 5.x 已废弃（defunct）→ 用 unlockBinding+assign 在命名空间
+# 内替换为 layer 参数。环境必须设为 liana 命名空间，内部函数
+# (.format_idents / .filter_sce) 才能解析；不能用 eval(parse) 求值函数体（%<>%/%||% 会报错）。
+patch_liana_prep <- function() {
+  ns <- asNamespace("liana")
+  new_f <- function(sce, idents_col = NULL, verbose = TRUE, assay = NULL,
+                    min_cells = 0, ...) {
+    if (is.null(assay)) assay <- SeuratObject::DefaultAssay(sce)
+    message(stringr::str_glue("Expression from the `{assay}` assay will be used"))
+    idents <- .format_idents(metadata = sce@meta.data,
+                             active_idents = SeuratObject::Idents(sce),
+                             idents_col = idents_col,
+                             object_class = class(sce)[[1]],
+                             verbose = verbose)
+    sce <- SingleCellExperiment::SingleCellExperiment(
+      list(counts = SeuratObject::GetAssayData(object = sce, assay = assay, layer = "counts"),
+           logcounts = SeuratObject::GetAssayData(object = sce, assay = assay, layer = "data")),
+      metadata = sce@meta.data)
+    SingleCellExperiment::colLabels(sce) <- idents
+    sce@int_metadata$base <- exp(1)
+    return(.filter_sce(sce, min_cells, verbose))
+  }
+  environment(new_f) <- ns
+  if (bindingIsLocked("liana_prep.Seurat", ns)) {
+    unlockBinding("liana_prep.Seurat", ns)
+    on.exit(lockBinding("liana_prep.Seurat", ns), add = TRUE)
+  }
+  assign("liana_prep.Seurat", new_f, envir = ns)
+  invisible(TRUE)
+}
+patch_liana_prep()
+cat("liana 版本:", as.character(packageVersion("liana")), "\n")
+cat("已应用 liana_prep.Seurat 兼容性补丁 (slot -> layer)\n")
+```
+
+## 2. 数据库与方法检查
+
+LIANA 资源来自 OmniPath；小鼠物种应使用 **MouseConsensus**（用户所指的 mousecensus 数据库）。
+
+```{r resource-check}
+cat("=== 可用方法 ===\n")
+print(show_methods())
+cat("\n=== 可用资源 ===\n")
+print(show_resources())
+cat("\n=== MouseConsensus 数据库概况 ===\n")
+mouse_db <- select_resource("MouseConsensus")
+db <- mouse_db$MouseConsensus
+cat("MouseConsensus 互作行数:", nrow(db), "\n")
+cat("Spp1 作为配体的互作:\n")
+print(db[grepl("^Spp1", db$source_genesymbol), c("source_genesymbol", "target_genesymbol")])
+```
+
+## 3. SPP1 注释整合进 whole_atlas
+
+将巨噬对象中的定稿注释（`macrophage_subtype`）按 barcode 直接写回全图谱，并新建二分分组列 `SPP1_group`。
+
+```{r annotation}
+whole <- readRDS("whole_atlas_control_24h_seurat.rds")
+mac <- readRDS("macrophages_final_M1M2_annotated.rds")
+DefaultAssay(whole) <- "RNA"
+
+# 巨噬注释写回（barcode 直接匹配）
+mac_sub <- mac$macrophage_subtype
+names(mac_sub) <- colnames(mac)
+stopifnot(all(names(mac_sub) %in% colnames(whole)))
+whole$macrophage_subtype <- as.character(NA)
+whole$macrophage_subtype[names(mac_sub)] <- as.character(mac_sub)
+
+# SPP1 二分分组: SPP1+ 巨噬 vs 其余所有细胞
+whole$SPP1_group <- ifelse(
+  !is.na(whole$macrophage_subtype) & whole$macrophage_subtype == "Cluster1 (SPP1⁺ TREM2⁺)",
+  "SPP1+ Macrophage", "Others"
+)
+whole$SPP1_group <- factor(whole$SPP1_group, levels = c("SPP1+ Macrophage", "Others"))
+
+cat("=== SPP1_group 分布 ===\n")
+print(table(whole$SPP1_group))
+cat("\n=== SPP1_group x condition ===\n")
+print(table(whole$SPP1_group, whole$condition))
+cat("\n=== SPP1_group x cell_type ===\n")
+print(table(whole$SPP1_group, whole$cell_type))
+
+# 保存全量注释对象（含两条件，不覆盖分析结果）
+saveRDS(whole, "whole_atlas_control_24h_seurat_annotated.rds")
+cat("\n已保存全量注释对象: whole_atlas_control_24h_seurat_annotated.rds\n")
+```
+
+## 4. 限定 APAP_24h 子集
+
+SPP1⁺ 巨噬仅存在于 APAP_24h，因此分析对象限定为 APAP_24h 条件（"Others" 只含 APAP_24h 的其余细胞）。
+
+```{r subset}
+whole <- subset(whole, subset = condition == "APAP_24h")
+whole$SPP1_group <- droplevels(whole$SPP1_group)
+cat("=== APAP_24h 子集: SPP1_group 分布 ===\n")
+print(table(whole$SPP1_group))
+cat("\n=== APAP_24h 子集: SPP1_group x cell_type ===\n")
+print(table(whole$SPP1_group, whole$cell_type))
+```
+
+## 5. cellphonedb 互作推断
+
+以 `SPP1_group` 为分组标签，运行 CellPhoneDB 算法（R 实现，置换检验 1000 次）。
+
+```{r liana-run, cache = TRUE}
+Idents(whole) <- "SPP1_group"
+liana_res <- liana_wrap(
+  whole,
+  method = "cellphonedb",
+  resource = "MouseConsensus",
+  expr_prop = 0.1,
+  perm_n = 1000,
+  seed = 42
+)
+# 单方法时 liana_wrap 直接返回 tibble（结果列名: lr.mean / pvalue）
+res <- liana_res
+if (is.list(liana_res) && !is.data.frame(liana_res) && "cellphonedb" %in% names(liana_res)) {
+  res <- liana_res$cellphonedb
+}
+cat("评估互作对数:", nrow(res), "\n")
+print(head(res, 5))
+```
+
+## 6. 结果整理与显著性筛选
+
+CellPhoneDB 的 p 值为置换检验 p 值（`pvalue`），互作强度为两组平均表达（`lr.mean`）。取 **p < 0.05** 为显著互作。
+
+```{r filter}
+res <- res %>%
+  mutate(pval = ifelse(pvalue == 0, 0.001, pvalue),
+         neg_log10_pval = -log10(pval)) %>%
+  arrange(pvalue, desc(lr.mean))
+
+sig <- res %>% filter(pvalue < 0.05)
+cat("显著互作对数 (p<0.05):", nrow(sig), "\n")
+
+cat("\n=== 显著互作按 source -> target 统计 ===\n")
+print(table(sig$source, sig$target))
+
+cross <- sig %>% filter(source != target)
+cat("\n跨组显著互作: SPP1+ Mac -> Others =",
+    nrow(cross %>% filter(source == "SPP1+ Macrophage")),
+    "| Others -> SPP1+ Mac =",
+    nrow(cross %>% filter(target == "SPP1+ Macrophage")), "\n")
+```
+
+### 6.1 SPP1+ Mac → Others TOP20
+
+```{r top-spp1out}
+spp1_out <- sig %>% filter(source == "SPP1+ Macrophage", target == "Others") %>%
+  arrange(desc(lr.mean), pvalue)
+print(head(spp1_out, 20) %>% select(source, target, ligand, receptor, lr.mean, pvalue))
+```
+
+### 6.2 Others → SPP1+ Mac TOP20
+
+```{r top-otherin}
+other_to_spp1 <- sig %>% filter(source == "Others", target == "SPP1+ Macrophage") %>%
+  arrange(desc(lr.mean), pvalue)
+print(head(other_to_spp1, 20) %>% select(source, target, ligand, receptor, lr.mean, pvalue))
+```
+
+### 6.3 关键已知互作轴核查（与 CellChat 结果交叉印证）
+
+```{r key-pairs}
+cat("=== Spp1 作为配体的跨组互作 ===\n")
+print(cross[grepl("^Spp1$", cross$ligand), c("source", "target", "ligand", "receptor", "lr.mean", "pvalue")])
+cat("\n=== App / Fn1 相关跨组互作 ===\n")
+print(cross[grepl("^(App|Fn1)$", cross$ligand), c("source", "target", "ligand", "receptor", "lr.mean", "pvalue")])
+```
+
+## 7. 可视化
+
+### 7.1 UMAP 分组展示
+
+```{r vis-umap, fig.width = 8, fig.height = 6}
+DimPlot(whole, reduction = "umap", group.by = "SPP1_group",
+        cols = c("SPP1+ Macrophage" = "#E64B35", "Others" = "#8491B4"),
+        pt.size = 0.3) +
+  ggtitle("SPP1+ Macrophage vs Others (APAP_24h)")
+```
+
+### 7.2 跨组显著互作点图（TOP25/方向）
+
+```{r vis-dot, fig.width = 14, fig.height = 6}
+spp1_out25 <- sig %>% filter(source == "SPP1+ Macrophage", target == "Others") %>%
+  arrange(desc(lr.mean), pvalue) %>% head(25)
+other_in25 <- sig %>% filter(source == "Others", target == "SPP1+ Macrophage") %>%
+  arrange(desc(lr.mean), pvalue) %>% head(25)
+
+plot_df <- bind_rows(
+  spp1_out25 %>% mutate(direction = "SPP1+ Mac → Others",
+                        label = paste0(ligand, " → ", receptor)),
+  other_in25 %>% mutate(direction = "Others → SPP1+ Mac",
+                        label = paste0(ligand, " → ", receptor))
+)
+plot_df$pval_disp <- ifelse(plot_df$pvalue == 0, 0.001, plot_df$pvalue)
+plot_df$direction <- factor(plot_df$direction, levels = c("SPP1+ Mac → Others", "Others → SPP1+ Mac"))
+plot_df$label <- factor(plot_df$label, levels = unique(plot_df$label))
+
+ggplot(plot_df, aes(x = label, y = direction)) +
+  geom_point(aes(size = -log10(pval_disp), color = lr.mean)) +
+  scale_color_gradient(low = "#FFFFCC", high = "#B2182B", name = "LR mean (log1p)") +
+  scale_size(range = c(2, 8), name = "-log10(p)") +
+  facet_grid(~direction, scales = "free_x", space = "free_x") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 9),
+        axis.title = element_blank(),
+        strip.text = element_text(size = 12, face = "bold"),
+        panel.spacing = unit(1, "lines"),
+        legend.position = "bottom", legend.box = "horizontal") +
+  ggtitle("Top 25 significant LR pairs (CellPhoneDB, MouseConsensus, p<0.05)")
+```
+
+### 7.3 互作方向统计
+
+```{r vis-bar, fig.width = 5, fig.height = 4}
+sum_df <- sig %>% filter(source != target) %>%
+  count(direction = paste0(source, " → ", target))
+ggplot(sum_df, aes(x = direction, y = n, fill = direction)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.3, size = 5) +
+  scale_fill_manual(values = c("#E64B35", "#4DBBD5")) +
+  theme_bw() +
+  theme(legend.position = "none", axis.text.x = element_text(size = 11)) +
+  labs(x = NULL, y = "显著互作对数 (p<0.05)",
+       title = "SPP1+ Mac 与 Others 互作方向统计")
+```
+
+## 8. 结果汇总
+
+```{r summary}
+cat("=== 评估/显著互作对数 ===\n")
+cat("评估:", nrow(res), "| 显著 (p<0.05):", nrow(sig), "\n\n")
+
+cat("=== 各组内/跨组显著互作数 ===\n")
+print(table(sig$source, sig$target))
+
+cat("\n=== 显著互作中 top 基因（按配体频次） ===\n")
+top_lig <- sig %>% filter(source != target) %>% count(ligand, sort = TRUE) %>% head(15)
+print(top_lig)
+cat("\n=== 显著互作中 top 受体（按受体频次） ===\n")
+top_rec <- sig %>% filter(source != target) %>% count(receptor, sort = TRUE) %>% head(15)
+print(top_rec)
+```
+
+## 9. 保存结果
+
+```{r save}
+# 注: 全量注释对象已在 §3 保存（whole_atlas_control_24h_seurat_annotated.rds）
+saveRDS(liana_res, "liana_cellphonedb_SPP1_vs_Others.rds")
+write.csv(res, "liana_cellphonedb_all_pairs.csv", row.names = FALSE)
+write.csv(sig, "liana_cellphonedb_significant.csv", row.names = FALSE)
+cat("已保存:\n")
+cat("- liana_cellphonedb_SPP1_vs_Others.rds\n")
+cat("- liana_cellphonedb_all_pairs.csv (", nrow(res), " 对)\n", sep = "")
+cat("- liana_cellphonedb_significant.csv (", nrow(sig), " 对)\n", sep = "")
+```
+
+## 10. 方法学说明
+
+> **分组设计**：按用户要求，SPP1⁺ TREM2⁺ 巨噬细胞（来自 `macrophage_subtype` 定稿注释）为第 1 组，其余细胞合并为第 2 组；并**限定在 APAP_24h 条件**内推断互作。
+>
+> **Caveat（如实报告）**：
+> - **分析限定 APAP_24h**：SPP1⁺ 巨噬仅存在于 APAP_24h（Control = 0），故在 APAP_24h 子集（SPP1 484 + Others 4289 = 4773 细胞）内分析；"Others" 只含 APAP_24h 的其余细胞（10 大类中除 SPP1⁺ 巨噬外的全部），不再混入 Control 细胞。
+> - **算法口径**：LIANA 的 `cellphonedb` 方法为 CellPhoneDB v2 算法在 R 中的重实现（表达均值 `lr.mean` + 置换检验 p 值 `pvalue`），与原生 python CellPhoneDB 数值会略有差异；互作强度未按细胞数比例校正（与 CellChat 的 `population.size` 口径不同）。
+> - **数据库**：MouseConsensus 为 OmniPath 中多个权威 L–R 库的小鼠共识资源；配体/受体复合物（如 Spp1→Itgav_Itgb3）在结果中被拆分为亚基（如 Spp1→Itgav、Spp1→Itgb3）。
+> - **兼容性**：liana 0.1.14 与 SeuratObject 5.x 不兼容（`GetAssayData(slot=)` 已废弃），本流程在 setup 中通过命名空间替换修复（见 §1）。

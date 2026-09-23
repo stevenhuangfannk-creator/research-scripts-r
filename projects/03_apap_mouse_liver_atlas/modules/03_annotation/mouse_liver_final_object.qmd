@@ -1,0 +1,53 @@
+---
+title: "最终整合 Seurat 对象（一级注释 + 免疫二级注释）"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本工作流最终只保留一个完整 Seurat 对象：`integrated_liver_final_seurat.rds`（41,948 细胞）。它同时包含全部细胞的一级注释和免疫细胞（26,694 个）的二级注释。本文档用于记录合并方法并验证对象完整性；完整的一级/二级注释依据见 `mouse_liver_level1_annotation.qmd` 与 `mouse_liver_level2_immune_annotation.qmd`。
+:::
+
+## 1. 合并方法（历史记录，不执行）
+
+最终对象由三部分合并而来（源对象已按约定删除，以下代码仅作记录）：
+
+```{r}
+#| eval: false
+base  <- readRDS("integrated_control_24h_seurat.rds")              # 原始全对象
+meta1 <- readRDS("integrated_control_24h_seurat_l1_annotated.rds") # 一级注释
+meta2 <- readRDS("integrated_immune_subset_l2_annotated.rds")      # 免疫二级注释
+# 1) 将 meta1 的 celltype_l1 / celltype_l1_confidence / cellstate_cycling_l1 按 barcode 写入 base；
+# 2) 将 meta2 的 celltype_l2 / celltype_l2_confidence / immune_clusters / cellstate_cycling_l2
+#    按 barcode 写入免疫亚集细胞，其余细胞为 NA；
+# 3) Idents 设为 celltype_l1，保存为 integrated_liver_final_seurat.rds。
+```
+
+## 2. 对象验证
+
+```{r verify}
+suppressPackageStartupMessages(library(Seurat))
+obj <- readRDS("integrated_liver_final_seurat.rds")
+cat("dim：", dim(obj), "\n")
+cat("新增 meta 列：", paste(c("celltype_l1","celltype_l1_confidence","cellstate_cycling_l1",
+  "celltype_l2","celltype_l2_confidence","immune_clusters","cellstate_cycling_l2"), collapse = " | "), "\n")
+
+cat("\n### celltype_l1 x condition\n")
+print(table(obj$celltype_l1, obj$condition))
+
+cat("\n### celltype_l2 x condition（NA = 非免疫细胞）\n")
+print(table(obj$celltype_l2, obj$condition, useNA = "always"))
+
+cat("\n### 完整性检查\n")
+cat("总细胞数：", ncol(obj), "\n")
+cat("免疫二级注释细胞数：", sum(!is.na(obj$celltype_l2)), "（应为 26694）\n")
+cat("非免疫细胞数：", sum(is.na(obj$celltype_l2)), "（应为 15254）\n")
+cat("Idents：", paste(levels(Idents(obj)), collapse = " | "), "\n")
+```

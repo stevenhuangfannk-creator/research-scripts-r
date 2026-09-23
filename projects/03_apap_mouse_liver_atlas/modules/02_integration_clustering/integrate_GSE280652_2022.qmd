@@ -1,0 +1,175 @@
+---
+title: "GSE280652 × Ben-Moshe2022 单细胞数据整合（对照 + 24h）"
+format:
+  html:
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## 概述
+
+本流程将两个 APAP 肝损伤小鼠 scRNA-seq 数据集整合（暂不做细胞类型注释）。**流程顺序：每样本独立 QC（基础过滤 + DoubletFinder）→ 合并 → harmony 去批次整合 → UMAP/聚类**，保证下游全部基于干净细胞。
+
+数据来源：
+
+1. **Ben-Moshe et al., Cell Stem Cell 2022（PMID 35659879）**：`whole_atlas_control_24h_seurat.rds`
+   - 10x 3' v3.1 全肝脏细胞，Control（未注射，n=2）/ APAP_24h（n=2）
+   - 原作者已用 scDblFinder 过滤 doublet；⚠️ 该数据集 APAP_24h 组**肝细胞 = 0**
+2. **De Ponti et al., Immunity 2025（GSE280652）**：`data/GSE280652/` 下 4 个 h5
+   - GSM8603014：**肝细胞 24h**（补 2022 缺的 24h 肝细胞）；GSM8603016：CD45− 24h（实质细胞）
+   - GSM8603017：CD45+ 24h（免疫细胞）；GSM8603015：CD45+ PBS（免疫对照）
+
+```{r setup}
+suppressMessages({
+  library(Seurat)
+  library(dplyr)
+  library(ggplot2)
+  library(harmony)
+  library(DoubletFinder)
+  library(knitr)
+})
+set.seed(42)
+h5dir <- "data/GSE280652"
+```
+
+## 1. 加载与基础 QC
+
+### 1.1 Ben-Moshe 2022（原作者已跑 scDblFinder，此处补线粒体过滤）
+
+```{r load-2022}
+obj22 <- readRDS("whole_atlas_control_24h_seurat.rds")
+cat("2022 原始: 细胞 =", ncol(obj22), "\n")
+obj22 <- subset(obj22, subset = scDblFinder_class == "singlet" & percent.mt < 20)
+obj22$dataset <- "BenMoshe2022"
+obj22$sample <- "BenMoshe2022"
+obj22$cell_source <- "WholeLiver"
+obj22$condition <- factor(obj22$condition, levels = c("Control", "APAP_24h"))
+obj22$cell_type_2022 <- obj22$cell_type
+obj22@meta.data <- obj22@meta.data[, c("dataset", "sample", "cell_source", "condition",
+                                        "cell_type_2022", "percent.mt", "nCount_RNA", "nFeature_RNA")]
+cat("2022 QC 后: 细胞 =", ncol(obj22), "\n")
+```
+
+### 1.2 GSE280652（4 个 h5，基础过滤：nFeature 200–7000、线粒体 < 20%）
+
+```{r load-gse280652}
+read_gsm <- function(fname, gsm, source_lab, cond) {
+  m <- Read10X_h5(file.path(h5dir, fname))
+  obj <- CreateSeuratObject(counts = m, project = gsm)
+  obj[["percent.mt"]] <- PercentageFeatureSet(obj, pattern = "^mt-")
+  obj <- subset(obj, subset = nFeature_RNA > 200 & nFeature_RNA < 7000 & percent.mt < 20)
+  obj$dataset <- "GSE280652"
+  obj$sample <- gsm
+  obj$cell_source <- source_lab
+  obj$condition <- factor(cond, levels = c("Control", "APAP_24h"))
+  cat(gsm, "QC 后: 细胞 =", ncol(obj), "\n")
+  obj
+}
+gsm3014 <- read_gsm("GSM8603014_filtered_feature_bc_matrix_CS49.h5", "GSM8603014", "Hepatocytes", "APAP_24h")
+gsm3015 <- read_gsm("GSM8603015_filtered_feature_bc_matrix_CS53.h5", "GSM8603015", "CD45+", "Control")
+gsm3016 <- read_gsm("GSM8603016_filtered_feature_bc_matrix_CS54.h5", "GSM8603016", "CD45-", "APAP_24h")
+gsm3017 <- read_gsm("GSM8603017_filtered_feature_bc_matrix_CS55.h5", "GSM8603017", "CD45+", "APAP_24h")
+```
+
+## 2. 合并与 Doublet 检测（每样本独立，整合前完成）
+
+```{r merge-and-doublet}
+merged <- merge(obj22, list(gsm3014, gsm3015, gsm3016, gsm3017))
+merged <- JoinLayers(merged)
+merged$dataset <- factor(merged$dataset, levels = c("BenMoshe2022", "GSE280652"))
+merged$DF_class <- NA_character_
+merged$pANN <- NA_real_
+
+# DoubletFinder 逐样本运行（GSE280652 的 4 个样本；2022 已有 scDblFinder 结果）
+run_doubletfinder <- function(obj, s) {
+  cells <- which(obj$sample == s)
+  sub <- obj[, cells]
+  sub <- NormalizeData(sub, verbose = FALSE)
+  sub <- FindVariableFeatures(sub, nfeatures = 2000, verbose = FALSE)
+  sub <- ScaleData(sub, verbose = FALSE)
+  sub <- RunPCA(sub, npcs = 20, verbose = FALSE)
+  sub <- FindNeighbors(sub, dims = 1:20, verbose = FALSE)
+  sub <- FindClusters(sub, resolution = 0.5, verbose = FALSE)
+  res <- capture.output({
+    sweep <- paramSweep(sub, PCs = 1:20, sct = FALSE)
+    sweep.stats <- summarizeSweep(sweep, GT = FALSE)
+    bcmvn <- find.pK(sweep.stats)
+    pK <- as.numeric(as.character(bcmvn$pK[which.max(bcmvn$BCmetric)]))
+    nExp <- round(ncol(sub) * 0.008 * ncol(sub) / 1000)   # 10x 经验 doublet 率
+    sub <- doubletFinder(sub, PCs = 1:20, pN = 0.25, pK = pK, nExp = nExp, sct = FALSE)
+  })
+  df_col <- grep('DF.classifications', colnames(sub@meta.data), value = TRUE)[1]
+  pann_col <- grep('pANN', colnames(sub@meta.data), value = TRUE)[1]
+  obj$DF_class[cells] <- sub@meta.data[[df_col]]
+  obj$pANN[cells] <- sub@meta.data[[pann_col]]
+  cat(s, "->", paste(names(table(obj$DF_class[cells])), table(obj$DF_class[cells]),
+                     sep = "=", collapse = "  "), "\n")
+  obj
+}
+for (s in setdiff(unique(merged$sample), "BenMoshe2022")) {
+  merged <- run_doubletfinder(merged, s)
+}
+
+# 剔除 doublet
+keep <- ifelse(merged$dataset == "GSE280652" & !is.na(merged$DF_class),
+               merged$DF_class == "Singlet", TRUE)
+merged <- merged[, keep]
+cat("剔除 doublet 后总细胞数:", ncol(merged), "\n")
+knitr::kable(as.data.frame.matrix(table(merged$dataset, merged$condition)),
+             caption = "数据集 × 分组（QC 后）")
+```
+
+## 3. 整合（harmony，按样本去批次）
+
+```{r integrate}
+merged <- NormalizeData(merged, verbose = FALSE)
+merged <- FindVariableFeatures(merged, nfeatures = 3000, verbose = FALSE)
+merged <- ScaleData(merged, verbose = FALSE)
+merged <- RunPCA(merged, npcs = 30, verbose = FALSE)
+merged <- RunHarmony(merged, group.by.vars = "sample", reduction = "pca",
+                     reduction.save = "harmony", verbose = FALSE)
+merged <- RunUMAP(merged, reduction = "harmony", dims = 1:30, verbose = FALSE)
+merged <- FindNeighbors(merged, reduction = "harmony", dims = 1:30, verbose = FALSE)
+merged <- FindClusters(merged, resolution = 0.5, verbose = FALSE)
+cat("整合完成: 聚类数 =", length(unique(merged$seurat_clusters)), "\n")
+```
+
+## 4. UMAP 可视化（整合质量检查）
+
+```{r umap-plots}
+p1 <- DimPlot(merged, reduction = "umap", group.by = "dataset") +
+  ggtitle("按数据集着色")
+p2 <- DimPlot(merged, reduction = "umap", group.by = "condition") +
+  ggtitle("按分组着色（Control vs APAP_24h）")
+p3 <- DimPlot(merged, reduction = "umap", group.by = "cell_source") +
+  ggtitle("按细胞来源着色")
+cols <- c("Hep" = "#F8766D", "HSC" = "#B79F00", "Endo" = "#00BA38", "Chol" = "#00BFC4",
+          "KC" = "#619CFF", "Macrophages" = "#F564E3", "Monocytes" = "#00C19F",
+          "cDC" = "#C77CFF", "pDC" = "#E68613", "B" = "#7CAE00", "T+NK" = "#0CB702")
+p4 <- DimPlot(merged, reduction = "umap", group.by = "cell_type_2022", cols = cols, na.value = "grey85") +
+  ggtitle("2022 自带的细胞类型（GSE280652 细胞为灰）")
+print(p1 + p2)
+print(p3 + p4)
+```
+
+## 5. 保存
+
+```{r save}
+if ("scale.data" %in% Layers(merged[["RNA"]])) {
+  merged[["RNA"]]$scale.data <- NULL
+}
+saveRDS(merged, "integrated_control_24h_seurat.rds", compress = TRUE)
+cat("已保存 integrated_control_24h_seurat.rds（",
+    round(file.size("integrated_control_24h_seurat.rds") / 1e6, 1), "MB）\n")
+```
+
+## 备注
+
+- **QC 顺序**：每样本独立完成基础过滤与 DoubletFinder（2022 用原作者 scDblFinder 结果），**之后**再做跨数据集 harmony 整合——doublet 检测不受批次混合影响。
+- **基因**：两数据集均为 mm10 符号，交集基因用于整合（约 1.88 万个重叠基因）。
+- **批次变量**：harmony 的 `group.by.vars = "sample"`（BenMoshe2022 + 4 个 GSM）。
+- **两数据集细胞比例不可直接比较**（全肝 vs 分选），下游比例统计需分数据集呈现。
+- **下一步**：细胞类型注释（Level-1 大类型 → 巨噬/T-NK 精细亚群），再做互作分析。

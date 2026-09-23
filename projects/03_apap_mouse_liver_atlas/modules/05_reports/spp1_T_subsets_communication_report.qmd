@@ -1,0 +1,584 @@
+---
+title: "SPP1 巨噬细胞 与 T/NK 细胞亚群（方案 B，T_l3）细胞通讯及上下游互作深度分析报告"
+subtitle: "直接提取自总集成对象（integrated_liver_final_seurat.rds）的 CellChat 全景推断与信号角色深度解析"
+author: "Macrophage-T Interaction Research Project"
+date: "2026-08-26"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: true
+    theme: cosmo
+    embed-resources: true
+    fig-width: 9.5
+    fig-height: 6
+    dpi: 300
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+suppressPackageStartupMessages({
+  library(CellChat)
+  library(ggplot2)
+  library(patchwork)
+  library(circlize)
+  library(dplyr)
+  library(cowplot)
+  library(knitr)
+  library(kableExtra)
+  library(ggrepel)
+})
+
+set.seed(42)
+
+# Publication theme with Arial / Sans font
+theme_pub <- function(base_size = 8, base_family = "sans") {
+  theme_classic(base_size = base_size, base_family = base_family) +
+    theme(
+      text = element_text(family = base_family, size = base_size, color = "black"),
+      axis.text = element_text(family = base_family, size = base_size, color = "black"),
+      axis.title = element_text(family = base_family, size = base_size, face = "bold", color = "black"),
+      plot.title = element_text(family = base_family, size = base_size + 1.5, face = "bold", hjust = 0.5, color = "black"),
+      plot.subtitle = element_text(family = base_family, size = base_size, hjust = 0.5, color = "grey30"),
+      legend.text = element_text(family = base_family, size = base_size - 0.5, color = "black"),
+      legend.title = element_text(family = base_family, size = base_size, face = "bold", color = "black"),
+      strip.text = element_text(family = base_family, size = base_size, face = "bold", color = "black"),
+      strip.background = element_rect(fill = "#f0f0f0", color = NA),
+      panel.grid = element_blank()
+    )
+}
+```
+
+::: {.callout-note}
+### 分析概述与设计说明
+本报告**直接从总集成单细胞对象（`integrated_liver_final_seurat.rds`）** 中提取分析对象：
+1. **巨噬细胞**：严格锁定 **`SPP1+ TREM2+ macrophage`**（`macrophage_l3` 列中的 SPP1⁺ 重塑型巨噬细胞，APAP_24h 中 3,391 个细胞）；
+2. **T / NK 细胞亚群**：采用 **方案 B（`T_l3` 注释列）**，共包含 7 大核心亚群：
+   - `Naive CD8 T (Tstr)`（初始/干细胞样 CD8 T）
+   - `CD8 Tex`（耗竭 CD8 T）
+   - `gamma-delta T`（γδ T）
+   - `NKT`（自然杀伤 T）
+   - `Naive CD4 T (Tstr)`（初始/干细胞样 CD4 T）
+   - `CD4 Treg`（调节性 T 细胞）
+   - `NK`（自然杀伤细胞）
+
+基于 **CellChat** 与小鼠官方配受体数据库（`CellChatDB.mouse`），对 **SPP1⁺ 巨噬细胞 ↔ 7 个 T/NK 细胞亚群** 的双向信号流、信号角色热图、2D 角色散点图、上下游数量 vs 强度分面散点图、配体-受体对（L-R pairs）与特征通路展开全景深度解析。
+:::
+
+# 细胞亚群构成与样本分布
+
+```{r load-data}
+# 载入针对 SPP1+ Mac 与 方案 B (T_l3) 的 CellChat 对象
+cc_apap   <- readRDS("integrated_cellchat_spp1_T_files/cellchat_APAP24h_expanded.rds")
+cc_ctrl   <- readRDS("integrated_cellchat_spp1_T_files/cellchat_Control_expanded.rds")
+cc_merged <- readRDS("integrated_cellchat_spp1_T_files/cellchat_merged_Control_vs_APAP24h.rds")
+
+df_apap_lr <- read.csv("integrated_cellchat_spp1_T_files/cellchat_APAP24h_LR.csv", stringsAsFactors = FALSE)
+df_ctrl_lr <- read.csv("integrated_cellchat_spp1_T_files/cellchat_Control_LR.csv", stringsAsFactors = FALSE)
+
+spp1_mac  <- "SPP1+ TREM2+ macrophage"
+t_types   <- c("Naive CD8 T (Tstr)", "CD8 Tex", "gamma-delta T", "NKT", "Naive CD4 T (Tstr)", "CD4 Treg", "NK")
+
+cell_stats <- data.frame(
+  "亚群分类" = c("核心巨噬细胞", rep("T / NK 细胞亚群（方案 B，T_l3）", 7)),
+  "细胞亚群名称" = c(spp1_mac, t_types),
+  "APAP_24h 细胞数" = c(3391, 108, 36, 96, 263, 85, 43, 111),
+  "Control 细胞数" = c(3, 197, 113, 33, 1128, 205, 85, 451),
+  "分析纳入状态" = c(
+    "APAP 特异性诱导 (Control 零填充)",
+    rep("两条件均充足 (>=10 cells)", 7)
+  ),
+  check.names = FALSE
+)
+
+kable(cell_stats, caption = "SPP1⁺ 巨噬细胞与 7 个 T/NK 亚群（方案 B）在 Control 与 APAP_24h 下的细胞数量分布") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  row_spec(1, bold = TRUE, background = "#ffebee")
+```
+
+---
+
+# 【维度一】SPP1 信号通路（SPP1 Pathway）与 T/NK 亚群的互作
+
+SPP1 信号通路涵盖配体 `Spp1`（骨桥蛋白，Osteopontin）与受体 `Cd44` 及整合素复合物（如 `Itga4+Itgb1`）。
+
+## SPP1 通路靶向 T/NK 亚群的具体配受体互作清单
+
+```{r spp1-t-table}
+spp1_t <- df_apap_lr %>%
+  filter(pathway_name == "SPP1", source == spp1_mac, target %in% t_types) %>%
+  arrange(desc(prob))
+
+kable(spp1_t %>% select(source, target, ligand, receptor, prob, pval),
+      caption = "SPP1 信号通路中 SPP1⁺ 巨噬细胞 → T/NK 细胞各亚群的显著互作对",
+      col.names = c("发送方 (Source)", "接收方 (Target)", "配体 (Ligand)", "受体 (Receptor)", "通讯强度 (Prob)", "显著性 (p-val)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+::: {.callout-important}
+### SPP1 通路靶向 T/NK 亚群的核心结论
+1. **严格的单向输出**：在微环境中，仅 `SPP1+ TREM2+ macrophage` 显著分泌 `Spp1` 配体，7 个 T/NK 亚群未检测到高表达配体输出（上游输入为 0）。
+2. **靶向特征**：
+   - 主要通过 **`Spp1 – (Itga4+Itgb1)`** 整合素（VLA-4）轴与 **`NK`**（强度 **0.000984**）、**`CD4 Treg`**（强度 **0.000633**）和 **`CD8 Tex`**（强度 **0.000631**）发生强效互作，介导淋巴细胞在损伤重塑病灶处的黏附滞留与免疫调节；
+   - SPP1 通路靶向 T/NK 细胞的总互作数为 **3 对**，总强度为 **0.002248**。
+:::
+
+## SPP1 通路网络可视化
+
+```{r spp1-bubble, fig.width = 8.5, fig.height = 4}
+# 图 1：SPP1 信号通路配受体气泡图
+p_bubble_spp1 <- netVisual_bubble(
+  cc_apap,
+  sources.use = spp1_mac,
+  targets.use = t_types,
+  signaling = "SPP1",
+  remove.isolate = FALSE,
+  font.size = 8
+) +
+  labs(title = "SPP1 Pathway L-R Pairs: SPP1+ Mac → T/NK Subsets") +
+  theme_pub(base_size = 8)
+
+p_bubble_spp1
+```
+
+```{r spp1-circle, fig.width = 6, fig.height = 5.5}
+# 图 2：SPP1 通路单通路圆形网络图
+par(mar = c(1, 1, 2, 1), family = "sans")
+netVisual_aggregate(
+  cc_apap,
+  signaling = "SPP1",
+  layout = "circle",
+  sources.use = spp1_mac,
+  targets.use = t_types,
+  signaling.name = "SPP1 Pathway (SPP1+ Mac → T/NK Subsets)",
+  vertex.label.cex = 0.75
+)
+```
+
+---
+
+# 【维度二】下游输出分析（SPP1⁺ 巨噬细胞 → 7 个 T/NK 细胞亚群）
+
+`SPP1+ TREM2+ macrophage` 作为核心发送中枢，向 7 个 T/NK 细胞亚群输出全部信号通路的互作情况。
+
+```{r downstream-stats}
+downstream <- df_apap_lr %>% filter(source == spp1_mac, target %in% t_types)
+cat("下游互作对总数:", nrow(downstream), "条\n")
+cat("下游信号总强度 (Sum of Prob):", round(sum(downstream$prob), 6), "\n")
+```
+
+## 各目标 T/NK 细胞亚群接收到的信号排名
+
+```{r downstream-target-table}
+target_stat <- downstream %>%
+  group_by(target) %>%
+  summarise(
+    互作对数 = n(),
+    信号强度 = round(sum(prob), 6),
+    占比 = paste0(round(sum(prob) / sum(downstream$prob) * 100, 2), "%")
+  ) %>%
+  arrange(desc(信号强度))
+
+kable(target_stat, caption = "SPP1⁺ 巨噬细胞 → 7 个 T/NK 亚群的信号接收强度与互作对数排名",
+      col.names = c("目标 T/NK 细胞亚群", "互作对数 (Count)", "接收总强度 (Weight)", "占下游总强度比例")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  row_spec(1:3, bold = TRUE, background = "#ffebee")
+```
+
+## 下游信号通路贡献度排名（Top Pathways）
+
+```{r downstream-pathway-table}
+down_pw_stat <- downstream %>%
+  group_by(pathway_name) %>%
+  summarise(
+    互作对数 = n(),
+    信号强度 = round(sum(prob), 6),
+    占比 = paste0(round(sum(prob) / sum(downstream$prob) * 100, 2), "%")
+  ) %>%
+  arrange(desc(信号强度))
+
+kable(down_pw_stat, caption = "SPP1⁺ 巨噬细胞 → T/NK 细胞各主要信号通路的强度贡献排名",
+      col.names = c("信号通路", "互作对数 (Count)", "总强度 (Weight)", "占下游总强度比例")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+## 下游互作图表展示（接收强度排序、Top 通路贡献与全配受体气泡图）
+
+```{r downstream-plots, fig.width = 9.5, fig.height = 4}
+# 柱状图：各 T/NK 细胞接收强度
+p_down_bar1 <- ggplot(target_stat, aes(x = reorder(target, -信号强度), y = 信号强度, fill = target)) +
+  geom_col(width = 0.65, show.legend = FALSE) +
+  geom_text(aes(label = sprintf("%.4f", 信号强度)), vjust = -0.3, size = 2.4, fontface = "bold") +
+  scale_fill_brewer(palette = "Blues", direction = -1) +
+  labs(title = "Downstream Signal Strength by T/NK Target", x = NULL, y = "Total Strength (Weight)") +
+  theme_pub(base_size = 8) +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+
+p_down_bar2 <- ggplot(head(down_pw_stat, 8), aes(x = reorder(pathway_name, 信号强度), y = 信号强度, fill = 信号强度)) +
+  geom_col(width = 0.65, show.legend = FALSE) +
+  coord_flip() +
+  scale_fill_gradient(low = "#fee0d2", high = "#de2d26") +
+  labs(title = "Top Downstream Pathways (Mac → T/NK)", x = NULL, y = "Information Flow (Weight)") +
+  theme_pub(base_size = 8)
+
+p_down_bar1 + p_down_bar2
+```
+
+```{r downstream-bubble, fig.width = 10, fig.height = 9.5}
+# 下游全配受体对气泡图
+p_down_bubble <- netVisual_bubble(
+  cc_apap,
+  sources.use = spp1_mac,
+  targets.use = t_types[t_types %in% levels(cc_apap@idents)],
+  remove.isolate = TRUE,
+  font.size = 7.2,
+  angle.x = 45
+) +
+  labs(title = "All Ligand-Receptor Pairs: SPP1+ TREM2+ Mac → 7 T/NK Subsets (97 Pairs)") +
+  theme_pub(base_size = 8) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 7.5),
+    axis.text.y = element_text(size = 6.8),
+    legend.key.size = unit(0.35, "cm")
+  )
+
+p_down_bubble
+```
+
+---
+
+# 【维度三】上游输入分析（7 个 T/NK 细胞亚群 → SPP1⁺ 巨噬细胞）
+
+7 个 T/NK 细胞亚群作为信号发送方，向 `SPP1+ TREM2+ macrophage` 反馈调控信号。
+
+```{r upstream-stats}
+upstream <- df_apap_lr %>% filter(source %in% t_types, target == spp1_mac)
+cat("上游互作对总数:", nrow(upstream), "条\n")
+cat("上游信号总强度 (Sum of Prob):", round(sum(upstream$prob), 6), "\n")
+```
+
+## 各来源 T/NK 细胞亚群发送信号排名
+
+```{r upstream-source-table}
+source_stat <- upstream %>%
+  group_by(source) %>%
+  summarise(
+    互作对数 = n(),
+    信号强度 = round(sum(prob), 6),
+    占比 = paste0(round(sum(prob) / sum(upstream$prob) * 100, 2), "%")
+  ) %>%
+  arrange(desc(信号强度))
+
+kable(source_stat, caption = "7 个 T/NK 亚群 → SPP1⁺ 巨噬细胞的信号发送强度与互作对数排名",
+      col.names = c("来源 T/NK 细胞亚群", "互作对数 (Count)", "发送总强度 (Weight)", "占上游总强度比例")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  row_spec(1:2, bold = TRUE, background = "#e3f2fd")
+```
+
+## 每个上游来源贡献最强的关键配-受体对
+
+```{r upstream-top-pairs-table}
+top_upstream_pairs <- upstream %>%
+  group_by(source) %>%
+  arrange(desc(prob)) %>%
+  slice_head(n = 1) %>%
+  select(source, ligand, receptor, pathway_name, prob) %>%
+  arrange(desc(prob))
+
+kable(
+  data.frame(
+    "上游来源 T/NK 亚群" = top_upstream_pairs$source,
+    "配体 (Ligand)" = top_upstream_pairs$ligand,
+    "受体 (Receptor)" = top_upstream_pairs$receptor,
+    "信号通路" = top_upstream_pairs$pathway_name,
+    "通讯强度 (Prob)" = sprintf("%.4f", top_upstream_pairs$prob),
+    check.names = FALSE
+  ),
+  caption = "每个上游 T/NK 亚群向 SPP1⁺ 巨噬细胞输出贡献最强的配-受体对"
+) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+## 上游信号通路贡献度排名（Top Pathways）
+
+```{r upstream-pathway-table}
+up_pw_stat <- upstream %>%
+  group_by(pathway_name) %>%
+  summarise(
+    互作对数 = n(),
+    信号强度 = round(sum(prob), 6),
+    占比 = paste0(round(sum(prob) / sum(upstream$prob) * 100, 2), "%")
+  ) %>%
+  arrange(desc(信号强度))
+
+kable(up_pw_stat, caption = "T/NK 细胞各亚群 → SPP1⁺ 巨噬细胞的主要信号通路贡献排名",
+      col.names = c("信号通路", "互作对数 (Count)", "总强度 (Weight)", "占上游总强度比例")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+## 上游互作图表展示（发送强度排序与全配受体气泡图）
+
+```{r upstream-plots, fig.width = 9.5, fig.height = 4}
+p_up_bar1 <- ggplot(source_stat, aes(x = reorder(source, -信号强度), y = 信号强度, fill = source)) +
+  geom_col(width = 0.65, show.legend = FALSE) +
+  geom_text(aes(label = sprintf("%.4f", 信号强度)), vjust = -0.3, size = 2.4, fontface = "bold") +
+  scale_fill_brewer(palette = "Greens", direction = -1) +
+  labs(title = "Upstream Signal Strength by T/NK Source", x = NULL, y = "Total Strength (Weight)") +
+  theme_pub(base_size = 8) +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+
+p_up_bar2 <- ggplot(up_pw_stat, aes(x = reorder(pathway_name, 信号强度), y = 信号强度, fill = 信号强度)) +
+  geom_col(width = 0.65, show.legend = FALSE) +
+  coord_flip() +
+  scale_fill_gradient(low = "#e5f5e0", high = "#31a354") +
+  labs(title = "Top Upstream Pathways (T/NK → Mac)", x = NULL, y = "Information Flow (Weight)") +
+  theme_pub(base_size = 8)
+
+p_up_bar1 + p_up_bar2
+```
+
+```{r upstream-bubble, fig.width = 9, fig.height = 5.5}
+p_up_bubble <- netVisual_bubble(
+  cc_apap,
+  sources.use = t_types[t_types %in% levels(cc_apap@idents)],
+  targets.use = spp1_mac,
+  remove.isolate = TRUE,
+  font.size = 7.5,
+  angle.x = 45
+) +
+  labs(title = "All Ligand-Receptor Pairs: 7 T/NK Subsets → SPP1+ TREM2+ Mac (33 Pairs)") +
+  theme_pub(base_size = 8) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 7.5),
+    axis.text.y = element_text(size = 7),
+    legend.key.size = unit(0.35, "cm")
+  )
+
+p_up_bubble
+```
+
+---
+
+# 【维度四】信号角色深度分析（Signaling Role Heatmaps & 2D Scatter）
+
+参考 `upstream_signal_to_SPP1Mac_report` 的标准角色度量方法，从 **接收角色（Incoming）**、**发送角色（Outgoing）** 与 **2D 角色网络（Sender vs Receiver）** 综合判定各亚群在全网络中的通讯定位。
+
+## 接收信号角色热图（Incoming Signaling Role Heatmap）
+
+展示每个细胞亚群作为**接收方（Receiver）**在各主要信号通路中的信息流贡献（顶部柱状图为全通路接收强度汇总）：
+
+```{r incoming-role-heatmap, fig.width = 8.5, fig.height = 6.5}
+p_in_role <- netAnalysis_signalingRole_heatmap(
+  cc_apap,
+  pattern = "incoming",
+  signaling = NULL,
+  font.size = 7,
+  font.size.title = 8.5,
+  width = 7.5,
+  height = 6.5,
+  title = "Incoming Signaling Role (Receiver)"
+)
+p_in_role
+```
+
+---
+
+## 发送信号角色热图（Outgoing Signaling Role Heatmap）
+
+展示每个细胞亚群作为**发送方（Sender）**在各主要信号通路中的信息流贡献（顶部柱状图为全通路发送强度汇总）：
+
+```{r outgoing-role-heatmap, fig.width = 8.5, fig.height = 6.5}
+p_out_role <- netAnalysis_signalingRole_heatmap(
+  cc_apap,
+  pattern = "outgoing",
+  signaling = NULL,
+  font.size = 7,
+  font.size.title = 8.5,
+  width = 7.5,
+  height = 6.5,
+  title = "Outgoing Signaling Role (Sender)"
+)
+p_out_role
+```
+
+---
+
+## 2D 信号角色网络散点图（Sender vs Receiver 2D Scatter Plot）
+
+基于网络中心性度量将各细胞亚群投影至二维坐标系（横轴：流出信号强度 Outgoing；纵轴：流入信号强度 Incoming），节点大小代表连接丰富度：
+
+```{r role-scatter-2d, fig.width = 7, fig.height = 5.2}
+netAnalysis_signalingRole_scatter(
+  cc_apap,
+  label.size = 2.8,
+  title = "2D Signaling Role Analysis (Sender vs Receiver)"
+) +
+  theme_pub(base_size = 8) +
+  theme(plot.title = element_text(size = 9, face = "bold", hjust = 0.5))
+```
+
+> **2D 角色象限解读**：
+> - **右上角（Dominant Sender & Receiver）**：`SPP1+ TREM2+ macrophage` 占据绝对优势，流出与流入强度均居首位，是全场的通讯中枢；
+> - **右下/中偏右（Influencer / Feedback Senders）**：`NKT` 与 `NK` 细胞表现出高水平的 Outgoing 流出信号，是调控巨噬细胞的最关键上游驱动源；
+> - **左上/中偏上（Target Receivers）**：`Naive CD8 T (Tstr)` 与 `gamma-delta T` 细胞高度富集传入信号，主要作为巨噬细胞信号的响应靶标。
+
+---
+
+# 【维度五】上下游互作：数量 vs 强度分面散点图（Upstream vs Downstream Scatter）
+
+参考 `upstream_signal_to_SPP1Mac_report` 经典设计，将每个 T/NK 细胞亚群与 SPP1⁺ 巨噬细胞在上游（Upstream）与下游（Downstream）方向的**互作对数（Interaction count）** 与 **互作强度（Interaction strength, weight）** 绘制为左右双分面散点图：
+
+```{r facet-scatter-count-weight, fig.width = 10, fig.height = 4.5}
+# 构造分面散点图数据
+df_up <- data.frame(
+  cell_type = t_types,
+  count = as.numeric(cc_apap@net$count[t_types, spp1_mac]),
+  weight = as.numeric(cc_apap@net$weight[t_types, spp1_mac]),
+  direction = "Upstream (to SPP1+ Mac)"
+)
+
+df_down <- data.frame(
+  cell_type = t_types,
+  count = as.numeric(cc_apap@net$count[spp1_mac, t_types]),
+  weight = as.numeric(cc_apap@net$weight[spp1_mac, t_types]),
+  direction = "Downstream (from SPP1+ Mac)"
+)
+
+df_plot_facet <- rbind(df_up, df_down)
+df_plot_facet$direction <- factor(df_plot_facet$direction, levels = c("Upstream (to SPP1+ Mac)", "Downstream (from SPP1+ Mac)"))
+
+# 绘制与标准报告一致的高清分面散点图
+p_facet_scatter <- ggplot(df_plot_facet, aes(x = count, y = weight)) +
+  geom_point(color = "#1f77b4", size = 3.5, alpha = 0.9) +
+  geom_text_repel(
+    aes(label = cell_type),
+    size = 3.2,
+    max.overlaps = 25,
+    box.padding = 0.4,
+    point.padding = 0.3,
+    family = "sans"
+  ) +
+  facet_wrap(~ direction, scales = "free") +
+  labs(
+    title = "Upstream and downstream interactions of SPP1+ Mac (with 7 T/NK Subsets)",
+    x = "Interaction count",
+    y = "Interaction strength (weight)"
+  ) +
+  theme_bw(base_size = 9, base_family = "sans") +
+  theme(
+    plot.title = element_text(size = 11, face = "bold", hjust = 0),
+    strip.background = element_rect(fill = "#e0e0e0", color = "black"),
+    strip.text = element_text(size = 9, face = "bold"),
+    axis.title = element_text(size = 9, face = "bold"),
+    axis.text = element_text(size = 8.5, color = "black"),
+    panel.grid.minor = element_blank()
+  )
+
+p_facet_scatter
+```
+
+> **分面散点图解读**：
+> - **左图（Upstream）**：横轴为向 SPP1⁺ 巨噬细胞发送的互作数量，纵轴为发送强度。`NKT` 位于强度最上方（强度 0.01496, 8 对），`NK` 位列第二（强度 0.00794, 4 对），二者是向 SPP1⁺ 巨噬细胞输送信号最强的上游驱动源；
+> - **右图（Downstream）**：横轴为接收自 SPP1⁺ 巨噬细胞的互作数量，纵轴为接收强度。`Naive CD8 T (Tstr)` 强度最高（强度 0.01903, 16 对），`gamma-delta T` 与 `NKT` 紧随其后（强度均 ~0.0146），而 `CD8 Tex` 互作条数最多（22 对，强度 0.00501）。
+
+---
+
+# 【维度六】网络拓扑与特征通路
+
+## SPP1⁺ 巨噬细胞中心通讯圈图（Centered Circle Plots）
+
+```{r circle-plots, fig.width = 9.5, fig.height = 4.8}
+par(mfrow = c(1, 2), mar = c(1, 1, 2, 1), family = "sans", cex = 0.8)
+
+sub_types <- c(spp1_mac, t_types)
+cols_sub  <- c("#d73027", "#4575b4", "#74add1", "#abd9e9", "#fee090", "#fdae61", "#f46d43", "#a6d96a")
+names(cols_sub) <- sub_types
+
+mat_sub_count  <- cc_apap@net$count[sub_types, sub_types]
+mat_sub_weight <- cc_apap@net$weight[sub_types, sub_types]
+
+keep_mask <- matrix(FALSE, nrow = length(sub_types), ncol = length(sub_types), dimnames = list(sub_types, sub_types))
+keep_mask[spp1_mac, ] <- TRUE
+keep_mask[, spp1_mac] <- TRUE
+
+mat_sub_count[!keep_mask]  <- 0
+mat_sub_weight[!keep_mask] <- 0
+
+netVisual_circle(mat_sub_count, color.use = cols_sub, weight.scale = TRUE,
+                 label.edge = FALSE, vertex.label.cex = 0.7, vertex.weight = 18,
+                 title.name = "Interaction Count (SPP1+ Mac Centered)")
+
+netVisual_circle(mat_sub_weight, color.use = cols_sub, weight.scale = TRUE,
+                 label.edge = FALSE, vertex.label.cex = 0.7, vertex.weight = 18,
+                 title.name = "Interaction Strength (SPP1+ Mac Centered)")
+```
+
+## 上下双向信号对称性对比（镜像对比图）
+
+```{r bidirectional-comparison, fig.width = 9.5, fig.height = 4.2}
+df_asym <- data.frame(
+  T_Cell = t_types,
+  Downstream_Out = as.numeric(cc_apap@net$weight[spp1_mac, t_types]),
+  Upstream_In    = as.numeric(cc_apap@net$weight[t_types, spp1_mac])
+)
+
+df_asym_long <- data.frame(
+  T_Cell = rep(df_asym$T_Cell, 2),
+  Direction = rep(c("Downstream (Mac → T)", "Upstream (T → Mac)"), each = nrow(df_asym)),
+  Strength = c(df_asym$Downstream_Out, df_asym$Upstream_In)
+)
+
+p_asym <- ggplot(df_asym_long, aes(x = reorder(T_Cell, -Strength), y = Strength, fill = Direction)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.65) +
+  geom_text(aes(label = sprintf("%.4f", Strength)), position = position_dodge(width = 0.75), vjust = -0.3, size = 2.3, fontface = "bold") +
+  scale_fill_manual(values = c("Downstream (Mac → T)" = "#e41a1c", "Upstream (T → Mac)" = "#377eb8")) +
+  labs(
+    title = "Bidirectional Communication: SPP1+ Mac ↔ 7 T/NK Subsets",
+    subtitle = "Mac → T (Red) dominates in Naive CD8/γδ T/NKT; T → Mac (Blue) is led by NKT & NK",
+    x = "T/NK Cell Subsets",
+    y = "Signal Strength (Weight)"
+  ) +
+  theme_pub(base_size = 8) +
+  theme(legend.position = "top", axis.text.x = element_text(angle = 30, hjust = 1))
+
+p_asym
+```
+
+## 核心特征通路圆形网络图总览（Key Pathways Circle Diagrams）
+
+```{r multi-circle, fig.width = 9, fig.height = 8}
+par(mfrow = c(2, 2), mar = c(1, 1, 2, 1), family = "sans", cex = 0.75)
+
+key_pws <- c("SPP1", "CCL", "THY1", "FN1")
+for (pw in key_pws) {
+  if (pw %in% cc_apap@netP$pathways) {
+    netVisual_aggregate(
+      cc_apap, signaling = pw, layout = "circle",
+      sources.use = NULL, targets.use = NULL,
+      signaling.name = paste0("Pathway: ", pw),
+      vertex.label.cex = 0.65
+    )
+  }
+}
+```
+
+---
+
+# 结论与生物学机制解读
+
+::: {.callout-note}
+### 关键发现总结
+1. **SPP1 信号通路的定点靶向**：
+   - SPP1 配体由 `SPP1+ TREM2+ macrophage` 释放，通过 **`Spp1 – (Itga4+Itgb1)`** 轴靶向 **`NK`**（0.000984）、**`CD4 Treg`**（0.000633）和 **`CD8 Tex`**（0.000631），发挥基质结合与免疫稳态调控作用，共计 **3 对显著互作，总强度 0.00225**。
+2. **下游输出（巨噬 → 7 个 T/NK 亚群）的主导性**：
+   - 覆盖 **97 条互作，强度 0.07052**（占双向总强度的 67.9%）。
+   - **`Naive CD8 T (Tstr)`**（0.01903，16 对，占 27.0%）、**`gamma-delta T`**（0.01463，10 对，占 20.8%）与 **`NKT`**（0.01452，10 对，占 20.6%）是三大核心接收靶群，主要富集抗原呈递（MHC-I）、吞噬调控（THBS）、基质重塑（FN1）、趋化因子（CCL）与免疫抑制检查点（GALECTIN）。
+3. **上游输入（7 个 T/NK 亚群 → 巨噬）的特异性驱动**：
+   - 覆盖 **33 条互作，强度 0.03334**（占双向总强度的 32.1%）。
+   - **`NKT` 细胞**（0.01496，8 对，占 **44.85%**）与 **`NK` 细胞**（0.00794，4 对，占 **23.81%**）构成压倒性的上游核心驱动源，通过 **CCL 趋化轴（`Ccl5/Ccl4/Ccl3 – Ccr1/Ccr5`）** 与 **THY1 接触黏附轴（`Thy1 – Mac-1`）** 强力反馈调控 SPP1⁺ 巨噬细胞的活化与浸润。
+:::

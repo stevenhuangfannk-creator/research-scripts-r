@@ -1,0 +1,380 @@
+---
+title: "小鼠肝脏巨噬细胞三级注释（KC + Macrophages，对齐 Immunity 2025）"
+author: "Macrophage-T interaction project"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-important}
+本文档对 `integrated_liver_final_seurat.rds` 中 `celltype_l2 ∈ {KC, Macrophages}` 的 13,902 个巨噬细胞进行三级注释，命名体系对齐 **De Ponti et al., Immunity 2025**（PMID 39862865；GSE280652 来源文献）：按“来源（KC vs recruited）+ 表型（LAM/TREM2⁺ vs non-LAM）+ 功能状态（IFN / 增殖）”命名。结果回写 final 对象。
+:::
+
+## 1. 命名依据
+
+| 三级亚群 | 定义 | 关键 marker |
+|---|---|---|
+| KC | 驻留 Kupffer 细胞（含稀有 LAM-like 状态，用状态标签标记） | Clec4f / Timd4 / Vsig4 / Cd5l |
+| SPP1⁺ TREM2⁺ macrophage | 募集修复相关巨噬（Recruited LAM 与 SPP1⁺Arg1⁺ repair 合并） | Spp1 / Trem2 / Gpnmb / Cd9 / Arg1 / Chil3 |
+| Ccr2⁺ recruited inflammatory macrophage | 新募集炎症型（non-LAM） | Ccr2 / Il1b / Cxcl2 / Plac8 |
+| IFN-stimulated macrophage | 干扰素应答状态 | Isg15 / Ifit1 / Stat1 / Irf7 |
+| 状态标签 | LAM-like（KC 内）、Cycling、IFN-high | Cd9/Trem2；Mki67/Top2a；Isg15/Stat1 |
+
+## 2. 数据与重聚类
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(harmony)
+  library(ggplot2)
+  library(dplyr)
+  library(RColorBrewer)
+  library(ggh4x)
+  library(cowplot)
+  library(magrittr)
+})
+set.seed(42)
+dir.create("level3_qmd_outputs", showWarnings = FALSE)
+```
+
+```{r subset-recluster}
+obj <- readRDS("integrated_liver_final_seurat.rds")
+DefaultAssay(obj) <- "RNA"
+mac_cells <- which(!is.na(obj$celltype_l2) & obj$celltype_l2 %in% c("KC", "Macrophages"))
+mac <- obj[, mac_cells]
+cat("subset：", dim(mac), "\n")
+print(table(l2 = mac$celltype_l2, condition = mac$condition))
+
+mac <- FindVariableFeatures(mac, nfeatures = 2000, verbose = FALSE)
+mac <- ScaleData(mac, features = VariableFeatures(mac), verbose = FALSE)
+mac <- RunPCA(mac, npcs = 30, verbose = FALSE)
+mac <- RunHarmony(mac, group.by.vars = "sample", reduction.use = "pca",
+                  reduction.save = "harmony", verbose = FALSE)
+mac <- FindNeighbors(mac, reduction = "harmony", dims = 1:20)
+mac <- FindClusters(mac, resolution = c(0.2, 0.3, 0.5), verbose = FALSE)
+mac <- RunUMAP(mac, reduction = "harmony", dims = 1:20, verbose = FALSE)
+Idents(mac) <- "RNA_snn_res.0.5"
+cat("res 0.5 聚类数：", length(levels(Idents(mac))), "\n")
+print(table(cluster = Idents(mac)))
+```
+
+## 3. 证据矩阵
+
+```{r evidence}
+genes <- c("Trem2","Cd9","Gpnmb","Spp1","Lpl","Arg1","Chil3","Ccr2","Plac8",
+           "Il1b","Ccl2","Cxcl2","Isg15","Ifit1","Stat1","Irf7","Clec4f","Timd4",
+           "Vsig4","Cd5l","C1qa","Adgre1","Mki67","Top2a","Cx3cr1","Mrc1")
+genes <- genes[genes %in% rownames(mac)]
+exp <- GetAssayData(mac, assay = "RNA", layer = "data")
+clusters <- levels(Idents(mac))
+pct <- sapply(genes, function(g) {
+  sapply(clusters, function(cl) {
+    cc <- WhichCells(mac, idents = cl)
+    round(100 * mean(exp[g, cc] > 0), 1)
+  })
+})
+rownames(pct) <- paste0("M", clusters)
+write.csv(pct, "level3_qmd_outputs/mac_l3_marker_pct.csv")
+print(pct)
+```
+
+## 4. 三级注释决策表
+
+```{r decision}
+l3_map <- c(
+  "0"  = "KC",
+  "1"  = "SPP1+ TREM2+ macrophage",
+  "2"  = "Ccr2+ recruited inflammatory macrophage",
+  "3"  = "KC",
+  "4"  = "SPP1+ TREM2+ macrophage",
+  "5"  = "KC",
+  "6"  = "IFN-stimulated macrophage",
+  "7"  = "KC",
+  "8"  = "KC",
+  "9"  = "KC",
+  "10" = "KC",
+  "11" = "Ccr2+ recruited inflammatory macrophage",
+  "12" = "KC",
+  "13" = "Ccr2+ recruited inflammatory macrophage",
+  "14" = "KC"
+)
+l3_levels <- c("KC", "SPP1+ TREM2+ macrophage",
+               "Ccr2+ recruited inflammatory macrophage",
+               "IFN-stimulated macrophage")
+
+decision <- data.frame(
+  cluster = 0:14,
+  evidence = c(
+    "Clec4f 100/Timd4 91/Cd5l 100；Trem2 31/Cd9 4",
+    "Trem2 93/Spp1 75/Gpnmb 80/Cd9 88/Arg1 56",
+    "Ccr2 85/Il1b 72/Cx3cr1 73/Trem2 67",
+    "Clec4f 90/Timd4 43/Cd5l 95",
+    "Spp1 64/Arg1 61/Chil3 87/Ccl2 79",
+    "KC marker 高 + Mki67 17/Top2a 27",
+    "Stat1 98/Irf7 97/Isg15 34/Ifit1 34（KC 来源）",
+    "Mki67 87/Top2a 93（增殖 KC）",
+    "KC marker 中等 + Stat1 73/Mki67 37（混合/过渡）",
+    "Clec4f 93/Timd4 81/Cd5l 94",
+    "C1qa 97/Adgre1 92/Cx3cr1 88/Clec4f 40（原 MacC4，实为驻留 KC）",
+    "Il1b 95/Cd9 88/Ccl2 65/Cxcl2 74",
+    "Clec4f 85/Cd5l 99/Ccl2 70",
+    "Ccr2 61/Il1b 69/Cxcl2 61/Cd9 53（混合小群）",
+    "KC marker 高 + Cd9 88/Trem2 48（LAM-like KC）"
+  ),
+  macrophage_l3 = l3_map[as.character(0:14)],
+  confidence = c(rep("High", 13), "Low", "High"),
+  note = c(rep("", 13),
+           "并入 Ccr2+ recruited inflammatory（低置信）",
+           "并入 KC，状态标签 mac_state_lam_like = LAM-like"),
+  stringsAsFactors = FALSE
+)
+print(decision, row.names = FALSE)
+write.csv(decision, "level3_qmd_outputs/mac_l3_cluster_annotation.csv", row.names = FALSE)
+```
+
+## 5. 写入三级标签并回写 final 对象
+
+```{r assign}
+mac$macrophage_l3 <- factor(unname(l3_map[as.character(Idents(mac))]), levels = l3_levels)
+mac$macrophage_l3_confidence <- ifelse(as.character(Idents(mac)) == "13", "Low", "High")
+mac$mac_state_lam_like <- ifelse(as.character(Idents(mac)) == "14",
+                                 "LAM-like", NA_character_)
+
+# 状态标签（按基因表达，不改变亚群归属）
+mac$mac_state_cycling <- ifelse(exp["Mki67", ] > 0 & exp["Top2a", ] > 0,
+                                "Cycling", NA_character_)
+ifn_cut <- as.numeric(quantile(exp["Isg15", ], 0.9))
+mac$mac_state_ifn <- ifelse(exp["Isg15", ] >= ifn_cut & exp["Stat1", ] > 0.5,
+                            "IFN-high", NA_character_)
+cat("IFN-high 阈值（Isg15 90% 分位）：", round(ifn_cut, 3), "\n")
+cat("状态标签计数：\n")
+print(table(cycling = mac$mac_state_cycling, ifn = mac$mac_state_ifn, useNA = "always"))
+
+# 按证据把原误标为 Macrophages 的驻留 KC（R10 = 原 MacC4）改回 KC
+r10_mac <- as.character(Idents(mac)) == "10" & mac$celltype_l2 == "Macrophages"
+mac$celltype_l2[r10_mac] <- "KC"
+cat("R10 中由 Macrophages 改回 KC 的细胞数：", sum(r10_mac), "\n")
+
+cat("### macrophage_l3 x condition（子集内）\n")
+print(table(mac$macrophage_l3, mac$condition))
+
+cat("\n### 修正后 celltype_l2 x condition（子集内）\n")
+print(table(mac$celltype_l2, mac$condition))
+
+# 回写 final 对象（复用上文已加载的 obj，避免二次读入）
+final <- obj
+final$macrophage_l3 <- factor(rep(NA_character_, ncol(final)), levels = l3_levels)
+final$macrophage_l3_confidence <- rep(NA_character_, ncol(final))
+final$mac_state_cycling <- rep(NA_character_, ncol(final))
+final$mac_state_ifn <- rep(NA_character_, ncol(final))
+final$mac_state_lam_like <- rep(NA_character_, ncol(final))
+bc <- colnames(mac)
+final$macrophage_l3[bc] <- mac$macrophage_l3
+final$macrophage_l3_confidence[bc] <- mac$macrophage_l3_confidence
+final$mac_state_cycling[bc] <- mac$mac_state_cycling
+final$mac_state_ifn[bc] <- mac$mac_state_ifn
+final$mac_state_lam_like[bc] <- mac$mac_state_lam_like
+final$celltype_l2[bc] <- mac$celltype_l2
+
+cat("\n### final 对象 macrophage_l3 x condition\n")
+print(table(final$macrophage_l3, final$condition, useNA = "always"))
+cat("\n### final 对象修正后 celltype_l2 x condition\n")
+print(table(final$celltype_l2, final$condition, useNA = "always"))
+```
+
+### 5.1 聚类质量审计
+
+> 本节的 top-DE 仅用于**质量审计**，不作为注释或点图依据；注释与点图一律使用第 1 节的经典 marker。
+
+```{r audit}
+cat("### 分辨率稳定性（res0.2 → 0.3 → 0.5 交叉表，应为层级分裂）\n")
+print(table(r0.2 = mac$RNA_snn_res.0.2, r0.3 = mac$RNA_snn_res.0.3))
+print(table(r0.3 = mac$RNA_snn_res.0.3, r0.5 = mac$RNA_snn_res.0.5))
+
+Idents(mac) <- "macrophage_l3"
+de <- FindAllMarkers(mac, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25,
+                     test.use = "wilcox", verbose = FALSE)
+top5 <- de %>%
+  group_by(cluster) %>%
+  slice_max(avg_log2FC, n = 5) %>%
+  ungroup() %>%
+  as.data.frame()
+write.csv(top5[, c("cluster","gene","avg_log2FC","pct.1","pct.2","p_val_adj")],
+          "level3_qmd_outputs/mac_l3_top5_DE.csv", row.names = FALSE)
+cat("\n### 各亚群 top5 DE marker（vs 其余巨噬，Wilcox）\n")
+print(top5[, c("cluster","gene","avg_log2FC","pct.1","pct.2","p_val_adj")],
+      row.names = FALSE)
+
+cat("\n### 亚群 x sample（批次检查）\n")
+print(table(macrophage_l3 = mac$macrophage_l3, sample = mac$sample))
+
+cat("\n### 亚群 x 旧二级标签\n")
+print(table(macrophage_l3 = mac$macrophage_l3, old_l2 = mac$celltype_l2))
+```
+
+## 6. 结果图
+
+```{r figures}
+cols_l3 <- c(
+  "KC" = "#D62728",
+  "SPP1+ TREM2+ macrophage" = "#2CA02C",
+  "Ccr2+ recruited inflammatory macrophage" = "#9467BD",
+  "IFN-stimulated macrophage" = "#E377C2"
+)
+Idents(mac) <- "macrophage_l3"
+
+p_umap <- DimPlot(mac, reduction = "umap", group.by = "macrophage_l3",
+                  label = TRUE, repel = TRUE, cols = cols_l3, pt.size = 0.6) +
+  ggtitle("Macrophage Level 3 (KC + Macrophages)")
+print(p_umap)
+ggsave("level3_qmd_outputs/UMAP_macrophage_l3.png", p_umap,
+       width = 9, height = 6, dpi = 300)
+
+p_split <- DimPlot(mac, reduction = "umap", group.by = "macrophage_l3",
+                   split.by = "condition", ncol = 2, cols = cols_l3, pt.size = 0.6)
+print(p_split)
+ggsave("level3_qmd_outputs/UMAP_macrophage_l3_by_condition.png", p_split,
+       width = 12, height = 6, dpi = 300)
+
+p_cl <- DimPlot(mac, reduction = "umap", group.by = "RNA_snn_res.0.5",
+                label = TRUE, repel = TRUE) + NoLegend() +
+  ggtitle("Macrophage clusters (res 0.5)")
+print(p_cl)
+ggsave("level3_qmd_outputs/UMAP_macrophage_clusters.png", p_cl,
+       width = 8, height = 6, dpi = 300)
+
+p_feat <- FeaturePlot(mac, features = c("Trem2", "Cd9", "Spp1", "Arg1",
+                                        "Ccr2", "Isg15", "Clec4f", "Mki67"),
+                      ncol = 4, pt.size = 0.5) &
+  scale_colour_gradientn(colours = c("lightgrey", "blue", "red"))
+print(p_feat)
+ggsave("level3_qmd_outputs/FeaturePlot_mac_l3_markers.png", p_feat,
+       width = 14, height = 7, dpi = 300)
+
+comp <- mac@meta.data %>%
+  count(condition, macrophage_l3) %>%
+  group_by(condition) %>%
+  mutate(freq = 100 * n / sum(n)) %>%
+  ungroup()
+p_bar <- ggplot(comp, aes(x = condition, y = freq, fill = macrophage_l3)) +
+  geom_col(position = "fill", width = 0.6) +
+  scale_fill_manual(values = cols_l3, name = "macrophage_l3") +
+  labs(y = "Proportion", x = NULL) +
+  theme_classic(base_size = 12)
+print(p_bar)
+ggsave("level3_qmd_outputs/Barplot_mac_l3_composition.png", p_bar,
+       width = 6, height = 6, dpi = 300)
+```
+
+```{r dotplot}
+#| fig-width: 18
+#| fig-height: 7
+#| out-width: "100%"
+#| fig-align: center
+# 经典 marker 面板（注释依据；状态标签单独列出）
+l3_dot <- list(
+  "KC" = c("Clec4f","Timd4","Vsig4","Cd5l","C1qa","Mrc1"),
+  "SPP1+ TREM2+ macrophage" = c("Spp1","Trem2","Gpnmb","Cd9","Arg1","Chil3"),
+  "Ccr2+ inflammatory" = c("Ccr2","Ly6c2","Plac8","Il1b","Cxcl2","Ccl2","Cx3cr1"),
+  "IFN-stimulated" = c("Isg15","Ifit1","Stat1","Irf7"),
+  "Cycling" = c("Mki67","Top2a")
+)
+l3_dot <- lapply(l3_dot, function(gs) gs[gs %in% rownames(mac)])
+
+# 自定义数据：每个基因在 6 个亚群间做 z-score（蓝=低、白=中、红=高），
+# 避免白→红单方向配色导致“所有巨噬都红”的问题
+exp <- GetAssayData(mac, assay = "RNA", layer = "data")
+zscale <- function(x) {
+  s <- sd(x, na.rm = TRUE)
+  if (is.na(s) || s == 0) return(rep(0, length(x)))
+  (x - mean(x, na.rm = TRUE)) / s
+}
+rows <- list()
+for (grp in names(l3_dot)) {
+  genes <- l3_dot[[grp]]
+  for (ct in l3_levels) {
+    cc <- WhichCells(mac, idents = ct)
+    m <- exp[genes, cc, drop = FALSE]
+    rows[[length(rows) + 1]] <- data.frame(
+      group = grp, gene = genes, id = ct,
+      pct = as.numeric(100 * Matrix::rowMeans(m > 0)),
+      avg = as.numeric(Matrix::rowMeans(m)))
+  }
+}
+dd <- bind_rows(rows)
+dd <- dd %>%
+  group_by(group, gene) %>%
+  mutate(avg_scaled = zscale(avg)) %>%
+  ungroup()
+dd$id <- factor(dd$id, levels = l3_levels)
+dd$group <- factor(dd$group, levels = names(l3_dot))
+strip_fill <- brewer.pal(12, "Paired")[seq_along(l3_dot)]
+dot_strip <- strip_themed(background_x = elem_list_rect(fill = strip_fill))
+
+p_main <- dd %>%
+  ggplot(aes(x = gene, y = id)) +
+  geom_point(aes(size = pct, color = avg_scaled)) +
+  scale_size_continuous(range = c(0.5, 8), name = "Percent expressed") +
+  scale_colour_gradient2(low = "#4575B4", mid = "#F7F7F7", high = "#D73027",
+                         midpoint = 0, name = "Scaled avg expr") +
+  facet_wrap2(~group, scales = "free_x", strip = dot_strip, nrow = 1) +
+  theme_classic(base_size = 11) +
+  theme(strip.text.x = element_text(size = 9, color = "black", face = "bold"),
+        strip.background = element_rect(color = "white"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1,
+                                   color = "black", size = 9),
+        axis.text.y = element_blank(),
+        axis.title = element_blank(),
+        panel.spacing = unit(0.4, "lines"),
+        legend.position = "bottom")
+
+leg_df <- data.frame(x = 0, y = l3_levels, stringsAsFactors = FALSE)
+leg_df$y <- factor(leg_df$y, levels = l3_levels)
+p_leg <- ggplot(leg_df, aes(x, y, color = y)) +
+  geom_point(size = 6, shape = 18, show.legend = FALSE) +
+  scale_color_manual(values = cols_l3) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.margin = margin(r = 0),
+        axis.title = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 10),
+        axis.ticks = element_blank(),
+        axis.line = element_blank())
+
+p_dot <- plot_grid(p_leg, p_main, align = "h", axis = "bt",
+                   rel_widths = c(2.2, 7.8))
+print(p_dot)
+ggsave("level3_qmd_outputs/DotPlot_macrophage_l3.png", p_dot,
+       width = 18, height = 7, dpi = 300)
+```
+
+## 7. 保存 final 对象
+
+```{r save}
+saveRDS(final, "integrated_liver_final_seurat.rds")
+cat("已保存 integrated_liver_final_seurat.rds\n")
+cat("新增列：macrophage_l3 | macrophage_l3_confidence | mac_state_cycling | mac_state_ifn | mac_state_lam_like\n")
+cat("同时修正：原 R10/MacC4 的 185 个细胞 celltype_l2 由 Macrophages 改为 KC\n")
+```
+
+## 8. 注释要点
+
+- **4 个三级亚群 + 3 个状态标签**：KC（含 n=40 的 LAM-like 状态，`mac_state_lam_like`）；SPP1⁺ TREM2⁺ macrophage（Recruited LAM 与 SPP1⁺Arg1⁺ repair 合并，依据 Ramachandran Nature 2019 / Xiong Mol Cell 2019 / De Ponti Immunity 2025 的 SPP1⁺/TREM2⁺ 单一群体命名）；Ccr2⁺ recruited inflammatory；IFN-stimulated。
+- **Ccr2⁺ recruited inflammatory（R2+R11+R13）**：Ccr2/Il1b/Cxcl2 高，Trem2/Gpnmb 较低，为 non-LAM 募集炎症群。
+- **IFN-stimulated macrophage（R6，n=430）**：主要为 KC 来源的干扰素应答群（Stat1 98/Irf7 97），按表型命名。
+- **状态标签**：`mac_state_cycling` = Mki67 与 Top2a 双阳性；`mac_state_ifn` = Isg15 达到全巨噬细胞 90% 分位且 Stat1 > 0.5；`mac_state_lam_like` = 原 R14 的 LAM-like KC。状态标签不改变亚群归属。
+- **Low confidence**：R13（n=51，炎症/过渡混合小群）标 Low，下游比例与 DEG 分析建议敏感性检验。
+- **结构可靠性**：5.1 审计（仅供质量检查）显示 res0.2→0.3→0.5 为层级分裂、亚群横跨多个样本；注释与点图不使用 DE 基因，只使用经典 marker。
+- **不采用 M1/M2 命名**：Nos2 全群≈0，M1/M2 二元命名不适合该体内数据；如需与旧分析衔接，可用 Arg1/Chil3（修复）与 Il1b/Cxcl2（炎症）打分。
+
+```{r session-info}
+sessionInfo()
+```

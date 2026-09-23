@@ -1,0 +1,532 @@
+---
+title: "巨噬细胞亚群 × T细胞亚群 上游信号来源与通讯网络分析报告"
+subtitle: "基于 CellChat（Control vs APAP_24h 动态解析）"
+author: "Macrophage-T interaction project"
+date: "2026-08-25"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    theme: cosmo
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+suppressPackageStartupMessages({
+  library(CellChat)
+  library(ggplot2)
+  library(patchwork)
+  library(circlize)
+  library(dplyr)
+  library(cowplot)
+  library(knitr)
+  library(kableExtra)
+})
+
+set.seed(42)
+
+# Publication theme with Arial 8pt
+theme_pub <- function(base_size = 8, base_family = "Arial") {
+  theme_classic(base_size = base_size, base_family = base_family) +
+    theme(
+      text = element_text(family = base_family, size = base_size, color = "black"),
+      axis.text = element_text(family = base_family, size = base_size, color = "black"),
+      axis.title = element_text(family = base_family, size = base_size, face = "bold", color = "black"),
+      plot.title = element_text(family = base_family, size = base_size + 1, face = "bold", hjust = 0.5, color = "black"),
+      plot.subtitle = element_text(family = base_family, size = base_size - 0.5, hjust = 0.5, color = "grey30"),
+      legend.text = element_text(family = base_family, size = base_size - 0.5, color = "black"),
+      legend.title = element_text(family = base_family, size = base_size, face = "bold", color = "black"),
+      strip.text = element_text(family = base_family, size = base_size, face = "bold", color = "black"),
+      strip.background = element_rect(fill = "#f0f0f0", color = NA),
+      panel.grid = element_blank()
+    )
+}
+
+# Fix for CellChat 1.6.1 + igraph 2.x compatibility
+fix_diffInteraction <- function() {
+  f <- get('netVisual_diffInteraction', envir = asNamespace('CellChat'))
+  b <- deparse(body(f))
+  idx_if <- grep('if \\(sum\\(edge.start', b)
+  b2 <- append(b, "        igraph::E(g)$loop.angle <- rep(0, length(igraph::E(g)))", after = idx_if)
+  parse(text = b2)[[1]]
+}
+netVisual_diffInteraction_fixed <- function(object, comparison = c(1, 2),
+    measure = c("count", "weight", "count.merged", "weight.merged"),
+    color.use = NULL, color.edge = c("#b2182b", "#2166ac"), title.name = NULL,
+    sources.use = NULL, targets.use = NULL, remove.isolate = FALSE, top = 1,
+    weight.scale = FALSE, vertex.weight = 20, vertex.weight.max = NULL,
+    vertex.size.max = 15, vertex.label.cex = 0.75, vertex.label.color = "black",
+    edge.weight.max = NULL, edge.width.max = 8, alpha.edge = 0.6,
+    label.edge = FALSE, edge.label.color = "black", edge.label.cex = 0.7,
+    edge.curved = 0.2, shape = "circle", layout = igraph::in_circle(),
+    margin = 0.2, arrow.width = 1, arrow.size = 0.2) {
+  eval(fix_diffInteraction(), envir = environment())
+}
+```
+
+::: {.callout-note}
+### 分析概述与数据基础
+本报告参考 `upstream_signal_to_SPP1Mac_report` 的分析架构与度量方法，深入解析小鼠肝脏单细胞数据集（`integrated_liver_final_seurat.rds`）中**巨噬细胞 4 亚群**与 **T 细胞 6 亚群**在 **Control（稳态）** 与 **APAP_24h（急性肝损伤）** 状态下的细胞间通讯网络（Cell-Cell Communication, CCC）。
+
+**绘图规范**：全篇图表统一使用 **Arial，8pt** 字体（标题 9pt 加粗，图例与注记 7.5pt），严格协调画布宽高比，采用极简美学配色与纯白背景，符合国际高水平期刊论文组图标准。
+:::
+
+# 分析背景与方法
+
+## 细胞亚群与实验分组
+
+本分析聚焦于小鼠肝脏微环境中两类核心免疫细胞群体的细分亚群：
+
+- **巨噬细胞亚群（4 类）**：
+  1. `KC`（Kupffer cells，肝脏驻留稳态巨噬细胞）
+  2. `SPP1+ TREM2+ Mac`（损伤特异性脂质相关/重塑型巨噬细胞）
+  3. `Ccr2+ Mac`（单核来源招募型促炎巨噬细胞）
+  4. `IFN-stimulated Mac`（干扰素刺激型巨噬细胞）
+- **T 细胞亚群（6 类）**：
+  1. `Naive CD8 T`（未成熟/初始 CD8 T 细胞，含 Tstr 特征）
+  2. `CD8 Tex`（耗竭 CD8 T 细胞）
+  3. `γδ T`（γδ T 细胞）
+  4. `NKT`（自然杀伤 T 细胞）
+  5. `CD4 T`（CD4⁺ 辅助 T 细胞）
+  6. `Memory/other T`（记忆/其他 T 细胞）
+
+```{r load-data}
+# 载入预计算的 CellChat 对象与数据表
+cc_ctrl   <- readRDS("macrophage_T_cellchat_files/cellchat_Control_10types_expanded.rds")
+cc_apap   <- readRDS("macrophage_T_cellchat_files/cellchat_APAP24h_10types_expanded.rds")
+cc_merged <- readRDS("macrophage_T_cellchat_files/cellchat_merged_Control_vs_APAP24h.rds")
+
+df_apap_lr <- read.csv("macrophage_T_cellchat_files/cellchat_APAP24h_LR.csv", stringsAsFactors = FALSE)
+df_ctrl_lr <- read.csv("macrophage_T_cellchat_files/cellchat_Control_LR.csv", stringsAsFactors = FALSE)
+df_apap_mac2t <- read.csv("macrophage_T_cellchat_files/cellchat_APAP24h_Mac_to_T_LR.csv", stringsAsFactors = FALSE)
+df_apap_t2mac <- read.csv("macrophage_T_cellchat_files/cellchat_APAP24h_T_to_Mac_LR.csv", stringsAsFactors = FALSE)
+
+mac_types <- c("KC", "SPP1+ TREM2+ Mac", "Ccr2+ Mac", "IFN-stimulated Mac")
+t_types   <- c("Naive CD8 T", "CD8 Tex", "γδ T", "NKT", "CD4 T", "Memory/other T")
+all_types <- c(mac_types, t_types)
+
+# 各条件细胞数汇总
+cell_counts <- data.frame(
+  "亚群分类" = c(rep("巨噬细胞亚群", 4), rep("T细胞亚群", 6)),
+  "细胞亚群" = all_types,
+  "Control 细胞数" = c(6875, 3, 168, 426, 207, 27, 34, 877, 317, 105),
+  "APAP_24h 细胞数" = c(852, 3391, 2183, 4, 124, 2, 95, 154, 142, 76),
+  "分析纳入说明" = c(
+    "两条件均充足", "APAP 特异性诱导 (Control 零填充)", "两条件均充足", "Control 主要存在 (APAP 零填充)",
+    "两条件均充足", "Control 存在 (APAP 零填充)", "两条件均充足", "两条件均充足", "两条件均充足", "两条件均充足"
+  ),
+  check.names = FALSE
+)
+
+kable(cell_counts, caption = "巨噬细胞与 T 细胞各亚群在 Control 与 APAP_24h 条件下的细胞分布") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+## 度量指标与分析方法
+
+1. **信号强度（Information Flow / Weight）**：通信概率（`prob`）之和，反映信号传递的生理/功能活性强度。
+2. **互作对数（Interaction Count）**：显著富集的配体-受体（L–R）对数量，反映通讯的多样性与复杂程度。
+3. **零填充比较机制**：对单个条件中细胞数 $< 10$ 的亚群（如 Control 中的 `SPP1+ TREM2+ Mac`、APAP 中的 `IFN-stimulated Mac` 及 `CD8 Tex`），在单样本推断中排除并在比较矩阵中补 0，确保两条件 10×10 维度统一且真实反映亚群特异性出现带来的信号增量。
+
+---
+
+# 巨噬 ↔ T 细胞上游与下游信号强弱量化分析
+
+## 谁给巨噬细胞各亚群发信号最强？（T 细胞来源排名）
+
+在 APAP 肝损伤微环境中，T 细胞作为上游发送方（Source），向巨噬细胞各亚群发送调控信号。以下量化汇总各 T 细胞对巨噬细胞的信号强度与互作对数：
+
+```{r t-to-mac-ranking}
+# 汇总 T -> SPP1+ Mac, T -> Ccr2+ Mac, T -> KC
+rank_t_to_mac <- lapply(c("SPP1+ TREM2+ Mac", "Ccr2+ Mac", "KC"), function(mac_name) {
+  w <- cc_apap@net$weight[t_types, mac_name]
+  c <- cc_apap@net$count[t_types, mac_name]
+  data.frame(
+    "靶向巨噬亚群" = mac_name,
+    "上游 T 细胞来源" = t_types,
+    "信号强度" = round(as.numeric(w), 4),
+    "互作对数" = as.numeric(c),
+    check.names = FALSE
+  ) %>% arrange(desc(信号强度))
+})
+
+rank_t_to_mac_df <- do.call(rbind, rank_t_to_mac)
+
+kable(rank_t_to_mac_df, caption = "APAP_24h 条件下：上游 T 细胞亚群 → 巨噬细胞各亚群的信号强度与互作条数排名") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  row_spec(which(rank_t_to_mac_df$`上游 T 细胞来源` == "NKT" & rank_t_to_mac_df$`靶向巨噬亚群` == "SPP1+ TREM2+ Mac"), bold = TRUE, background = "#eef5ff")
+```
+
+### 关键发现：
+1. **NKT 细胞是巨噬细胞最强的上游 T 细胞信号源**：向 `SPP1+ TREM2+ Mac` 发送的信号强度高达 **0.0035（9 条互作）**，向 `Ccr2+ Mac` 发送 **0.0018（10 条互作）**，显著高于其他 T 细胞。
+2. **γδ T 细胞与初始/记忆 T 细胞提供辅助反馈**：γδ T 细胞向 SPP1⁺ 巨噬发送 0.0013 强度信号（6 对），主要通过 THY1（Thy1–Itgam/Itgb2）和趋化因子受体轴。
+3. **稳态 KC 接收的 T 细胞信号微弱**：KC 在损伤期接收到的 T 细胞信号总强度仅 0.0009，表明 T 细胞与髓系的互作重心已彻底转向损伤诱导的 SPP1⁺ 及 Ccr2⁺ 巨噬细胞。
+
+---
+
+## 谁给 T 细胞各亚群发信号最强？（巨噬细胞来源排名）
+
+巨噬细胞作为效应发送方（Source），向各 T 细胞亚群输出抗原呈递、趋化、基质锚定及免疫调控信号：
+
+```{r mac-to-t-ranking}
+rank_mac_to_t <- lapply(c("Naive CD8 T", "γδ T", "NKT", "CD4 T", "Memory/other T"), function(t_name) {
+  w <- cc_apap@net$weight[mac_types, t_name]
+  c <- cc_apap@net$count[mac_types, t_name]
+  data.frame(
+    "靶向 T 细胞亚群" = t_name,
+    "上游巨噬来源" = mac_types,
+    "信号强度" = round(as.numeric(w), 4),
+    "互作对数" = as.numeric(c),
+    check.names = FALSE
+  ) %>% arrange(desc(信号强度))
+})
+
+rank_mac_to_t_df <- do.call(rbind, rank_mac_to_t)
+
+kable(rank_mac_to_t_df, caption = "APAP_24h 条件下：上游巨噬细胞亚群 → T 细胞各亚群的信号强度与互作条数排名") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  row_spec(which(rank_mac_to_t_df$`上游巨噬来源` == "SPP1+ TREM2+ Mac" & rank_mac_to_t_df$`靶向 T 细胞亚群` == "Naive CD8 T"), bold = TRUE, background = "#fff0f2")
+```
+
+### 关键发现：
+1. **SPP1⁺ TREM2⁺ 巨噬是所有 T 细胞最主要的巨噬信号发送者**：
+   - 向 `Naive CD8 T` 发送强度 **0.0073（17 条互作）**（全场最高）；
+   - 向 `γδ T` 发送强度 **0.0060（14 条互作）**；
+   - 向 `NKT` 和 `CD4 T` 分别发送 **0.0032（12 与 15 条互作）**。
+2. **Ccr2⁺ 巨噬细胞位居第二**：主要靶向 `Naive CD8 T`（0.0049，17 对）与 `NKT`（0.0016，12 对），以炎性趋化与黏附为主。
+
+---
+
+## 巨噬 ↔ T 细胞双向互作矩阵全景
+
+```{r interaction-matrices, fig.width = 7.5, fig.height = 3.5}
+par(mfrow = c(1, 2), mar = c(4, 4, 2.5, 1), family = "Arial", cex = 0.8)
+
+# 数量热图与强度热图
+mat_count  <- cc_apap@net$count[mac_types, t_types]
+mat_weight <- cc_apap@net$weight[mac_types, t_types]
+
+# 转换为 ggplot 风格长表格画图
+df_mat_w <- as.data.frame(as.table(mat_weight))
+colnames(df_mat_w) <- c("Macrophage", "T_Cell", "Weight")
+
+df_mat_c <- as.data.frame(as.table(mat_count))
+colnames(df_mat_c) <- c("Macrophage", "T_Cell", "Count")
+
+p_mat1 <- ggplot(df_mat_w, aes(x = T_Cell, y = Macrophage, fill = Weight)) +
+  geom_tile(color = "white", linewidth = 0.6) +
+  geom_text(aes(label = sprintf("%.3f", Weight)), family = "Arial", size = 2.4, color = ifelse(df_mat_w$Weight > 0.004, "white", "black")) +
+  scale_fill_gradient(low = "#f7fbff", high = "#08519c", name = "Strength") +
+  labs(title = "Interaction Strength (Mac → T)", x = "T Cell Subsets", y = "Macrophage Subsets") +
+  theme_pub(base_size = 8) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+p_mat2 <- ggplot(df_mat_c, aes(x = T_Cell, y = Macrophage, fill = Count)) +
+  geom_tile(color = "white", linewidth = 0.6) +
+  geom_text(aes(label = Count), family = "Arial", size = 2.4, color = ifelse(df_mat_c$Count > 12, "white", "black")) +
+  scale_fill_gradient(low = "#fff5f0", high = "#cb181d", name = "Pairs") +
+  labs(title = "Interaction Number (Mac → T)", x = "T Cell Subsets", y = "") +
+  theme_pub(base_size = 8) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+p_mat1 + p_mat2
+```
+
+---
+
+# 核心亚群中心圈图与数量 vs 强度散点图
+
+## SPP1⁺ 巨噬细胞中心通讯圈图
+
+展示以 `SPP1+ TREM2+ Mac` 为中心、与其直接相连的 T 细胞各亚群双向互作网络。边粗细代表信号强度（Weight），箭头指示信号流向：
+
+```{r circle-spp1, fig.width = 8, fig.height = 4}
+# 提取 SPP1 相关的子网络矩阵
+par(mfrow = c(1, 2), mar = c(1, 1, 2, 1), family = "Arial", cex = 0.8)
+
+# 颜色分配：巨噬系为暖色/红色系，T 细胞为冷色/绿色系
+sub_types <- c("SPP1+ TREM2+ Mac", "Naive CD8 T", "γδ T", "NKT", "CD4 T", "Memory/other T")
+cols_sub  <- c("#d73027", "#4575b4", "#74add1", "#abd9e9", "#fdae61", "#fee090")
+names(cols_sub) <- sub_types
+
+mat_sub_count  <- cc_apap@net$count[sub_types, sub_types]
+mat_sub_weight <- cc_apap@net$weight[sub_types, sub_types]
+
+# 仅保留与 SPP1+ Mac 相关的边
+keep_mask <- matrix(FALSE, nrow = length(sub_types), ncol = length(sub_types), dimnames = list(sub_types, sub_types))
+keep_mask["SPP1+ TREM2+ Mac", ] <- TRUE
+keep_mask[, "SPP1+ TREM2+ Mac"] <- TRUE
+
+mat_sub_count[!keep_mask]  <- 0
+mat_sub_weight[!keep_mask] <- 0
+
+netVisual_circle(mat_sub_count, color.use = cols_sub, weight.scale = TRUE,
+                 label.edge = FALSE, vertex.label.cex = 0.75, vertex.weight = 18,
+                 title.name = "Interaction Number (SPP1+ Mac Centered)")
+
+netVisual_circle(mat_sub_weight, color.use = cols_sub, weight.scale = TRUE,
+                 label.edge = FALSE, vertex.label.cex = 0.75, vertex.weight = 18,
+                 title.name = "Interaction Strength (SPP1+ Mac Centered)")
+```
+
+---
+
+## 数量 vs 强度（Count vs Weight）散点图
+
+将各细胞对的通讯数量（横轴）与通讯强度（纵轴）绘制为散点图，直观划分“高频高强”、“高频低强”与“低频弱效”模式：
+
+```{r scatter-count-weight, fig.width = 7.5, fig.height = 4}
+df_scatter_mac2t <- data.frame(
+  Pair = paste0(df_mat_w$Macrophage, " → ", df_mat_w$T_Cell),
+  Macrophage = df_mat_w$Macrophage,
+  T_Cell = df_mat_w$T_Cell,
+  Strength = df_mat_w$Weight,
+  Count = df_mat_c$Count,
+  Direction = "Macrophage → T"
+)
+
+# T -> Mac 数据
+mat_t2mac_w <- cc_apap@net$weight[t_types, mac_types]
+mat_t2mac_c <- cc_apap@net$count[t_types, mac_types]
+
+df_t2mac_w <- as.data.frame(as.table(mat_t2mac_w))
+df_t2mac_c <- as.data.frame(as.table(mat_t2mac_c))
+
+df_scatter_t2mac <- data.frame(
+  Pair = paste0(df_t2mac_w$Var1, " → ", df_t2mac_w$Var2),
+  Macrophage = df_t2mac_w$Var2,
+  T_Cell = df_t2mac_w$Var1,
+  Strength = df_t2mac_w$Freq,
+  Count = df_t2mac_c$Freq,
+  Direction = "T → Macrophage"
+)
+
+df_scatter_all <- rbind(df_scatter_mac2t, df_scatter_t2mac) %>%
+  filter(Count > 0)
+
+p_scatter <- ggplot(df_scatter_all, aes(x = Count, y = Strength, color = Macrophage, shape = Direction)) +
+  geom_point(size = 2.5, alpha = 0.85) +
+  ggrepel::geom_text_repel(
+    data = subset(df_scatter_all, Strength > 0.002 | Count >= 15),
+    aes(label = Pair),
+    family = "Arial", size = 2.3, max.overlaps = 15, show.legend = FALSE
+  ) +
+  scale_color_manual(values = c("KC" = "#31a354", "SPP1+ TREM2+ Mac" = "#e41a1c", "Ccr2+ Mac" = "#ff7f00", "IFN-stimulated Mac" = "#984ea3")) +
+  labs(
+    title = "Interaction Number vs Strength (APAP_24h)",
+    x = "Number of Significant Interactions (Count)",
+    y = "Total Communication Strength (Weight)",
+    color = "Mac Subset",
+    shape = "Direction"
+  ) +
+  theme_pub(base_size = 8)
+
+p_scatter
+```
+
+---
+
+# 信号角色分析（Sender / Receiver / Mediator / Influencer）
+
+## 接收信号角色热图（Incoming Role Heatmap）
+
+展示每个细胞亚群作为**接收方（Receiver）**在各主要信号通路中的信息流贡献（顶部条形图为全通路接收强度汇总）：
+
+```{r incoming-heatmap, fig.width = 8.5, fig.height = 6.5}
+# 过滤掉全为 0 的亚群以便排版美观
+p_in <- netAnalysis_signalingRole_heatmap(
+  cc_apap, pattern = "incoming", signaling = NULL,
+  font.size = 6.5, font.size.title = 8, width = 7, height = 6,
+  title = "Incoming Signaling Role (APAP_24h)"
+)
+p_in
+```
+
+---
+
+## 发送信号角色热图（Outgoing Role Heatmap）
+
+展示每个细胞亚群作为**发送方（Sender）**在各主要信号通路中的信息流贡献：
+
+```{r outgoing-heatmap, fig.width = 8.5, fig.height = 6.5}
+p_out <- netAnalysis_signalingRole_heatmap(
+  cc_apap, pattern = "outgoing", signaling = NULL,
+  font.size = 6.5, font.size.title = 8, width = 7, height = 6,
+  title = "Outgoing Signaling Role (APAP_24h)"
+)
+p_out
+```
+
+---
+
+## 2D 信号角色散点图（Outgoing vs Incoming Strength）
+
+```{r role-scatter, fig.width = 6.5, fig.height = 5}
+par(family = "Arial", cex = 0.8)
+netAnalysis_signalingRole_scatter(cc_apap, label.size = 2.6, title = "2D Signaling Role (Sender vs Receiver)") +
+  theme_pub(base_size = 8) +
+  theme(plot.title = element_text(size = 9, face = "bold", hjust = 0.5))
+```
+
+> **角色定位结论**：
+> - **SPP1⁺ TREM2⁺ 巨噬细胞**：位于全场最突出的“Dominant Sender & Major Receiver”位置，总流出与流入强度均居首位；
+> - **Ccr2⁺ 巨噬细胞**：强 Sender / 中度 Receiver；
+> - **NKT 与 γδ T 细胞**：作为 T 细胞中活跃的“Influencer / Feedback Senders”；
+> - **Naive CD8 T 细胞**：主要充当“Primary Receiver”，高度富集 MHC-I、GALECTIN、CCL 等输入信号。
+
+---
+
+# 关键通路与配-受体对
+
+## 信号通路信息流排名
+
+```{r pathway-table}
+pw_mac2t_top <- df_apap_mac2t %>%
+  group_by(pathway_name) %>%
+  summarise(互作对数 = n(), 信号强度 = round(sum(prob), 4)) %>%
+  arrange(desc(信号强度))
+
+pw_t2mac_top <- df_apap_t2mac %>%
+  group_by(pathway_name) %>%
+  summarise(互作对数 = n(), 信号强度 = round(sum(prob), 4)) %>%
+  arrange(desc(信号强度))
+
+kable(pw_mac2t_top, caption = "巨噬细胞亚群 → T 细胞各亚群 TOP 信号通路（按信号强度降序）") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+kable(pw_t2mac_top, caption = "T 细胞各亚群 → 巨噬细胞各亚群 TOP 信号通路（按信号强度降序）") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+---
+
+## 巨噬细胞亚群 → T 细胞亚群配-受体对气泡图
+
+展示各巨噬亚群作为发送方、T 细胞各亚群作为接收方的具体配体-受体对（Arial 8pt，极简美观）：
+
+```{r bubble-mac2t, fig.width = 8.5, fig.height = 7.5}
+p_b1 <- netVisual_bubble(
+  cc_apap,
+  sources.use = mac_types[mac_types %in% levels(cc_apap@idents)],
+  targets.use = t_types[t_types %in% levels(cc_apap@idents)],
+  remove.isolate = TRUE, font.size = 7.5, font.size.title = 8.5, angle.x = 45
+) +
+  labs(title = "Macrophage subsets → T cell subsets (APAP_24h)") +
+  theme_pub(base_size = 8) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 7.5),
+    axis.text.y = element_text(size = 7),
+    legend.key.size = unit(0.35, "cm")
+  )
+
+p_b1
+```
+
+---
+
+## T 细胞亚群 → 巨噬细胞亚群配-受体对气泡图
+
+展示 T 细胞各亚群作为发送方、巨噬各亚群作为接收方的反馈信号配体-受体对：
+
+```{r bubble-t2mac, fig.width = 8.5, fig.height = 5.5}
+p_b2 <- netVisual_bubble(
+  cc_apap,
+  sources.use = t_types[t_types %in% levels(cc_apap@idents)],
+  targets.use = mac_types[mac_types %in% levels(cc_apap@idents)],
+  remove.isolate = TRUE, font.size = 7.5, font.size.title = 8.5, angle.x = 45
+) +
+  labs(title = "T cell subsets → Macrophage subsets (APAP_24h)") +
+  theme_pub(base_size = 8) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 7.5),
+    axis.text.y = element_text(size = 7),
+    legend.key.size = unit(0.35, "cm")
+  )
+
+p_b2
+```
+
+---
+
+## 核心通讯轴通路弦图（Chord Diagrams）
+
+以下展示 4 条最关键特征通路的精细弦图：
+
+```{r chord-plots, fig.width = 8, fig.height = 7}
+par(mfrow = c(2, 2), mar = c(1, 1, 2, 1), family = "Arial", cex = 0.75)
+
+key_pws <- c("SPP1", "THY1", "FN1", "MHC-I")
+key_pws <- key_pws[key_pws %in% cc_apap@netP$pathways]
+
+for (pw in key_pws) {
+  netVisual_aggregate(
+    cc_apap, signaling = pw, layout = "chord",
+    sources.use = NULL, targets.use = NULL,
+    signaling.name = paste0("Pathway: ", pw),
+    vertex.label.cex = 0.7
+  )
+}
+```
+
+---
+
+# 双条件比较（Control vs APAP_24h）与生物学结论
+
+## 双条件全景信息流对比
+
+```{r compare-barchart, fig.width = 7.5, fig.height = 3.5}
+g1 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2)) +
+  labs(title = "Total Interactions") +
+  theme_pub(base_size = 8)
+
+g2 <- compareInteractions(cc_merged, show.legend = FALSE, group = c(1, 2), measure = "weight") +
+  labs(title = "Total Strength") +
+  theme_pub(base_size = 8)
+
+g1 + g2
+```
+
+---
+
+## 差异网络与热图（Control vs APAP_24h）
+
+```{r diff-network, fig.width = 8, fig.height = 4}
+par(mfrow = c(1, 2), mar = c(1, 1, 2, 1), family = "Arial", cex = 0.75)
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE, title.name = "Diff Number (APAP - Control)")
+netVisual_diffInteraction_fixed(cc_merged, weight.scale = TRUE, measure = "weight", title.name = "Diff Strength (APAP - Control)")
+```
+
+> **差异图解读**：红色边表示 APAP_24h 中显著增强/新出现的通讯，蓝色边表示减弱。由于 `SPP1+ TREM2+ Mac` 是 APAP 损伤后特异性涌现的亚群（Control 零填充），其与 T 细胞的所有连线全部呈现为显著红色的**“新发互作”**。
+
+---
+
+## 结论摘要（Conclusions）
+
+1. **核心上游与下游定位**：
+   - **T → 巨噬 方向**：**NKT 细胞** 是最主要的上游驱动源（信号强度 0.0035，9 条互作），主要通过 `Thy1 -> Itgam+Itgb2`（Mac-1 整合素激活轴）与 `Ccl5 -> Ccr1/Ccr5` 趋化轴强力调控 SPP1⁺ 巨噬细胞。
+   - **巨噬 → T 方向**：**SPP1⁺ TREM2⁺ 巨噬细胞** 是全场最核心的通讯中枢，向 `Naive CD8 T` 和 `γδ T` 输送最强信号（强度分别为 0.0073 与 0.0060），通过 `Spp1 -> Cd44`、`Fn1 -> Cd44/Itga4+Itgb1`、`Lgals9 -> Ptprc/Cd44` 和 `MHC-I` 等分子轴发挥促基质修复与免疫调控双重效应。
+2. **损伤状态下的微环境重塑**：
+   - **Control 稳态**：由驻留 `KC` 与 `NKT / CD4 T` 维持基础免疫监视与抗原呈递；
+   - **APAP 损伤态**：稳态 KC 通讯弱化，损伤微环境全面转向由 **SPP1⁺ TREM2⁺ 巨噬细胞** 主导的基质重塑与免疫细胞互作网络。
+3. **成果交付**：所有数据对象已完整保存于 `macrophage_T_cellchat_files/`，报告图表已按 Arial 8pt 规范优化，适合直接用于论文主图与附图排版。
+
+---
+
+# 数据与对象导出
+
+```{r export-summary}
+cat("本分析产出的核心数据对象与表格清单：\n")
+cat("1. 独立单样本对象：cellchat_Control_10types_expanded.rds / cellchat_APAP24h_10types_expanded.rds\n")
+cat("2. 双条件合并比较对象：cellchat_merged_Control_vs_APAP24h.rds\n")
+cat("3. 关键配-受体对 CSV 表格：\n")
+cat("   - cellchat_APAP24h_Mac_to_T_LR.csv（APAP 巨噬→T 全部互作）\n")
+cat("   - cellchat_APAP24h_T_to_Mac_LR.csv（APAP T→巨噬 全部互作）\n")
+cat("   - cellchat_APAP24h_LR.csv / cellchat_Control_LR.csv（全网络互作）\n")
+cat("   - cellchat_APAP24h_pathways.csv / cellchat_Control_pathways.csv（通路汇总）\n")
+```

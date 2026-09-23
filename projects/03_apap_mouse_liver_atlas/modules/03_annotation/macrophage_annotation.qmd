@@ -1,0 +1,205 @@
+---
+title: "巨噬细胞亚群注释（APAP 肝损伤，三群定稿）"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## 概述
+
+本流程对 `macrophages_final_M1M2_annotated.rds`（小鼠肝脏巨噬细胞，909 细胞）进行低分辨率聚类与亚群注释。
+
+对象背景：APAP 药物性肝损伤模型（Control 78 / APAP_24h 831），为"巨噬细胞"大类子集。经聚类稳定性评估与文献命名规范学习，最终注释为 **3 个 cluster**（含标记标注）：
+
+- **Cluster1 (SPP1⁺ TREM2⁺)**：脂质相关/重塑型巨噬细胞
+- **Cluster2 (Ccr2⁺ recruited)**：单核样募集型巨噬细胞
+- **Cluster3 (undefined)**：保留待定标签（实际呈 Kupffer 细胞特征，见方法学说明）
+
+> 注释依据：肝脏巨噬细胞命名文献体系（Guillot & Tacke 2019/2024、Ramachandran 2019、Zwicker & Scott 2021）及 APAP 肝损伤单细胞研究（Adv Sci 2024、J Transl Med 2026 等）。命名采用与 **SPP1⁺** 并列的"标记基因⁺"风格，不使用"Monocyte-like"等非文献术语。
+
+## 1. 环境与数据加载
+
+```{r setup}
+suppressMessages({
+  library(Seurat)
+  library(ggplot2)
+  library(ggh4x)
+  library(RColorBrewer)
+  library(cowplot)
+  library(dplyr)
+  library(magrittr)
+})
+set.seed(42)
+
+obj <- readRDS("macrophages_final_M1M2_annotated.rds")
+DefaultAssay(obj) <- "RNA"
+obj$macrophage_subtype <- factor(obj$macrophage_subtype)
+cat("细胞数 x 基因数:", dim(obj), "\n")
+cat("已有注释列:", grep("subtype", colnames(obj@meta.data), value = TRUE), "\n")
+cat("condition 分布:\n"); print(table(obj$condition))
+```
+
+## 2. 低分辨率聚类（三群重演）
+
+对象已含 `macrophage_subtype` 定稿注释。此处利用已有 PCA 重演低分辨率聚类，验证三群结构的稳定性。经扫描，**res 0.15 重演得到与定稿注释一致的 3 群**（res 0.25 起 Cluster3 会被进一步拆分，见方法学说明）。
+
+> 注意：**不重新运行 RunUMAP**，直接沿用对象已有的 umap reduction（原始 UMAP_X/Y 坐标），避免覆盖原始降维结果。
+
+```{r clustering, cache = TRUE}
+# 已有归一化/PCA 与 umap reduction，只重演聚类（低分辨率 0.15）
+obj <- FindNeighbors(obj, dims = 1:15)
+obj <- FindClusters(obj, resolution = 0.15, verbose = FALSE)
+
+cat("重演聚类细胞数:\n")
+print(table(Idents(obj)))
+
+cat("\n=== 重演聚类 vs 定稿注释 交叉表 ===\n")
+print(table(obj$RNA_snn_res.0.15, obj$macrophage_subtype))
+```
+
+## 3. 核心 marker 整体评估（注释依据）
+
+> 用**官方 marker 面板**从整体表达量与特异性多角度判断三群，与定稿注释相互印证。核心面板分三组：SPP1⁺/脂质相关、募集型（Ccr2 通路）、Kupffer 细胞。
+
+### 3.1 核心 marker 表达热图
+
+```{r marker-heatmap, fig.width = 10, fig.height = 6, cache = TRUE}
+marker_groups <- list(
+  "SPP1+/脂质相关"  = c("Spp1","Trem2","Gpnmb","Cd9","Cd63","Fabp5","Lgals3","Ctsb","Apoe"),
+  "募集型 MoMF"     = c("Ccr2","Cx3cr1","Plac8","Ms4a4c","Ly6c2","Vim","Ccl2"),
+  "Kupffer cells"   = c("Clec4f","Vsig4","Timd4","Cd5l","Marco","C1qa","F13a1","Adgre1")
+)
+marker_groups <- lapply(marker_groups, function(gs) gs[gs %in% rownames(obj)])
+markers_panel <- unique(unlist(marker_groups))
+
+obj <- ScaleData(obj, features = markers_panel)
+DoHeatmap(obj, features = markers_panel, group.by = "macrophage_subtype",
+          size = 3.5, angle = 45) +
+  scale_fill_gradient2(low = "#3C5488", mid = "white", high = "#E64B35", midpoint = 0)
+```
+
+### 3.2 各 cluster 核心 marker 阳性比例（%）
+
+```{r marker-pct}
+exp <- GetAssayData(obj, assay = "RNA", layer = "data")
+sub <- obj$macrophage_subtype
+pct_mat <- sapply(markers_panel, function(g) {
+  sapply(levels(sub), function(ct) {
+    cells <- which(sub == ct)
+    round(100 * mean(exp[g, cells] > 0), 1)
+  })
+})
+rownames(pct_mat) <- levels(sub)
+print(pct_mat, digits = 3)
+```
+
+## 4. 三群注释
+
+结合热图与阳性比例，三群判定与定稿注释一致：
+
+| Cluster | marker 特征（阳性比例%） | 注释 |
+|---------|------------------------|------|
+| C1 (484) | **Spp1 71.5% / Trem2 94.2%** / Gpnmb 89.9% / Cd9 83.3% / Lgals3 100%；KC 标记 <10% | **Cluster1 (SPP1⁺ TREM2⁺)** |
+| C2 (361) | **Ccr2 90.9%** / Cx3cr1 78.1% / Plac8 78.4% / Ms4a4c 72.6% / Vim 89.5% | **Cluster2 (Ccr2⁺ recruited)** |
+| C3 (64) | **Clec4f 65.6% / Vsig4 64.1%** / Timd4 53.1% / Cd5l 64.1% / C1qa 100% | **Cluster3 (undefined)**（实际呈 Kupffer 细胞特征） |
+
+> 判定逻辑：三群分别以 SPP1⁺/TREM2⁺（脂质相关）、Ccr2⁺（募集型）、Clec4f⁺（驻留型）为标志性 marker，与文献命名体系一致。Ccr2 阳性率在其他群亦约 50%，但表达量（中位 2.09 vs 0.47/0.51）梯度明显，作为募集型标记可接受。
+
+## 5. 注释结果可视化
+
+```{r vis-umap}
+cols <- c("#E64B35", "#4DBBD5", "#00A087")
+DimPlot(obj, reduction = "umap", group.by = "macrophage_subtype",
+        cols = cols, pt.size = 1.2) +
+  ggtitle("Macrophage annotation (3 clusters)")
+```
+
+```{r vis-dot, fig.width = 14, fig.height = 5}
+# 各 cluster 的标志性 marker（分组条美化版）
+sig_groups <- list(
+  "SPP1+ TREM2+"   = c("Spp1","Trem2","Gpnmb","Cd9","Fabp5"),
+  "Ccr2+ recruited"= c("Ccr2","Cx3cr1","Plac8","Ly6c2","Vim"),
+  "KC markers"     = c("Clec4f","Vsig4","Timd4","Cd5l","C1qa")
+)
+sig_groups <- lapply(sig_groups, function(gs) gs[gs %in% rownames(obj)])
+
+p <- DotPlot(obj, features = sig_groups, group.by = "macrophage_subtype",
+             cols = c("#ffffff", "firebrick3"))
+
+ct_order <- levels(obj$macrophage_subtype)
+p$data$id <- factor(p$data$id, levels = ct_order)
+p$data$feature.groups2 <- factor(p$data$feature.groups, levels = names(sig_groups))
+
+strip <- strip_themed(
+  background_x = elem_list_rect(fill = cols)
+)
+
+p1 <- p$data %>%
+  ggplot(aes(x = features.plot, y = id)) +
+  geom_point(aes(size = pct.exp, color = avg.exp.scaled)) +
+  facet_wrap2(~feature.groups2, scales = "free_x", strip = strip, nrow = 1) +
+  theme_classic() + RotatedAxis() +
+  theme(strip.text.x = element_text(size = 11, color = "white"),
+        axis.text.x = element_text(color = "black", size = 10.5),
+        axis.title = element_blank(),
+        strip.background = element_rect(color = "white"),
+        panel.spacing = unit(1, "lines"),
+        axis.text.y = element_blank()) +
+  scale_color_gradient2(low = "#ffffff", mid = "#ffffff", high = "firebrick3",
+                        midpoint = -1) +
+  scale_size(range = c(1, 7))
+
+# 图例面板（与 UMAP 同配色）
+df <- data.frame(x = 0, y = ct_order, stringsAsFactors = FALSE)
+df$y <- factor(df$y, levels = ct_order)
+p2 <- ggplot(df, aes(x, y, color = factor(y))) +
+  geom_point(size = 6, shape = 18, show.legend = FALSE) +
+  scale_color_manual(values = cols) +
+  scale_y_discrete(expand = expansion(add = 0.6)) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.margin = margin(r = 0, l = 1), axis.title = element_blank(),
+        axis.text.x = element_blank(), axis.text.y = element_text(size = 12),
+        axis.ticks = element_blank(), axis.line = element_blank())
+
+plot_grid(p2, p1, align = "h", axis = "bt", rel_widths = c(3, 9))
+```
+
+```{r vis-feature, fig.width = 15, fig.height = 5.5}
+FeaturePlot(obj, features = c("Spp1", "Trem2", "Ccr2", "Clec4f", "Vsig4", "Timd4"),
+            ncol = 3, pt.size = 1)
+```
+
+## 6. 结果汇总
+
+```{r summary}
+cat("=== macrophage_subtype x condition ===\n")
+print(table(obj$macrophage_subtype, obj$condition))
+
+cat("\n=== macrophage_subtype x final_M1M2 ===\n")
+print(table(obj$macrophage_subtype, obj$final_M1M2))
+```
+
+## 7. 方法学说明
+
+> **命名规范**（学习自肝脏巨噬细胞文献体系）：
+> - **SPP1⁺ TREM2⁺**：脂质相关/损伤相关巨噬细胞（LAM/SAM 概念），Trem2 为其定义性 marker，与 Spp1 常共表达（Ramachandran 2019）。
+> - **Ccr2⁺ recruited**：单核细胞募集型巨噬细胞（MoMF）。文献中 "monocyte-derived" 描述**来源**（SPP1⁺ 群同样单核来源），故不用作命名词；Ccr2 表示募集状态。
+> - **Cluster3 (undefined)**：此群实际呈 **Clec4f⁺ Kupffer 细胞**特征（Clec4f/Vsig4/Timd4/Cd5l 阳性），按用户要求暂标 undefined，待最终确认。
+>
+> **Caveat（如实报告）**：
+> - 对象为"巨噬细胞"大类子集，但原始注释中残留 54 个 Kupffer 细胞（KC-homeostatic 等标签），集中于本三群的 C3(64)，并在最终 M1/M2 二分类中被并入 M1/M2。
+> - **Ccr2 阳性率并非完全特异**（M0 53.9%、M2 51.6%），命名依据为表达量梯度（中位 2.09 vs 0.47/0.51）。
+> - **继续细分不推荐**：res 0.5 的 4 群及 res 1.3 的 9 群细分主要由管家基因/表达丰度（Fth1/Ftl1/Tmsb4x/Gm42418）驱动，非生物学 marker；三群（res 0.25–0.4）结构稳定。
+
+## 8. 保存结果
+
+```{r save}
+# 移除重演聚类产生的临时列，仅保留定稿注释
+obj$RNA_snn_res.0.15 <- NULL
+obj$seurat_clusters <- NULL
+saveRDS(obj, "macrophages_final_M1M2_annotated.rds")
+cat("已保存: macrophages_final_M1M2_annotated.rds（含 macrophage_subtype 列）\n")
+```
