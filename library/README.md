@@ -17,7 +17,18 @@
 5. 保存来源项目和 Research OS 方法说明链接；
 6. 绘图资产同时提供小型示例图。
 
-## Current state
+## Maturity
 
-目前没有已晋升资产。Williams 2021 试点只产生候选项，等待真实数据复现和第二次使用。
+- `candidate`：有复用价值，但没有完成第二场景验证。
+- `validated`：在至少两个真实场景中成功使用；仍需遵守记录的边界。
+- `stable`：经过多次使用，接口和限制已经稳定。
+- `deprecated`：不再建议用于新分析。
+
+## Current assets
+
+| Asset | Type | Maturity | Promotion decision |
+|---|---|---|---|
+| [`r_namespace_preflight`](workflows/r_namespace_preflight/README.md) | Environment workflow | validated | PROMOTED WITH LIMITATIONS |
+
+候选项及未晋升原因见 [`docs/phase3-candidate-review.md`](../docs/phase3-candidate-review.md)。
 

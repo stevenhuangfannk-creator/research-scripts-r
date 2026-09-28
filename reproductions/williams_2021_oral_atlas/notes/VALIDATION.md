@@ -25,3 +25,9 @@ The full package matrix is in `environment/package_status.tsv`; the runtime reco
 During R startup, locale-setting warnings were emitted for `C.UTF-8`. They did not prevent the preflight from writing its reports, but they should be checked when the isolated environment is created.
 
 No package was installed or updated. No data, figure or result was fabricated to bypass the failure.
+
+## 2026-09-28 Phase 3 shared-workflow rerun
+
+The promoted namespace preflight was run with this reproduction's `environment/packages.tsv`. It checked 33 declared packages and returned exit code `2`; 5 of 7 required packages loaded. The same shared script was then run in the GSE255834 project with a different manifest.
+
+This confirms that the checker transfers across package sets. It does not change the reproduction status: GSE164241 remains unavailable locally and Figure S1A-C remains not tested.

@@ -56,3 +56,9 @@ None. The upstream helpers have not been isolated or tested outside their origin
 
 No asset is promoted in Phase 2. The QC audit and plot remain candidates pending real-data reproduction and second validation.
 
+## Phase 3 follow-up
+
+The environment namespace preflight was split from the project package list and run unchanged in both this reproduction and the GSE255834 APAP scRNA-seq project. It is now **PROMOTED WITH LIMITATIONS** at maturity `validated`.
+
+The donor-aware QC audit, hierarchical annotation and QC visualization remain candidates. Neither project has locally available analysis data or QC outputs, so Phase 3 did not treat static code similarity as scientific validation.
+

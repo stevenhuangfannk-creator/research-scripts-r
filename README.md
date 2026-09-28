@@ -43,7 +43,7 @@ Phase 2 对既有代码的保留/候选判断见 [`docs/phase2-code-disposition.
 
 - [`reproductions/`](reproductions/README.md)：进入 L3 的完整论文复现；当前只实施一个 Williams 2021 试点。
 - [`reproductions/_template/`](reproductions/_template/README.md)：轻量 README 与 Asset Extraction Review 模板。
-- [`library/`](library/README.md)：经过真实复现和重复验证后才进入的共享资产入口；当前没有已晋升资产。
+- [`library/`](library/README.md)：经过真实复现和重复验证后才进入的共享资产入口；当前有 1 个带明确限制的 validated workflow。
 
 论文复现先保留完整上下文。共享 workflow、function 或 visualization 只有经过 Asset Extraction Review 后才提取。
 

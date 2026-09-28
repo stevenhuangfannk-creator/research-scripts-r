@@ -1,0 +1,15 @@
+group	package	required	installed	version	load_status
+data_ingestion	Seurat	TRUE	TRUE	5.2.1	error: namespace 'Matrix' 1.5-4.1 is already loaded, but >= 1.6.4 is required
+data_ingestion	DropletUtils	TRUE	FALSE		not installed
+data_ingestion	Matrix	TRUE	TRUE	1.5-4.1	ok
+data_ingestion	future	TRUE	FALSE		not installed
+data_ingestion	data.table	TRUE	TRUE	1.17.0	ok
+data_ingestion	ggplot2	TRUE	TRUE	3.5.2	ok
+quality_control	SingleCellExperiment	TRUE	FALSE		not installed
+quality_control	scDblFinder	TRUE	FALSE		not installed
+quality_control	BiocParallel	TRUE	FALSE		not installed
+quality_control	future.apply	TRUE	FALSE		not installed
+quality_control	patchwork	TRUE	TRUE	1.3.1	ok
+decontamination	celda	TRUE	FALSE		not installed
+decontamination	SummarizedExperiment	TRUE	TRUE	1.32.0	ok
+quality_control	uwot	TRUE	TRUE	0.2.3	ok
