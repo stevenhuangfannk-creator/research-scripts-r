@@ -23,7 +23,7 @@ def main():
         missing=[k for k,v in files.items() if v is None]
         row={"missing":missing,"files":{k:(str(v) if v else None) for k,v in files.items()}}
         if not missing:
-            genes=count_gzip_lines(files["features.tsv.gz"]); barcodes=count_gzip_lines(files["barcodes.tsv.gz"]); rows=sum(1 for _ in gzip.open(files["tissue_positions_list.csv.gz"],"rt",encoding="utf-8"))-1; mrows,mcols,nnz=matrix_shape(files["matrix.mtx.gz"])
+            genes=count_gzip_lines(files["features.tsv.gz"]); barcodes=count_gzip_lines(files["barcodes.tsv.gz"]); position_lines=list(gzip.open(files["tissue_positions_list.csv.gz"],"rt",encoding="utf-8")); rows=len(position_lines) - (1 if position_lines and position_lines[0].lower().startswith("barcode") else 0); mrows,mcols,nnz=matrix_shape(files["matrix.mtx.gz"])
             row.update({"features":genes,"barcodes":barcodes,"tissue_positions_rows":rows,"matrix_rows":mrows,"matrix_cols":mcols,"matrix_nnz":nnz,"dimensions_match":genes==mrows and barcodes==mcols,"positions_match_barcodes":rows==barcodes})
         samples[stem]=row
     out={"sample_count":len(samples),"samples":samples}; args.output.parent.mkdir(parents=True,exist_ok=True); args.output.write_text(json.dumps(out,indent=2),encoding="utf-8"); print(json.dumps({"sample_count":len(samples),"output":str(args.output),"all_complete":all(not x["missing"] for x in samples.values())},indent=2))
