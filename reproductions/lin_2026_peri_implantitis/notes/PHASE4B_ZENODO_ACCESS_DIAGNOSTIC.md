@@ -31,7 +31,7 @@ No redirect was observed in this diagnostic. The API response supplies the curre
 
 A previous attempt from the same Windows environment returned HTTP 403 for the binary download endpoint. The current repeat test does not reproduce that 403. This indicates an intermittent access or edge/network condition rather than a consistently expired link. No evidence currently points to required authentication, a private record, or an access-control bypass.
 
-The current download is running through the versioned acquisition script. Completion requires the published byte count and MD5 to match before extraction.
+The download completed through resumable official Range requests. The merged archive matched the published byte count and MD5, then was extracted and inventoried.
 
 ## Methods attempted
 
@@ -50,4 +50,4 @@ No mirror, bypass, token, credential or unofficial source was used.
 - GEO/SRA may contain related or raw data, but no equivalent PI spatial archive has been confirmed in this project.
 - No author code repository or alternate author-hosted spatial archive has been identified.
 
-Until the archive passes checksum validation, PI spatial data remain unavailable for analysis.
+The PI spatial archive is now available locally and has passed checksum and Space Ranger inventory validation.
