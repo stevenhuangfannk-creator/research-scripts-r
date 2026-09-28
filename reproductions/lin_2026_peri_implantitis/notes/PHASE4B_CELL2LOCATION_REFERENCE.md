@@ -15,8 +15,10 @@ Date: 2026-09-28
 
 `cell2location` was installed only inside the project-local `.venv`. Its
 `RegressionModel` and `Cell2location` classes import successfully with the current
-scvi-tools version. The optional OpenCV dependency was not installed because its
-44 MB wheel download stalled and it is not required for the model classes used here.
+scvi-tools version. Package metadata declares `opencv-python` as a dependency; its
+44 MB wheel download stalled and it remains absent. `pip check` therefore reports
+this dependency gap, although the model classes used in the smoke run import and
+start training without OpenCV.
 
 ## Training specification prepared
 
@@ -41,8 +43,9 @@ The model initialized correctly and entered training. Epoch 1 required about
 fits would require substantially more time.
 
 The run was stopped after the timing measurement. No model, posterior or signature
-file was presented as a trained result. This is a **COMPUTE BLOCKER**, not an input
-or API failure.
+file was presented as a trained result. This is primarily a **COMPUTE BLOCKER**,
+with an additional environment-completeness warning for the missing declared OpenCV
+dependency; it is not an input failure.
 
 ## Gate decision
 
