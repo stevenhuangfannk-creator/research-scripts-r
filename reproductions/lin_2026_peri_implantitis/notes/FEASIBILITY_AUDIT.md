@@ -42,3 +42,8 @@
 
 Proceed in gated scientific order. The absence of author code changes the claim level to transparent method reconstruction; it does not prevent the project. Refactor and reusable asset extraction are deferred until working outputs pass paper-oriented validation.
 
+## Environment resolution log
+
+- The first Phase 4A installation attempt included `scrublet`. On Windows/Python 3.12 its `annoy` dependency had no compatible wheel and required Microsoft Visual C++ Build Tools.
+- Installing a system compiler solely for this optional method would add unnecessary machine-level complexity. The reconstruction therefore uses scvi-tools SOLO, already within the selected integration stack, and records the change as **MODERNIZED IMPLEMENTATION**.
+

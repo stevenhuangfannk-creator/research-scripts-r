@@ -1,5 +1,5 @@
 ---
-status: phase4a_initializing
+status: phase4a_preliminary
 paper_doi: "10.1038/s41368-026-00447-2"
 source_dataset: "Zenodo 10.5281/zenodo.19697596; GSE164241; GSE206621"
 research_os_note: "10_Projects/README.md"
@@ -29,7 +29,7 @@ These labels describe individual steps. The project will not present reconstruct
 
 | Phase | Scope | Entry condition | Current status |
 |---|---|---|---|
-| 4A | PI scRNA-seq, healthy gingiva reference/integration, QC, annotation, abundance and state foundations | Public PI count matrices and a working isolated environment | initializing |
+| 4A | PI scRNA-seq, healthy gingiva reference/integration, QC, annotation, abundance and state foundations | Public PI count matrices and a working isolated environment | preliminary integrated object generated; validation documented |
 | 4B | PI and healthy spatial transcriptomics, cell2location and spatial programs | Stable 4A reference with defensible cell labels | not started |
 | 4C | trajectory, communication, SCENIC, CellOracle, NMF and supported enrichment | Validated 4A/4B inputs for each module | not started |
 | 4D | key figure reconstruction, code refactor and reusable asset extraction | Working analyses have been scientifically validated | not started |
@@ -45,6 +45,10 @@ The complete dependency graph is in [`notes/DEPENDENCY_GRAPH.md`](notes/DEPENDEN
 - User-provided paper PDF and the official supplementary PDF are recorded in [`source/SOURCE.md`](source/SOURCE.md).
 
 Raw data and generated binary objects remain outside Git. Acquisition scripts, checksums and provenance records are versioned.
+
+## Phase 4A current result
+
+The current preliminary integrated object contains 92,112 prior-corrected singlets across 21 PI/healthy samples and 21,934 intersected genes. It uses a scVI base model trained before doublet filtering, then projects the corrected singlets for clustering. This is a **MODERNIZED IMPLEMENTATION** and remains a preliminary foundation until donor-aware diagnostics, label review and paper-oriented figure comparisons are complete. The reported paper total is 90,551 cells; the difference is recorded in [`notes/PHASE4A_VALIDATION.md`](notes/PHASE4A_VALIDATION.md) and is not treated as an exact reproduction.
 
 ## Paper-reported computational methods
 

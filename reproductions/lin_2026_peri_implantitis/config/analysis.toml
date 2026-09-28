@@ -16,12 +16,22 @@ healthy_spatial = "GSE206621"
 
 [phase4a.qc]
 max_pct_mito = 25.0
-min_genes = 200
+min_genes = 1000
+max_genes = 6000
 min_cells_per_gene = 3
 
+[phase4a.healthy_qc]
+max_pct_mito = 15.0
+min_genes_exclusive = 200
+max_genes_exclusive = 5000
+
 [phase4a.doublets]
-method = "scrublet"
+method = "scvi-tools SOLO"
 expected_rate = 0.06
+simulated_doublet_ratio = 2.0
+scvi_max_epochs = 60
+solo_max_epochs = 30
+batch_size = 512
 
 [phase4a.features]
 n_highly_variable_genes = 2000
@@ -39,7 +49,8 @@ use_rep = "X_scVI"
 leiden_resolution = 0.8
 
 [classification]
-qc_thresholds = "USER/CODEX ANALYTICAL CHOICE"
+pi_qc_thresholds = "USER/CODEX ANALYTICAL CHOICE"
+healthy_qc_thresholds = "METHOD-BASED RECONSTRUCTION"
 doublet_method = "MODERNIZED IMPLEMENTATION"
 integration = "MODERNIZED IMPLEMENTATION"
 annotation = "METHOD-BASED RECONSTRUCTION"

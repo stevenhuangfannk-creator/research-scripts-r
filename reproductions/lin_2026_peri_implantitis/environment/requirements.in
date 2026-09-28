@@ -1,6 +1,5 @@
 scanpy
 scvi-tools
-scrublet
 leidenalg
 igraph
 tomli-w; python_version < "3.11"

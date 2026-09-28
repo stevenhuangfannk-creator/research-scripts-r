@@ -55,7 +55,12 @@ def inspect(path: Path) -> dict[str, object]:
 
 
 def main() -> int:
-    files = sorted(INPUT_ROOT.rglob("*.h5"))
+    candidates = sorted(INPUT_ROOT.rglob("*.h5"))
+    files = [
+        path
+        for path in candidates
+        if "__MACOSX" not in path.parts and not path.name.startswith("._") and h5py.is_hdf5(path)
+    ]
     if not files:
         raise FileNotFoundError(f"no .h5 files found under {INPUT_ROOT}")
 
@@ -65,6 +70,7 @@ def main() -> int:
     total_expected = sum(EXPECTED_CELLS.values())
     summary = {
         "files": len(rows),
+        "excluded_non_hdf5_sidecars": len(candidates) - len(files),
         "samples": [row["sample_id"] for row in rows],
         "duplicate_sample_ids": duplicates,
         "total_observed_cells": total_observed,
