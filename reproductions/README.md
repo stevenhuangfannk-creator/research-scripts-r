@@ -19,4 +19,5 @@
 ## 当前试点
 
 - [`williams_2021_oral_atlas/`](williams_2021_oral_atlas/README.md)：Williams et al. 2021 人口腔黏膜单细胞图谱；Phase 2 最小试点。
+- [`lin_2026_peri_implantitis/`](lin_2026_peri_implantitis/README.md)：Lin et al. 2026 种植体周围炎全论文计算架构复现；Phase 4 旗舰项目。
 
