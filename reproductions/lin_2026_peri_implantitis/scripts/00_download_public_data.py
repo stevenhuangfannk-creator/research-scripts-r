@@ -24,6 +24,9 @@ PI_SCRNA = {
     "extract_dir": PROJECT_ROOT / "data" / "raw" / "pi_scrna",
 }
 GEO_SUPPLEMENT_ROOT = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE164nnn/GSE164241/suppl"
+GEO_SPATIAL_ROOT = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE206nnn/GSE206621/suppl"
+PI_SPATIAL = {"record": "19697597", "filename": "space ranger output.zip", "bytes": 169698220, "md5": "503e0e75aeff315b3f1a14f3cd8d3243"}
+HEALTHY_SPATIAL = {"filename": "GSE206621_RAW.tar", "bytes": 133652480}
 
 
 def digest(path: Path, algorithm: str = "md5") -> str:
@@ -216,14 +219,69 @@ def acquire_healthy_scrna(force: bool) -> int:
     return 0
 
 
+
+def acquire_pi_spatial(force: bool) -> int:
+    item = PI_SPATIAL
+    archive_dir = PROJECT_ROOT / "data" / "downloads"
+    archive = archive_dir / item["filename"]
+    encoded_name = urllib.parse.quote(item["filename"], safe="")
+    url = f"https://zenodo.org/api/records/{item['record']}/files/{encoded_name}/content"
+    if archive.exists() and digest(archive) == item["md5"] and not force:
+        print(f"verified existing archive: {archive}")
+        return 0
+    if archive.exists() and not force:
+        raise RuntimeError("existing PI spatial archive is incomplete or has the wrong MD5; use --force")
+    partial = archive.with_suffix(archive.suffix + ".part")
+    print(f"downloading {url}")
+    partial = download(url, archive, item["bytes"])
+    observed = digest(partial)
+    if observed != item["md5"]:
+        raise RuntimeError(f"MD5 mismatch: expected {item['md5']}, observed {observed}")
+    partial.replace(archive)
+    print(f"verified MD5: {observed}")
+    destination = PROJECT_ROOT / "data" / "raw" / "pi_spatial"
+    destination.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as bundle:
+        bundle.extractall(destination)
+    print(f"extracted to: {destination}")
+    return 0
+
+
+def acquire_healthy_spatial(force: bool) -> int:
+    item = HEALTHY_SPATIAL
+    archive = PROJECT_ROOT / "data" / "downloads" / item["filename"]
+    filelist_url = f"{GEO_SPATIAL_ROOT}/filelist.txt"
+    request = urllib.request.Request(filelist_url, headers={"User-Agent": "research-os-reproduction/1.0"})
+    with urllib.request.urlopen(request, timeout=60) as response:
+        filelist = response.read().decode("utf-8")
+    raw_root = PROJECT_ROOT / "data" / "raw" / "gse206621_healthy_spatial"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    (raw_root / "filelist.txt").write_text(filelist, encoding="utf-8")
+    if archive.exists() and archive.stat().st_size == item["bytes"] and not force:
+        print(f"verified archive size: {archive.stat().st_size} bytes")
+    else:
+        if archive.exists() and not force:
+            raise RuntimeError("existing healthy spatial archive has the wrong size; use --force")
+        print(f"downloading {GEO_SPATIAL_ROOT}/{item['filename']}")
+        partial = download_parallel_ranges(f"{GEO_SPATIAL_ROOT}/{item['filename']}", archive, item["bytes"])
+        partial.replace(archive)
+    with tarfile.open(archive, mode="r") as bundle:
+        bundle.extractall(raw_root)
+    print(f"extracted to: {raw_root}")
+    return 0
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", choices=("pi-scrna", "healthy-scrna"), required=True)
+    parser.add_argument("--dataset", choices=("pi-scrna", "healthy-scrna", "pi-spatial", "healthy-spatial"), required=True)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
     if args.dataset == "pi-scrna":
         return acquire_pi_scrna(args.force)
-    return acquire_healthy_scrna(args.force)
+    if args.dataset == "healthy-scrna":
+        return acquire_healthy_scrna(args.force)
+    if args.dataset == "pi-spatial":
+        return acquire_pi_spatial(args.force)
+    return acquire_healthy_spatial(args.force)
 
 
 if __name__ == "__main__":
