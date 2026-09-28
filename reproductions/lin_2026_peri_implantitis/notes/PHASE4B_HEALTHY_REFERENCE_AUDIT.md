@@ -25,3 +25,7 @@ For each sample, verify these assets before analysis:
 7. aligned fiducial and detected-tissue images
 
 The PI spatial archive remains separately blocked by the Zenodo HTTP 403 recorded in `PHASE4B_INPUT_AUDIT.md`.
+
+## Download endpoint check
+
+The `filelist.txt` entries describe members of `GSE206621_RAW.tar`; direct URLs formed from those member names returned HTTP 404. The supported acquisition path is therefore the official TAR archive, followed by local extraction and per-file size checks.
