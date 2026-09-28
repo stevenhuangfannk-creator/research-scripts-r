@@ -38,3 +38,14 @@
 *_outputs/
 ccc_outputs/
 *cellchat_files/
+
+# Keep lightweight documentation inside ignored reproduction data/output folders.
+!reproductions/**/data/
+reproductions/**/data/*
+!reproductions/**/data/README.md
+!reproductions/**/results/
+reproductions/**/results/*
+!reproductions/**/results/README.md
+!reproductions/**/figures/
+reproductions/**/figures/*
+!reproductions/**/figures/README.md

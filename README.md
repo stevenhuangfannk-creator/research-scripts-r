@@ -1,6 +1,6 @@
 # Research Scripts R
 
-一个按研究项目和分析职责整理的 R 科研代码库。当前收录 3 个项目、28 个原始 R/Quarto 文件。
+一个按研究项目和分析职责整理的 R 科研代码库。当前保留 3 个既有项目，并以 Williams 2021 oral atlas 作为首个论文复现试点。
 
 代码库采用两层结构：第一层保留独立研究项目，第二层按分析模块组织脚本。这样可以看清每个项目的完整流程，同时避免把不同数据集的脚本误当成可直接互换的通用函数。
 
@@ -37,6 +37,15 @@
 5. 新分析优先放入现有模块；只有出现新的、长期稳定的职责时才新增模块。
 
 完整的逐脚本职责、输入输出和状态见 [`docs/script-catalog.md`](docs/script-catalog.md)。
+Phase 2 对既有代码的保留/候选判断见 [`docs/phase2-code-disposition.md`](docs/phase2-code-disposition.md)。
+
+## 论文复现与可复用资产
+
+- [`reproductions/`](reproductions/README.md)：进入 L3 的完整论文复现；当前只实施一个 Williams 2021 试点。
+- [`reproductions/_template/`](reproductions/_template/README.md)：轻量 README 与 Asset Extraction Review 模板。
+- [`library/`](library/README.md)：经过真实复现和重复验证后才进入的共享资产入口；当前没有已晋升资产。
+
+论文复现先保留完整上下文。共享 workflow、function 或 visualization 只有经过 Asset Extraction Review 后才提取。
 
 ## 数据和版本管理
 
@@ -48,4 +57,4 @@
 
 ## 可运行性
 
-整理时所在环境没有 R 和 Quarto，且缺少原始数据与中间对象，因此没有执行分析。所有 28 个原始代码文件在移动前后均通过 SHA-256 校验，内容未因整理而改变。每个项目的已知阻塞项记录在自己的 README 和 `Notes/` 中。
+整理时没有执行既有分析；原始数据和中间对象仍然缺失。Phase 2 找到本机 R 4.3.1，但当前 Seurat/Matrix 版本不兼容，Quarto 仍不可用。所有 28 个既有代码文件保持未修改；每个项目的已知阻塞项记录在自己的 README 和 `Notes/` 中。
