@@ -43,6 +43,7 @@ ccc_outputs/
 *.pyc
 **/.pytest_cache/
 **/.ipynb_checkpoints/
+reproductions/**/models/
 
 # Keep lightweight documentation inside ignored reproduction data/output folders.
 !reproductions/**/data/

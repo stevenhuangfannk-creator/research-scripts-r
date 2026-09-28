@@ -1,10 +1,10 @@
 # Task State
 
-- 当前阶段：Phase 4B-2 为 cell2location 准备统一输入
-- 已完成：Phase 4A scRNA reference 与 PI/8 个 healthy spatial 样本的 exact-symbol gene intersection；逐样本 H5AD；cell type 与 spot 数量审计
-- 当前阻塞：无技术输入阻塞；14 类注释仍为 preliminary，2,080 个 low-confidence cells；参考细胞类型明显不平衡
-- 下一步：Phase 4B-3，检查 cell2location 环境并训练 reference signature model
-- 关键输出：`results/phase4b/cell2location_input/`、`notes/PHASE4B_CELL2LOCATION_INPUT.md`
-- 最近一次分析 commit：`3aa3fc6 feat: complete spatial QC and mapping`
-- 是否通过 QC：是；附带 annotation/imbalance warning
+- 当前阶段：Phase 4B-3 cell2location Reference Signature Model
+- 已完成：项目 `.venv` 中安装并验证 cell2location 0.1.5；准备完整训练脚本；完成 CPU smoke run 与耗时评估
+- 当前阻塞：CUDA 不可用；CPU 实测约 54.8 秒/epoch，100 epochs 约 90 分钟，尚未形成完成训练的 model/posterior/signatures
+- 下一步：在 CUDA 环境完成 reference fit，或明确接受长时间 CPU 正式训练；通过 loss/signature QC 后才进入 Phase 4B-4
+- 关键输出：`scripts/16_train_cell2location_reference.py`、`notes/PHASE4B_CELL2LOCATION_REFERENCE.md`
+- 最近一次分析 commit：`a7bc2d3 feat: prepare cell2location inputs`
+- 是否通过 QC：否；reference model 尚未完成训练
 - 是否 push：否

@@ -1,6 +1,6 @@
 scanpy
 scvi-tools
+cell2location==0.1.5
 leidenalg
 igraph
 tomli-w; python_version < "3.11"
-

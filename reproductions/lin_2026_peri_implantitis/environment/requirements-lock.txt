@@ -6,6 +6,7 @@ anndata==0.13.4
 annotated-types==0.8.0
 array-api-compat==1.15.0
 attrs==26.1.0
+cell2location==0.1.5
 certifi==2026.7.22
 cloudpickle==3.1.2
 colorama==0.4.6
