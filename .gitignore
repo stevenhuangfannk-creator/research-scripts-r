@@ -39,6 +39,7 @@
 ccc_outputs/
 *cellchat_files/
 **/.venv/
+**/.venv-*/
 **/__pycache__/
 *.pyc
 **/.pytest_cache/
