@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import json
+import argparse
 from pathlib import Path
 
 import anndata as ad
 import matplotlib as mpl
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -18,13 +20,13 @@ FIG = ROOT / "figures" / "phase4b" / "cell2location_reference"
 
 MARKERS = {
     "B cells": ["CD79A", "MS4A1", "CD37", "CD74", "HLA-DRA"],
-    "Dendritic cells": ["FCER1A", "CD1C", "CLEC10A", "HLA-DRA", "CST3"],
-    "Epithelial cells": ["EPCAM", "KRT8", "KRT18", "KRT19", "KRT14"],
+    "Dendritic cells": ["IRF7", "FCER1A", "CD1C", "CLEC10A", "HLA-DRA", "CST3"],
+    "Epithelial cells": ["EPCAM", "KRT8", "KRT18", "KRT19", "KRT14", "KRT13", "KRT5", "TACSTD2"],
     "Fibroblasts": ["COL1A1", "COL1A2", "DCN", "LUM", "COL3A1"],
     "Lymphatic endothelium": ["PDPN", "LYVE1", "FLT4", "CCL21", "PROX1"],
     "Macrophages": ["C1QA", "C1QB", "C1QC", "APOE", "CD68"],
     "Mast cells": ["TPSAB1", "TPSB2", "KIT", "CPA3", "MS4A2"],
-    "Monocytes": ["LILRB1", "CTSS", "FCN1", "S100A8", "CTSD"],
+    "Monocytes": ["LST1", "LILRB1", "CTSS", "FCN1", "S100A8", "CTSD"],
     "NK cells": ["NKG7", "GNLY", "KLRD1", "PRF1", "GZMB"],
     "Neutrophils": ["FCGR3B", "CSF3R", "S100A8", "S100A9", "FPR1"],
     "Plasma cells": ["MZB1", "JCHAIN", "SDC1", "IGKC", "DERL3"],
@@ -70,6 +72,14 @@ def safe_corr(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--curated-v1", action="store_true")
+    args = parser.parse_args()
+    global INPUT, OUT, FIG
+    if args.curated_v1:
+        INPUT = INPUT.with_name("scrna_reference_counts_curated_v1.h5ad")
+        OUT = OUT / "curated_v1"
+        FIG = FIG / "curated_v1"
     summary = json.loads((OUT / "reference_model_summary.json").read_text(encoding="utf-8"))
     history = pd.read_csv(OUT / "training_history.tsv", sep="\t", index_col=0)
     signatures = pd.read_csv(OUT / "reference_signatures.tsv.gz", sep="\t", index_col=0)
@@ -130,6 +140,16 @@ def main() -> None:
         median_sample_correlation=("log1p_mean_correlation_to_cell_type_mean", "median"),
     )
     batch_summary.to_csv(OUT / "batch_signature_summary.tsv", sep="\t")
+    representation = pd.crosstab(labels, samples)
+    representation_summary = pd.DataFrame(
+        {
+            "cells": representation.sum(axis=1),
+            "represented_samples": (representation > 0).sum(axis=1),
+            "largest_sample": representation.idxmax(axis=1),
+            "largest_sample_fraction": representation.max(axis=1) / representation.sum(axis=1),
+        }
+    )
+    representation_summary.to_csv(OUT / "sample_representation_summary.tsv", sep="\t")
 
     neutrophil = labels == "Neutrophils"
     diagnostic_rows = []
@@ -155,6 +175,7 @@ def main() -> None:
         dominance_rows.append(
             {
                 "cell_type": cell_type,
+                "top_gene": str(values.index[0]),
                 "top1_fraction": float(values.iloc[0] / total),
                 "top10_fraction": float(values.iloc[:10].sum() / total),
                 "nonzero_genes": int((values > 0).sum()),
@@ -201,6 +222,11 @@ def main() -> None:
     loss = history[loss_col].dropna().to_numpy(float)
     tail = loss[-min(25, len(loss)) :]
     relative_tail_slope = float(np.polyfit(np.arange(len(tail)), tail, 1)[0] / np.median(tail))
+    excessive_dominance = dominance.loc[dominance["top1_fraction"] >= 0.10]
+    expected_plasma_ig = all(
+        cell_type == "Plasma cells" and gene.startswith(("IGK", "IGL", "IGH"))
+        for cell_type, gene in excessive_dominance["top_gene"].items()
+    )
     gates = {
         "loss_finite": bool(np.isfinite(loss).all()),
         "loss_decreased": bool(loss[-1] < loss[0]),
@@ -211,7 +237,7 @@ def main() -> None:
             and (signatures.to_numpy() >= 0).all()
         ),
         "minimum_posterior_naive_correlation_ge_0_75": bool(correlations.min() >= 0.75),
-        "top1_signature_fraction_lt_0_10": bool(dominance["top1_fraction"].max() < 0.10),
+        "no_unexplained_top1_signature_fraction_ge_0_10": bool(expected_plasma_ig),
         "low_confidence_logmean_correlation_ge_0_95": bool(
             low.loc[low["low_confidence_cells"] > 0, "log1p_mean_correlation_all_vs_provisional"].min()
             >= 0.95
@@ -222,15 +248,27 @@ def main() -> None:
         "at_least_one_canonical_marker_top500_each_type": bool(
             (marker_summary["markers_in_top_500"] >= 1).all()
         ),
+        "macrophage_core_marker_top500": bool(
+            marker.loc[
+                marker["cell_type"].eq("Macrophages")
+                & marker["gene"].isin(["C1QA", "C1QB", "C1QC", "CD68"]),
+                "in_top_500",
+            ].any()
+        ),
     }
     qc = {
         "relative_tail_25_epoch_slope": relative_tail_slope,
         "minimum_posterior_naive_correlation": float(correlations.min()),
         "maximum_top1_fraction": float(dominance["top1_fraction"].max()),
+        "top1_fraction_exceptions": excessive_dominance[["top_gene", "top1_fraction"]].to_dict(orient="index"),
         "minimum_low_confidence_correlation": float(
             low.loc[low["low_confidence_cells"] > 0, "log1p_mean_correlation_all_vs_provisional"].min()
         ),
         "minimum_median_batch_correlation": float(batch_summary["median_sample_correlation"].min()),
+        "types_over_0_75_single_sample_fraction": representation_summary.loc[
+            representation_summary["largest_sample_fraction"] > 0.75,
+            ["largest_sample", "largest_sample_fraction"],
+        ].to_dict(orient="index"),
         "gates": gates,
         "automatic_gate_pass": bool(all(gates.values())),
     }

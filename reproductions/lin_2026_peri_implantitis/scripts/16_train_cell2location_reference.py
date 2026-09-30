@@ -10,6 +10,7 @@ from pathlib import Path
 
 import anndata as ad
 import matplotlib as mpl
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -55,7 +56,15 @@ def main() -> None:
     parser.add_argument("--posterior-only", action="store_true")
     parser.add_argument("--finalize-existing-posterior", action="store_true")
     parser.add_argument("--training-elapsed-seconds", type=float)
+    parser.add_argument("--curated-v1", action="store_true", help="Use the documented Leiden 47 correction")
     args = parser.parse_args()
+
+    global INPUT, OUT, MODEL, FIG
+    if args.curated_v1:
+        INPUT = INPUT.with_name("scrna_reference_counts_curated_v1.h5ad")
+        OUT = OUT / "curated_v1"
+        MODEL = MODEL / "curated_v1"
+        FIG = FIG / "curated_v1"
 
     accelerator = args.accelerator
     if accelerator == "auto":
@@ -87,7 +96,7 @@ def main() -> None:
             train_size=1,
             lr=0.002,
             accelerator=accelerator,
-            enable_checkpointing=True,
+            enable_checkpointing=False,
         )
         elapsed = time.time() - started
         model.save(MODEL, overwrite=True)
@@ -191,8 +200,10 @@ def main() -> None:
         "tail_25_epoch_slope": tail_slope,
         "minimum_signature_correlation": min(correlations.values()),
         "maximum_gpu_memory_mb": (
-            float(torch.cuda.max_memory_allocated() / 2**20) if torch.cuda.is_available() else None
+            float(torch.cuda.max_memory_allocated() / 2**20)
+            if torch.cuda.is_available() and not args.posterior_only else None
         ),
+        "postprocessing_from_saved_model": bool(args.posterior_only and args.finalize_existing_posterior),
     }
     (OUT / "reference_model_summary.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8"

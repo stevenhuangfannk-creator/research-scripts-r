@@ -85,12 +85,69 @@ expected and is not the blocking issue.
 
 ## Gate decision and required repair
 
-Phase 4B-3 remains **NOT PASSED**. Phase 4B-4 was not started. The next step is
-to return to the Phase 4A annotation evidence for clusters 33 and 47, reassign
-cluster 47 to an evidence-supported epithelial/oral tissue label or mark it
-unresolved, rebuild the 4B-2 reference input, and refit the reference model.
-This changes a previously provisional biological label and must be reviewed
-explicitly; it should not be hidden as a cell2location parameter adjustment.
+The initial Phase 4B-3 attempt was **NOT PASSED** and Phase 4B-4 was not
+started. It required review of Leiden 33/47 and a separately versioned
+reference refit rather than a hidden cell2location parameter adjustment.
+That correction and its new QC outcome are recorded below.
+
+## Curated-v1 repair and repeat QC (2026-09-30)
+
+Marker review identified Leiden 47 as an oral epithelial population: high
+FDCSP, KRT13, SPRR2A and TACSTD2 with near-absent PTPRC, FCGR3B and CSF3R.
+The new `16_curate_reference_labels.py` preserves the original input and writes
+a separate `scrna_reference_counts_curated_v1.h5ad`, changing only those 702
+cells from `Neutrophils` to `Epithelial cells`. All 92,112 cells and the 2,080
+low-confidence cells remain. The exact before/after counts and marker evidence
+are in `curated_v1_annotation_audit.json`.
+
+The formal GPU reference refit used the same seed, 250 epochs and 2,500-cell
+batches. Outputs are isolated under `curated_v1/` paths. The 250 training epochs
+and 1,000-sample posterior sampling completed. A Windows Matplotlib/Tk error
+occurred only when drawing the loss figure; switching to the non-interactive
+`Agg` backend and loading the saved model/posterior completed postprocessing
+without retraining. Exact training elapsed time and GPU peak allocation were
+not preserved by this recovery path, so the machine-readable summary records
+them as null; the live progress meter showed about 89 minutes of training.
+
+| Curated-v1 check | Result |
+|---|---:|
+| Initial/final ELBO | 501,362,464 / 419,649,728 |
+| Last-25-epoch relative slope | -6.54e-06 per epoch |
+| Finite, nonnegative signatures | 14/14 |
+| Minimum posterior-vs-raw-mean correlation | 0.781 |
+| Minimum low-confidence retained-vs-provisional mean correlation | 0.990 |
+| Minimum median sample correlation among qualifying samples | 0.832 |
+
+The old and curated-v1 neutrophil signatures correlate only 0.193, confirming
+the correction was consequential. FDCSP fell from 1,865.32 to 0.0076 in the
+neutrophil signature, while CSF3R rose from 0.498 to 1.680. FCGR3B and CSF3R
+now rank 193 and 41; the epithelial signature contains FDCSP/KRT13/TACSTD2.
+The other 12 cell-type signatures each have old-vs-curated correlation at least
+0.994 except epithelial, which is 0.684. The 2,080 low-confidence cells remain;
+they do not explain the current failure.
+
+**Curated-v1 reference QC remains FAILED.** Macrophage top genes include IGKC
+(rank 3), IGKV4-1 (5) and IGHG1 (6). Its C1QA/B/C and CD68 ranks are 2,724,
+2,976, 3,286 and 2,589, respectively, and their expression is greater in the
+`Monocytes` signature. At the preliminary Phase 4A cluster level, the dominant
+macrophage-labelled clusters 7/12 show MZB1/JCHAIN with weak C1Q/LST1/LYZ,
+whereas monocyte cluster 25 has a stronger C1Q/LST1/LYZ pattern. This is a
+biological label/mixture problem, not a numerical convergence problem. The
+macrophage reference is also concentrated in one donor: IGT3 provides
+1,531/1,885 cells (81.2%); only three samples provide at least 50 cells for
+its within-type correlation check. Corrected neutrophils have 270 cells across
+12 samples, but only IGT3 supplies at least 50, so a robust cross-sample
+neutrophil signature check is also unavailable.
+
+The automatic QC gate fails `macrophage_core_marker_top500`; inspection of the
+marker heatmap supports the same conclusion. **Phase 4B-4 spatial mapping was
+not started.** The next scientific step is a targeted review of myeloid and
+plasma-like Phase 4A clusters and sample-level contamination/doublets, then a
+new versioned reference input and fit. Do not silently reassign these clusters
+or proceed with the current macrophage signature.
+
+The GPU package freeze is in `environment/requirements-gpu-lock.txt`; the CUDA
+PyTorch wheel is `torch 2.14.0+cu132` from the official PyTorch distribution.
 
 ## Outputs
 
