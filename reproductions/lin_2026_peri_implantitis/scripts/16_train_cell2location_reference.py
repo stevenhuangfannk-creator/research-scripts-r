@@ -57,7 +57,10 @@ def main() -> None:
     parser.add_argument("--finalize-existing-posterior", action="store_true")
     parser.add_argument("--training-elapsed-seconds", type=float)
     parser.add_argument("--curated-v1", action="store_true", help="Use the documented Leiden 47 correction")
+    parser.add_argument("--curated-v2", action="store_true", help="Use the audited myeloid/plasma reference")
     args = parser.parse_args()
+    if args.curated_v1 and args.curated_v2:
+        parser.error("Select one curated reference version")
 
     global INPUT, OUT, MODEL, FIG
     if args.curated_v1:
@@ -65,6 +68,11 @@ def main() -> None:
         OUT = OUT / "curated_v1"
         MODEL = MODEL / "curated_v1"
         FIG = FIG / "curated_v1"
+    if args.curated_v2:
+        INPUT = INPUT.parent / "curated_v2" / "scrna_reference_counts.h5ad"
+        OUT = OUT / "curated_v2"
+        MODEL = MODEL / "curated_v2"
+        FIG = FIG / "curated_v2"
 
     accelerator = args.accelerator
     if accelerator == "auto":

@@ -1,6 +1,7 @@
 """Prepare exact-symbol cell2location inputs after Phase 4B spatial QC."""
 from __future__ import annotations
 
+import argparse
 import gzip
 import json
 from pathlib import Path
@@ -62,8 +63,27 @@ def build_healthy(sample: str, common: pd.Index) -> ad.AnnData:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--curated-v2", action="store_true", help="Rebuild inputs using the versioned Phase 4A annotation audit")
+    args = parser.parse_args()
+    global OUT
+    if args.curated_v2:
+        OUT = OUT / "curated_v2"
     OUT.mkdir(parents=True, exist_ok=True)
     reference = ad.read_h5ad(SCRNA)
+    unresolved = 0
+    if args.curated_v2:
+        annotation_path = ROOT / "results/phase4a/myeloid_plasma_audit/curated_v2_annotations.tsv.gz"
+        labels = pd.read_csv(annotation_path, sep="\t", index_col=0)
+        assert reference.obs_names.equals(labels.index)
+        for column in ["major_cell_type", "annotation_confidence", "reference_annotation_source"]:
+            reference.obs[column] = pd.Categorical(labels[column])
+        unresolved = int(reference.obs["major_cell_type"].eq("Unresolved").sum())
+        assert unresolved == 2138
+        assert reference.obs.loc[reference.obs["leiden_scvi"].astype(str).eq("47"),
+                                 "major_cell_type"].eq("Epithelial cells").all()
+        reference = reference[~reference.obs["major_cell_type"].eq("Unresolved")].copy()
+        reference.obs["major_cell_type"] = reference.obs["major_cell_type"].cat.remove_unused_categories()
     scrna_genes, scrna_duplicates = exact_unique_genes(reference.var_names)
 
     pi = sc.read_10x_h5(PI_ROOT / "filtered_feature_bc_matrix.h5")
@@ -120,6 +140,8 @@ def main() -> None:
     }
     (OUT / "duplicate_gene_summary.json").write_text(json.dumps(duplicate_summary, indent=2), encoding="utf-8")
     summary = {
+        "annotation_source": "curated_v2_annotations.tsv.gz" if args.curated_v2 else "phase4a_preliminary_integrated.h5ad",
+        "unresolved_cells_excluded_from_reference": unresolved,
         "scrna_cells": int(reference.n_obs),
         "scrna_genes": int(len(scrna_genes)),
         "pi_spatial_genes": int(len(pi_genes)),

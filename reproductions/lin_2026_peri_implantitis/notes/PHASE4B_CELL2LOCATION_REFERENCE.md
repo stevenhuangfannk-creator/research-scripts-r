@@ -4,10 +4,11 @@ Date: 2026-09-29
 
 ## Status
 
-**QC FAIL — spatial mapping must not start.** The numerical fit converged and
-posterior sampling succeeded, but the reference labels contain a biologically
-invalid neutrophil component. This is a reference-annotation failure rather than
-a compute, CUDA or low-confidence-cell failure.
+**Current status: curated-v2 reference QC passes; spatial mapping has not
+started.** The initial and curated-v1 failures, their annotation repairs and
+the current fit are documented chronologically below. The initial numerical
+fit converged but contained an invalid neutrophil component; curated-v1
+repaired that component but exposed the mixed macrophage label.
 
 ## GPU and environment decision
 
@@ -158,3 +159,61 @@ PyTorch wheel is `torch 2.14.0+cu132` from the official PyTorch distribution.
 - `results/phase4b/cell2location_reference/reference_qc_summary.json`
 - `results/phase4b/cell2location_reference/neutrophil_cluster_diagnosis.tsv`
 - `figures/phase4b/cell2location_reference/`
+
+## Curated-v2 myeloid/plasma audit and reference refit (2026-09-30)
+
+The targeted Phase 4A audit and exact changed-cell ledger are in
+`notes/PHASE4A_MYELOID_PLASMA_AUDIT.md` and
+`results/phase4a/myeloid_plasma_audit/`. The old 1,885 macrophage-labelled
+cells have incompatible plasma, stromal and other lineage programs; they and
+253 osteoclast-like low-confidence monocytes were marked `Unresolved` rather
+than forced into another broad type. A distinct 1,417-cell subset of original
+Leiden 25 monocytes had concordant C1QA/B/C, CD68, LST1, TYROBP, FCER1G,
+CTSS and MS4A7 evidence and was provisionally labelled Macrophages. The new
+fit excludes 2,138 unresolved cells but retains them in the versioned
+annotation ledger and source matrices. The Leiden 47 epithelial correction
+and 270-cell neutrophil reference are unchanged.
+
+Phase 4B-2 was rerun into `results/phase4b/cell2location_input/curated_v2/`.
+The 89,974-cell reference has the same ordered 17,211 genes and 14 cell types
+as curated-v1; all nine spatial input derivatives retain their original sample
+identity and spot counts. The separate GPU fit ran 250 epochs (seed 20260928,
+batch 2,500, learning rate 0.002) on RTX 4070 Laptop GPU, taking 2,676 seconds.
+The ELBO decreased from 487,508,832 to 407,725,152, with a last-25-epoch
+relative slope of -5.96e-06 per epoch; there were no NaNs, divergence or memory
+errors. The trained model, 1,000-sample posterior, signatures, history, figures
+and exact environment details are under `curated_v2/` in the usual model,
+result and figure directories.
+
+| Curated-v2 QC | Result |
+|---|---:|
+| Finite, nonnegative signatures | 14/14 |
+| Minimum posterior-vs-raw-mean correlation | 0.774 |
+| Minimum retain-vs-provisional-only correlation among affected types | 0.998 |
+| Minimum median within-type sample correlation, qualifying samples | 0.862 |
+| Macrophage Ig share of signature, v1 → v2 | 3.59% → 0.12% |
+| Macrophage Ig genes in top 10, v1 → v2 | 3 → 0 |
+| Macrophage share from IGT3, v1 → v2 | 81.2% → 39.1% |
+
+The new macrophage signature ranks C1QA/B/C at 81/112/114, TYROBP at 24,
+FCER1G at 44, CTSS at 94, MS4A7 at 171, CD68 at 188 and LST1 at 202.
+All are in the top 500, unlike curated-v1. IGKC fell from rank 3 to 335 and
+IGHG1 from 6 to 5,318; no Ig gene is in its top 10. Plasma cells appropriately
+retain Ig genes together with JCHAIN, MZB1, XBP1 and PRDM1. B cells retain
+CD79A, MS4A1, CD37 and CD74. The monocyte signature retains LST1, FCN1,
+S100A8 and CTSS. Corrected neutrophils retain CSF3R, FCGR3B, S100A8/A9 and
+FPR1; FDCSP remains low. The log1p signatures of all other cell types have
+curated-v1-to-v2 Pearson correlations of at least 0.979; the intended
+macrophage change is larger (0.835). The marker heatmap and convergence plot
+were visually checked.
+
+**Curated-v2 reference QC PASSES for this reference fit.** All automatic gates
+in `reference_qc_summary.json` passed, and manual marker review supports the
+revised labels. This is a method-based reconstruction, not proof that these
+are the authors' original labels. Macrophages remain PI-heavy: 12 samples
+have any cells, but only five PI samples have at least 50 cells. Healthy
+macrophage transfer therefore lacks a robust within-condition reference
+check. Neutrophils likewise have only one sample with at least 50 cells.
+Those limitations must be assessed before interpreting later healthy spatial
+abundance. **Phase 4B-4 mapping was not started**, as explicitly requested for
+this audit checkpoint.

@@ -24,7 +24,7 @@ MARKERS = {
     "Epithelial cells": ["EPCAM", "KRT8", "KRT18", "KRT19", "KRT14", "KRT13", "KRT5", "TACSTD2"],
     "Fibroblasts": ["COL1A1", "COL1A2", "DCN", "LUM", "COL3A1"],
     "Lymphatic endothelium": ["PDPN", "LYVE1", "FLT4", "CCL21", "PROX1"],
-    "Macrophages": ["C1QA", "C1QB", "C1QC", "APOE", "CD68"],
+    "Macrophages": ["C1QA", "C1QB", "C1QC", "APOE", "CD68", "LST1", "TYROBP", "FCER1G", "CTSS", "MS4A7"],
     "Mast cells": ["TPSAB1", "TPSB2", "KIT", "CPA3", "MS4A2"],
     "Monocytes": ["LST1", "LILRB1", "CTSS", "FCN1", "S100A8", "CTSD"],
     "NK cells": ["NKG7", "GNLY", "KLRD1", "PRF1", "GZMB"],
@@ -74,12 +74,19 @@ def safe_corr(a: np.ndarray, b: np.ndarray) -> float:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--curated-v1", action="store_true")
+    parser.add_argument("--curated-v2", action="store_true")
     args = parser.parse_args()
+    if args.curated_v1 and args.curated_v2:
+        parser.error("Select one curated reference version")
     global INPUT, OUT, FIG
     if args.curated_v1:
         INPUT = INPUT.with_name("scrna_reference_counts_curated_v1.h5ad")
         OUT = OUT / "curated_v1"
         FIG = FIG / "curated_v1"
+    if args.curated_v2:
+        INPUT = INPUT.parent / "curated_v2" / "scrna_reference_counts.h5ad"
+        OUT = OUT / "curated_v2"
+        FIG = FIG / "curated_v2"
     summary = json.loads((OUT / "reference_model_summary.json").read_text(encoding="utf-8"))
     history = pd.read_csv(OUT / "training_history.tsv", sep="\t", index_col=0)
     signatures = pd.read_csv(OUT / "reference_signatures.tsv.gz", sep="\t", index_col=0)
@@ -207,7 +214,8 @@ def main() -> None:
 
     dominance = pd.DataFrame(dominance_rows).set_index("cell_type")
     dominance.to_csv(OUT / "signature_dominance.tsv", sep="\t")
-    pd.DataFrame(top_rows).to_csv(OUT / "signature_top_genes.tsv", sep="\t", index=False)
+    top_genes = pd.DataFrame(top_rows)
+    top_genes.to_csv(OUT / "signature_top_genes.tsv", sep="\t", index=False)
     marker = pd.DataFrame(marker_rows)
     marker.to_csv(OUT / "canonical_marker_audit.tsv", sep="\t", index=False)
     marker_summary = marker.groupby("cell_type").agg(
@@ -217,6 +225,12 @@ def main() -> None:
         median_specificity_log2=("specificity_log2_vs_max_other", "median"),
     )
     marker_summary.to_csv(OUT / "canonical_marker_summary.tsv", sep="\t")
+    ig_mask = signatures.index.str.startswith(("IGH", "IGK", "IGL"))
+    ig_fraction = signatures.loc[ig_mask].sum(axis=0) / signatures.sum(axis=0)
+    ig_fraction.rename("ig_signature_fraction").to_csv(OUT / "immunoglobulin_signature_fraction.tsv", sep="\t", header=True)
+    macrophage_ig_top10 = int(top_genes.loc[
+        top_genes["cell_type"].eq("Macrophages") & top_genes["rank"].le(10), "gene"
+    ].str.startswith(("IGH", "IGK", "IGL")).sum())
 
     loss_col = next(c for c in history.columns if "elbo" in c.lower())
     loss = history[loss_col].dropna().to_numpy(float)
@@ -255,6 +269,12 @@ def main() -> None:
                 "in_top_500",
             ].any()
         ),
+        "macrophage_ig_fraction_lt_0_02": bool(ig_fraction["Macrophages"] < 0.02),
+        "macrophage_ig_genes_in_top10_le_2": bool(macrophage_ig_top10 <= 2),
+        "neutrophil_fcgr3b_or_csf3r_top500": bool(marker.loc[
+            marker["cell_type"].eq("Neutrophils") & marker["gene"].isin(["FCGR3B", "CSF3R"]),
+            "in_top_500",
+        ].any()),
     }
     qc = {
         "relative_tail_25_epoch_slope": relative_tail_slope,
@@ -269,6 +289,8 @@ def main() -> None:
             representation_summary["largest_sample_fraction"] > 0.75,
             ["largest_sample", "largest_sample_fraction"],
         ].to_dict(orient="index"),
+        "macrophage_ig_signature_fraction": float(ig_fraction["Macrophages"]),
+        "macrophage_ig_genes_in_top10": macrophage_ig_top10,
         "gates": gates,
         "automatic_gate_pass": bool(all(gates.values())),
     }
