@@ -1,0 +1,9 @@
+{
+  "audited_date": "2026-10-07",
+  "official_documentation": "https://bioconductor.org/packages/release/bioc/vignettes/celda/inst/doc/decontX.html",
+  "original_paper": null,
+  "legacy_source": "projects/02_gse255834_scrna_pipeline/modules/03_decontamination/decontX_GSE255834.R",
+  "base_commit": "2f12bd7",
+  "adaptation": "Original parameterized implementation of the documented API; legacy data-specific paths, labels and patches are not copied.",
+  "upstream_license": "Review package license before redistribution; no upstream repository is vendored."
+}

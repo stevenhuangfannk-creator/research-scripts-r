@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/cox",
+  "covariates": "one for univariate; several justified covariates for multivariate"
+}

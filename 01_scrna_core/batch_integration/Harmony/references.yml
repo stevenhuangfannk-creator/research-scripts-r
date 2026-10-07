@@ -1,0 +1,9 @@
+{
+  "audited_date": "2026-10-07",
+  "official_documentation": "https://portals.broadinstitute.org/harmony/articles/quickstart.html",
+  "original_paper": "https://doi.org/10.1038/s41592-019-0619-0",
+  "legacy_source": "projects/03_apap_mouse_liver_atlas/modules/02_integration_clustering/integrate_GSE280652_2022.qmd",
+  "base_commit": "2f12bd7",
+  "adaptation": "Original parameterized implementation of the documented API; legacy data-specific paths, labels and patches are not copied.",
+  "upstream_license": "Review package license before redistribution; no upstream repository is vendored."
+}

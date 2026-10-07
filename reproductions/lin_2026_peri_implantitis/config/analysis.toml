@@ -1,0 +1,57 @@
+[project]
+name = "lin_2026_peri_implantitis"
+random_seed = 20260928
+
+[sources.zenodo]
+concept_doi = "10.5281/zenodo.19697596"
+record_id = "19697597"
+pi_scrna_filename = "filtered h5 files for peri-implantitis scRNA-seq.zip"
+pi_scrna_md5 = "cadde1d9e1d185e5ec5aa52d034959f5"
+spatial_filename = "space ranger output.zip"
+spatial_md5 = "503e0e75aeff315b3f1a14f3cd8d3243"
+
+[sources.geo]
+healthy_scrna = "GSE164241"
+healthy_spatial = "GSE206621"
+
+[phase4a.qc]
+max_pct_mito = 25.0
+min_genes = 1000
+max_genes = 6000
+min_cells_per_gene = 3
+
+[phase4a.healthy_qc]
+max_pct_mito = 15.0
+min_genes_exclusive = 200
+max_genes_exclusive = 5000
+
+[phase4a.doublets]
+method = "scvi-tools SOLO"
+expected_rate = 0.06
+simulated_doublet_ratio = 2.0
+scvi_max_epochs = 60
+solo_max_epochs = 30
+batch_size = 512
+
+[phase4a.features]
+n_highly_variable_genes = 2000
+
+[phase4a.scvi]
+latent_dim = 30
+batch_key = "sample_id"
+max_epochs = 400
+
+[phase4a.neighbors]
+n_neighbors = 15
+use_rep = "X_scVI"
+
+[phase4a.clustering]
+leiden_resolution = 0.8
+
+[classification]
+pi_qc_thresholds = "USER/CODEX ANALYTICAL CHOICE"
+healthy_qc_thresholds = "METHOD-BASED RECONSTRUCTION"
+doublet_method = "MODERNIZED IMPLEMENTATION"
+integration = "MODERNIZED IMPLEMENTATION"
+annotation = "METHOD-BASED RECONSTRUCTION"
+

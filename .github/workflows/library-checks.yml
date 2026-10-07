@@ -1,0 +1,14 @@
+name: Library structure and R source checks
+on:
+  push:
+  pull_request:
+jobs:
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+      - name: Install lightweight checker dependencies
+        run: Rscript -e 'install.packages(c("yaml", "jsonlite", "digest"), repos="https://cloud.r-project.org")'
+      - name: Check registry, preservation, generated files and R syntax
+        run: Rscript scripts/validate_library.R

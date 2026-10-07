@@ -1,0 +1,34 @@
+{
+  "id": "stacked_violin_v1",
+  "method": "visualization",
+  "purpose": "How do several marker distributions vary?",
+  "script": "scripts/generate_gallery.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "pbmc_small",
+  "input_object": "Selected marker expression; all cells",
+  "major_parameters": {
+    "genes": [
+      "LYZ",
+      "CD3E",
+      "MS4A1",
+      "PPBP",
+      "GNLY"
+    ],
+    "width_mm": 160,
+    "height_mm": 180,
+    "dpi": 400
+  },
+  "palette": "okabe_ito",
+  "theme": "theme_research",
+  "output_file": "08_visualization/Violin/gallery/stacked_violin_v1.png",
+  "vector_file": "08_visualization/Violin/gallery/stacked_violin_v1.pdf",
+  "status": "VALIDATED",
+  "selection": null,
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/slingshot",
+  "review_required": "start.clus; end.clus; shrinkage."
+}

@@ -1,0 +1,35 @@
+{
+  "id": "marker_heatmap_v1",
+  "method": "cell_markers",
+  "purpose": "How do selected marker means vary by cluster?",
+  "script": "08_visualization/Heatmap/heatmap_clean_v1.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "pbmc_small",
+  "input_object": "Marker means; not scaled differential effects",
+  "major_parameters": {
+    "scale": "mean log expression",
+    "genes": [
+      "LYZ",
+      "CD3E",
+      "MS4A1",
+      "PPBP",
+      "GNLY"
+    ],
+    "width_mm": 160,
+    "height_mm": 110,
+    "dpi": 400
+  },
+  "palette": "viridis",
+  "theme": "theme_research",
+  "output_file": "08_visualization/Heatmap/gallery/marker_heatmap_v1.png",
+  "vector_file": "08_visualization/Heatmap/gallery/marker_heatmap_v1.pdf",
+  "status": "VALIDATED",
+  "selection": "CURRENT_DEFAULT",
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

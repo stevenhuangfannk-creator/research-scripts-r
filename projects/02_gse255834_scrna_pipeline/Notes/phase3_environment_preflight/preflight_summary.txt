@@ -1,0 +1,6 @@
+context: gse255834_apap_scrna_pipeline
+r: R version 4.3.1 (2023-06-16 ucrt)
+manifest: C:/Users/13683/Desktop/scriptsR/projects/02_gse255834_scrna_pipeline/Notes/phase3_environment_preflight/packages.tsv
+packages_checked: 14
+required_ready: 6/14
+blocked_required: Seurat, DropletUtils, future, SingleCellExperiment, scDblFinder, BiocParallel, future.apply, celda

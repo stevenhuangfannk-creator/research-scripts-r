@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/tradeseq",
+  "review_required": "Knots; lineage contrasts; covariates."
+}

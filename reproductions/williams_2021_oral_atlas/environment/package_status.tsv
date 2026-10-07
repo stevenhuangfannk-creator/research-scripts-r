@@ -1,0 +1,34 @@
+group	package	required	installed	version	load_status
+pilot_core	Seurat	TRUE	TRUE	5.2.1	error: namespace 'Matrix' 1.5-4.1 is already loaded, but >= 1.6.4 is required
+pilot_core	dplyr	TRUE	TRUE	1.1.4	ok
+pilot_core	ggplot2	TRUE	TRUE	3.5.2	ok
+pilot_core	patchwork	TRUE	TRUE	1.3.1	ok
+pilot_core	reshape2	TRUE	TRUE	1.4.4	error: there is no package called 'plyr'
+pilot_core	cowplot	TRUE	TRUE	1.2.0	ok
+pilot_core	knitr	TRUE	TRUE	1.50	ok
+upstream_extended	tidyr	FALSE	TRUE	1.3.1	ok
+upstream_extended	scales	FALSE	TRUE	1.4.0	ok
+upstream_extended	gdata	FALSE	FALSE		not installed
+upstream_extended	ggraph	FALSE	TRUE	2.2.1	ok
+upstream_extended	scater	FALSE	FALSE		not installed
+upstream_extended	SingleR	FALSE	FALSE		not installed
+upstream_extended	data.table	FALSE	TRUE	1.17.0	ok
+upstream_extended	paletteer	FALSE	TRUE	1.6.0	ok
+upstream_extended	R.utils	FALSE	TRUE	2.13.0	ok
+upstream_extended	ComplexHeatmap	FALSE	FALSE		not installed
+upstream_extended	clustree	FALSE	TRUE	0.5.1	ok
+upstream_extended	viridis	FALSE	TRUE	0.6.5	ok
+upstream_extended	pheatmap	FALSE	FALSE		not installed
+upstream_extended	devtools	FALSE	TRUE	2.4.5	ok
+upstream_extended	Scillus	FALSE	FALSE		not installed
+upstream_extended	scFunctions	FALSE	FALSE		not installed
+upstream_extended	ggcharts	FALSE	FALSE		not installed
+upstream_extended	schex	FALSE	FALSE		not installed
+upstream_extended	Cairo	FALSE	TRUE	1.6-2	ok
+upstream_extended	cartography	FALSE	FALSE		not installed
+upstream_extended	kableExtra	FALSE	FALSE		not installed
+upstream_extended	gsfisher	FALSE	FALSE		not installed
+upstream_extended	BiocParallel	FALSE	FALSE		not installed
+upstream_extended	nichenetr	FALSE	FALSE		not installed
+upstream_extended	easyalluvial	FALSE	FALSE		not installed
+upstream_extended	purrr	FALSE	TRUE	1.0.4	ok

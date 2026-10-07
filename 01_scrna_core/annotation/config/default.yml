@@ -1,0 +1,7 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/hierarchical_annotation",
+  "cluster_column": "seurat_clusters",
+  "labels": "mandatory named maps",
+  "evidence": "mandatory biological evidence"
+}

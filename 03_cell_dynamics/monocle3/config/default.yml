@@ -1,0 +1,13 @@
+{
+  "input": "data/monocle_input.rds",
+  "output_dir": "results/monocle3",
+  "seed": 42,
+  "num_dim": 30,
+  "alignment_group": null,
+  "use_partition": true,
+  "close_loop": false,
+  "minimal_branch_len": 10,
+  "root_cells": [],
+  "celltype_column": "celltype",
+  "genes": []
+}

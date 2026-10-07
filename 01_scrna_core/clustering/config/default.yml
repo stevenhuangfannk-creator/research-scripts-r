@@ -1,0 +1,9 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/seurat_clustering",
+  "nfeatures": 2000,
+  "npcs": 30,
+  "resolution": 0.5,
+  "n_neighbors": 30,
+  "seed": 42
+}

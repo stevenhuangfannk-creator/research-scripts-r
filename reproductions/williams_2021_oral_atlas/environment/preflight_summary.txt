@@ -1,0 +1,6 @@
+context: williams_2021_oral_atlas
+r: R version 4.3.1 (2023-06-16 ucrt)
+manifest: C:/Users/13683/Desktop/scriptsR/reproductions/williams_2021_oral_atlas/environment/packages.tsv
+packages_checked: 33
+required_ready: 5/7
+blocked_required: Seurat, reshape2

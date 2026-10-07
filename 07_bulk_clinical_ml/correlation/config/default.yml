@@ -1,0 +1,7 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/correlation",
+  "variables": "explicit numeric columns",
+  "method": "pearson / spearman",
+  "missing": "error / pairwise"
+}

@@ -1,0 +1,9 @@
+sample_id	donor_id	reported_cells	sex	condition
+IGT1	D1	1050	male	PI
+IGT2	D2	363	female	PI
+IGT3	D3	9429	female	PI
+IGT4	D4	7709	female	PI
+IGT5	D5	8604	male	PI
+IGT6	D6	2126	male	PI
+IGT7	D7	3834	female	PI
+IGT8	D6	6278	male	PI

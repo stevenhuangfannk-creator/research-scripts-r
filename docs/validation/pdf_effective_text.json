@@ -1,0 +1,240 @@
+[
+  {
+    "id": "umap_clean_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 17,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "feature_clean_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 18,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "dotplot_clean_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 21,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "marker_heatmap_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 15,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "cluster_heatmap_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 20,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "violin_clean_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 11,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "stacked_violin_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 33,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "composition_sample_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 13,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "cluster_count_bar_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 10,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "multipanel_pbmc_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 69,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "boxplot_iris_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 9,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "violin_iris_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 9,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "density_iris_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 14,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "ridge_iris_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 9,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "scatter_fit_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 14,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "density_scatter_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 16,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "correlation_bh_heatmap_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 24,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "pairplot_iris_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 32,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "survival_km_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 36,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "forest_cox_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 8,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "roc_holdout_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 15,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "volcano_clean_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 18,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "enrichment_dot_style_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 23,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "lollipop_style_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 15,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "waterfall_style_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 16,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "alluvial_style_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 18,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "network_style_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 6,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "nes_heatmap_style_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 16,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "palette_swatches_v1",
+    "min_effective_pt": 7.0,
+    "selectable_text_spans": 16,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "chord_style_v1",
+    "min_effective_pt": 6.0,
+    "selectable_text_spans": 42,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "schematic_workflow_v1",
+    "min_effective_pt": 8.0,
+    "selectable_text_spans": 8,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "schematic_cell_interaction_v1",
+    "min_effective_pt": 8.0,
+    "selectable_text_spans": 5,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "schematic_mechanism_v1",
+    "min_effective_pt": 8.0,
+    "selectable_text_spans": 7,
+    "below_minimum": [],
+    "status": "PASS"
+  },
+  {
+    "id": "schematic_components_v1",
+    "min_effective_pt": 9.0,
+    "selectable_text_spans": 9,
+    "below_minimum": [],
+    "status": "PASS"
+  }
+]

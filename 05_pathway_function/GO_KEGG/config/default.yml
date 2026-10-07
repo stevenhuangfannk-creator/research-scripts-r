@@ -1,0 +1,8 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/go_kegg_ora",
+  "ontology": "BP / MF / CC / KEGG",
+  "key_type": "database-compatible ID",
+  "organism": "explicit",
+  "p_adjust": "BH"
+}

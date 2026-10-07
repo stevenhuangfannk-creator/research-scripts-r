@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/lasso",
+  "review_required": "Family; alpha=1; lambda.min vs lambda.1se; fold design."
+}

@@ -1,0 +1,11 @@
+{
+  "audited_date": "2026-10-07",
+  "official_documentation": "https://cole-trapnell-lab.github.io/monocle3/docs/trajectories/",
+  "original_paper": "https://doi.org/10.1038/s41586-019-0969-x",
+  "legacy_source": null,
+  "base_commit": "2f12bd7",
+  "adaptation": "Original parameterized implementation of the documented API; legacy data-specific paths, labels and patches are not copied.",
+  "upstream_license": "MIT",
+  "target_tag": "v1.4.27",
+  "target_commit": "536f1033d6de7c957f26a1f403f81efbd825e0db"
+}

@@ -1,0 +1,8 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/cell_markers",
+  "group_column": "seurat_clusters",
+  "only_positive": true,
+  "min_pct": 0.1,
+  "logfc_threshold": 0.25
+}

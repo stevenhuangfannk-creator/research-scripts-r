@@ -1,0 +1,9 @@
+{
+  "audited_date": "2026-10-07",
+  "official_documentation": "https://satijalab.org/seurat/articles/sctransform_vignette",
+  "original_paper": null,
+  "legacy_source": null,
+  "base_commit": "2f12bd7",
+  "adaptation": "Original parameterized implementation of the documented API; legacy data-specific paths, labels and patches are not copied.",
+  "upstream_license": "Review package license before redistribution; no upstream repository is vendored."
+}

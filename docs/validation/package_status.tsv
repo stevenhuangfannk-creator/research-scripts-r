@@ -1,0 +1,23 @@
+package	version	loaded	error
+Seurat	5.2.1	TRUE	""
+SeuratObject	5.0.2	TRUE	""
+Matrix	1.6.5	TRUE	""
+ggplot2	3.5.2	TRUE	""
+patchwork	1.3.1	TRUE	""
+ragg	1.3.3	TRUE	""
+svglite	2.1.3	TRUE	""
+harmony	1.2.3	TRUE	""
+CellChat		FALSE	there is no package called 'CellChat'
+monocle3		FALSE	there is no package called 'monocle3'
+scDblFinder		FALSE	there is no package called 'scDblFinder'
+celda		FALSE	there is no package called 'celda'
+clusterProfiler		FALSE	there is no package called 'clusterProfiler'
+fgsea		FALSE	there is no package called 'fgsea'
+GSVA		FALSE	there is no package called 'GSVA'
+UCell		FALSE	there is no package called 'UCell'
+AUCell	1.24.0	TRUE	""
+survival	3.8.3	TRUE	""
+glmnet	4.1.8	TRUE	""
+randomForest	4.7.1.2	TRUE	""
+pROC	1.18.5	TRUE	""
+yaml	2.3.10	TRUE	""

@@ -1,0 +1,32 @@
+During startup - Warning messages:
+1: Setting LC_COLLATE=C.UTF-8 failed
+2: Setting LC_CTYPE=C.UTF-8 failed
+3: Setting LC_MONETARY=C.UTF-8 failed
+4: Setting LC_TIME=C.UTF-8 failed
+Warning messages:
+1: package 'Seurat' was built under R version 4.3.3
+2: package 'SeuratObject' was built under R version 4.3.3
+3: package 'sp' was built under R version 4.3.3
+seurat_ingestion PASS
+scrna_qc PASS
+lognormalize PASS
+seurat_clustering PASS
+hierarchical_annotation PASS
+For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
+(default method for FindMarkers) please install the presto package
+--------------------------------------------
+install.packages('devtools')
+devtools::install_github('immunogenomics/presto')
+--------------------------------------------
+After installation of presto, Seurat will automatically use the more
+efficient implementation (no further action necessary).
+This message will be shown once per session
+cell_markers PASS
+The following grouping variables have 1 value and will be ignored: orig.ident
+The following grouping variables have 1 value and will be ignored: single_group, orig.ident
+All grouping variables have 1 value only. Computing across all cells.
+pseudobulk PASS
+registry_unicode PASS
+correlation PASS
+survival_km PASS
+cox PASS

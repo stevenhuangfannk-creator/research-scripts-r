@@ -1,0 +1,15 @@
+group	package	required
+data_ingestion	Seurat	TRUE
+data_ingestion	DropletUtils	TRUE
+data_ingestion	Matrix	TRUE
+data_ingestion	future	TRUE
+data_ingestion	data.table	TRUE
+data_ingestion	ggplot2	TRUE
+quality_control	SingleCellExperiment	TRUE
+quality_control	scDblFinder	TRUE
+quality_control	BiocParallel	TRUE
+quality_control	future.apply	TRUE
+quality_control	patchwork	TRUE
+decontamination	celda	TRUE
+decontamination	SummarizedExperiment	TRUE
+quality_control	uwot	TRUE

@@ -1,0 +1,29 @@
+{
+  "id": "violin_clean_v1",
+  "method": "lognormalize",
+  "purpose": "What is the per-cell LYZ distribution?",
+  "script": "08_visualization/Violin/violin_clean_v1.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "pbmc_small; all 80 cells including zeros",
+  "input_object": "RNA LYZ by cluster",
+  "major_parameters": {
+    "gene": "LYZ",
+    "zero_policy": "retain",
+    "width_mm": 160,
+    "height_mm": 110,
+    "dpi": 400
+  },
+  "palette": "okabe_ito",
+  "theme": "theme_research",
+  "output_file": "08_visualization/Violin/gallery/violin_clean_v1.png",
+  "vector_file": "08_visualization/Violin/gallery/violin_clean_v1.pdf",
+  "status": "VALIDATED",
+  "selection": "CURRENT_DEFAULT",
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

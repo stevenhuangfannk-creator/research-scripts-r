@@ -1,0 +1,1004 @@
+[
+  {
+    "id": "seurat_ingestion",
+    "path": "01_scrna_core/data_ingestion",
+    "purpose": "Build an auditable Seurat object from aligned counts and sample metadata.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "inputs": "RDS list(counts: nonnegative gene \u00d7 barcode matrix, metadata: barcode-indexed data.frame).",
+    "parameters": {
+      "project": "user label",
+      "min.cells": 0,
+      "min.features": 0
+    },
+    "outputs": [
+      "feature inventory",
+      "cell/sample inventory",
+      "Seurat counts object"
+    ],
+    "limits": "Barcode calling on raw droplets is a separate upstream decision. Do not invent symbols or collapse duplicated IDs silently.",
+    "alternatives": "Read10X/Read10X_h5 for supported 10x files; SingleCellExperiment for Bioconductor workflows.",
+    "script": "01_scrna_core/data_ingestion/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/02_gse255834_scrna_pipeline/modules/01_data_ingestion/build_GSE255834_seurat.R",
+    "paper": null
+  },
+  {
+    "id": "scrna_qc",
+    "path": "01_scrna_core/quality_control",
+    "purpose": "Inspect mitochondrial/ribosomal, feature and UMI metrics and record cell retention.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "inputs": "Seurat object with RNA counts; explicit species-sensitive patterns and numeric threshold bounds.",
+    "parameters": {
+      "mt_pattern": "^MT- (human) / ^mt- (mouse); review IDs",
+      "ribo_pattern": "^RP[SL] / ^Rp[sl]",
+      "thresholds": "mandatory, study-specific",
+      "filter": false
+    },
+    "outputs": [
+      "per-cell QC table",
+      "retention audit",
+      "QC-marked or explicitly filtered Seurat object"
+    ],
+    "limits": "A universal mitochondrial cutoff can remove meaningful injury states. Inspect each capture and tissue; QC does not detect all doublets or ambient RNA.",
+    "alternatives": "scater robust outlier QC; EmptyDrops for calling cells in raw droplets.",
+    "script": "01_scrna_core/quality_control/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/02_gse255834_scrna_pipeline/modules/02_quality_control/diagnose_qc_distributions.R",
+    "paper": null
+  },
+  {
+    "id": "scdblfinder",
+    "path": "01_scrna_core/doublet_detection/scDblFinder",
+    "purpose": "Flag likely doublets within independent droplet captures.",
+    "package": "scDblFinder",
+    "doc": "https://bioconductor.org/packages/release/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html",
+    "inputs": "Seurat RNA counts with capture/library identifiers (not automatically donor labels).",
+    "parameters": {
+      "capture_column": "capture ID",
+      "dbr": null,
+      "seed": 42
+    },
+    "outputs": [
+      "per-cell doublet score/class",
+      "labeled object"
+    ],
+    "limits": "Doublet rate depends on technology and recovered cells. Homotypic doublets remain difficult; retain audits before removing flagged cells.",
+    "alternatives": "DoubletFinder; Scrublet in Python. Compare on the same capture.",
+    "script": "01_scrna_core/doublet_detection/scDblFinder/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/02_gse255834_scrna_pipeline/modules/02_quality_control/add_scDblFinder_to_GSE255834.R",
+    "paper": null
+  },
+  {
+    "id": "decontx",
+    "path": "01_scrna_core/ambient_rna/DecontX",
+    "purpose": "Estimate and reduce ambient RNA separately by capture.",
+    "package": "celda",
+    "doc": "https://bioconductor.org/packages/release/bioc/vignettes/celda/inst/doc/decontX.html",
+    "inputs": "list(counts, aligned metadata, backgrounds = capture-named empty-droplet matrices); background can be absent.",
+    "parameters": {
+      "capture_column": "capture ID",
+      "seed": 42
+    },
+    "outputs": [
+      "corrected counts per capture",
+      "contamination estimates"
+    ],
+    "limits": "Background feature IDs must exactly match cell counts. Do not use already normalized counts; compare marker specificity and retained biology before adoption.",
+    "alternatives": "SoupX when raw/filtered droplets and cluster information are available.",
+    "script": "01_scrna_core/ambient_rna/DecontX/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/02_gse255834_scrna_pipeline/modules/03_decontamination/decontX_GSE255834.R",
+    "paper": null
+  },
+  {
+    "id": "lognormalize",
+    "path": "01_scrna_core/normalization/lognormalize",
+    "purpose": "Library-size normalize RNA counts for exploratory expression and downstream geometry.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "inputs": "Seurat RNA counts.",
+    "parameters": {
+      "scale_factor": 10000
+    },
+    "outputs": [
+      "RNA data layer with log-normalized expression"
+    ],
+    "limits": "Normalization does not remove batch effects. Keep raw counts for count models; do not treat data-layer values as integer pseudobulk.",
+    "alternatives": "SCTransform for model-based variance stabilization.",
+    "script": "01_scrna_core/normalization/lognormalize/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/02_gse255834_scrna_pipeline/modules/01_data_ingestion/build_GSE255834_seurat.R",
+    "paper": null
+  },
+  {
+    "id": "sctransform",
+    "path": "01_scrna_core/normalization/SCTransform",
+    "purpose": "Model count-depth effects and stabilize variance.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/sctransform_vignette",
+    "inputs": "Seurat RNA counts.",
+    "parameters": {
+      "vst_flavor": "v2",
+      "vars_to_regress": null,
+      "seed": 42
+    },
+    "outputs": [
+      "SCT assay",
+      "residuals and variable features"
+    ],
+    "limits": "Regression covariates need biological justification. Preserve RNA for communication; sparse tiny demos may not exercise model fitting reliably.",
+    "alternatives": "LogNormalize; appropriate count-based models for inference.",
+    "script": "01_scrna_core/normalization/SCTransform/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "harmony",
+    "path": "01_scrna_core/batch_integration/Harmony",
+    "purpose": "Align a PCA embedding across measured technical batches.",
+    "package": "harmony",
+    "doc": "https://portals.broadinstitute.org/harmony/articles/quickstart.html",
+    "inputs": "Normalized Seurat with PCA and explicit batch column.",
+    "parameters": {
+      "batch_column": "technical batch",
+      "npcs": 30,
+      "theta": 2
+    },
+    "outputs": [
+      "Harmony embedding"
+    ],
+    "limits": "Cannot recover treatment effects perfectly confounded with batch. Harmony corrects an embedding, not raw counts; evaluate mixing and lineage preservation.",
+    "alternatives": "Seurat anchors; unintegrated analysis when batch biology cannot be separated.",
+    "script": "01_scrna_core/batch_integration/Harmony/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/03_apap_mouse_liver_atlas/modules/02_integration_clustering/integrate_GSE280652_2022.qmd",
+    "paper": "https://doi.org/10.1038/s41592-019-0619-0"
+  },
+  {
+    "id": "seurat_integration",
+    "path": "01_scrna_core/batch_integration/Seurat",
+    "purpose": "Build a shared geometry with Seurat anchor integration.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/integration_introduction",
+    "inputs": "Seurat with RNA and explicit batch IDs; sufficiently populated batches.",
+    "parameters": {
+      "batch_column": "technical batch",
+      "nfeatures": 2000,
+      "npcs": 30
+    },
+    "outputs": [
+      "integrated assay",
+      "retained RNA assay"
+    ],
+    "limits": "Baseline uses the stable anchor interface, not an asserted default v5 layer workflow. Avoid integrated values for DEG/CellChat; compare mixing and overcorrection.",
+    "alternatives": "Harmony; Seurat v5 IntegrateLayers after separate version-specific validation.",
+    "script": "01_scrna_core/batch_integration/Seurat/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "seurat_clustering",
+    "path": "01_scrna_core/clustering",
+    "purpose": "Find variable features, PCA, neighbors, clusters and reproducible UMAP.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "inputs": "Normalized Seurat object.",
+    "parameters": {
+      "nfeatures": 2000,
+      "npcs": 30,
+      "resolution": 0.5,
+      "n_neighbors": 30,
+      "seed": 42
+    },
+    "outputs": [
+      "PCA and UMAP embeddings",
+      "cluster labels",
+      "neighbor graph"
+    ],
+    "limits": "Resolution is a biological decision, not a cell-type count estimator. UMAP distances are not quantitative lineage distances. Recompute after meaningful subsetting.",
+    "alternatives": "Leiden or other Seurat algorithms after validation; Harmony embedding for batch-corrected geometry.",
+    "script": "01_scrna_core/clustering/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/02_gse255834_scrna_pipeline/modules/02_quality_control/strict_qc_umap_70_workers.R",
+    "paper": null
+  },
+  {
+    "id": "hierarchical_annotation",
+    "path": "01_scrna_core/annotation",
+    "purpose": "Write reviewed level 1/2/3 annotations while preserving cluster IDs and evidence.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "inputs": "Seurat metadata with clusters; explicit cluster-to-label mappings by level plus evidence string.",
+    "parameters": {
+      "cluster_column": "seurat_clusters",
+      "labels": "mandatory named maps",
+      "evidence": "mandatory biological evidence"
+    },
+    "outputs": [
+      "annotation audit",
+      "labeled object; unmapped clusters remain Unknown"
+    ],
+    "limits": "Demo labels validate writeback only. Tissue markers, negative markers and subset reclustering require biological review. Cycling is a state, not a lineage.",
+    "alternatives": "SingleR, Azimuth/reference mapping with suitable validated references; retain manual evidence.",
+    "script": "01_scrna_core/annotation/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/03_apap_mouse_liver_atlas/modules/03_annotation/mouse_liver_level1_annotation.qmd",
+    "paper": null
+  },
+  {
+    "id": "cell_markers",
+    "path": "02_differential_analysis/differential_expression",
+    "purpose": "Find exploratory cell/cluster markers without claiming donor-level treatment inference.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "inputs": "Normalized RNA Seurat with grouping labels.",
+    "parameters": {
+      "group_column": "seurat_clusters",
+      "only_positive": true,
+      "min_pct": 0.1,
+      "logfc_threshold": 0.25
+    },
+    "outputs": [
+      "marker effect/test table"
+    ],
+    "limits": "Cell-level P values can reflect pseudoreplication. Marker evidence does not by itself identify a cell type or treatment effect.",
+    "alternatives": "Sample \u00d7 cell-type pseudobulk with DESeq2/edgeR/limma for condition effects.",
+    "script": "02_differential_analysis/differential_expression/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "pseudobulk",
+    "path": "02_differential_analysis/pseudobulk",
+    "purpose": "Sum raw counts per biological sample and cell type.",
+    "package": "Seurat",
+    "doc": "https://satijalab.org/seurat/reference/aggregateexpression",
+    "inputs": "Raw RNA Seurat plus sample and cell-type identifiers.",
+    "parameters": {
+      "sample_column": "biological sample",
+      "celltype_column": "reviewed annotation"
+    },
+    "outputs": [
+      "pseudobulk count matrix",
+      "library-size audit"
+    ],
+    "limits": "Summation is not a DEG test. Retain condition/covariate sample table, sufficient independent donors and within-subject design where needed.",
+    "alternatives": "DESeq2/edgeR/limma-voom for sample-level testing; mixed models for justified cell-level designs.",
+    "script": "02_differential_analysis/pseudobulk/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "cellchat",
+    "path": "04_cell_communication/CellChat",
+    "purpose": "Infer and visualize expression-supported ligand\u2013receptor communication hypotheses.",
+    "package": "CellChat",
+    "doc": "https://github.com/jinworks/CellChat",
+    "inputs": "list(expression: aligned log-normalized RNA, metadata: cell labels); human or mouse DB.",
+    "parameters": {
+      "species": "mandatory",
+      "expression_scale": "lognormalized_RNA",
+      "average": "triMean",
+      "population_size": false,
+      "min_cells": 10,
+      "nboot": 100,
+      "seed": 42,
+      "ppi_projection": false
+    },
+    "outputs": [
+      "LR probabilities and native permutation P values",
+      "count/strength matrices",
+      "pathway aggregation",
+      "network roles and optional patterns"
+    ],
+    "limits": "Inference is not physical contact, causal signaling or donor-level inference. population.size depends on capture/sorting design. PPI projection is an optional information projection step.",
+    "alternatives": "NicheNet for ligand \u2192 target response; CellPhoneDB/LIANA for complementary LR evidence.",
+    "script": "04_cell_communication/CellChat/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/03_apap_mouse_liver_atlas/modules/04_cell_communication/mouse_liver_ccc_cellchat_cellphonedb.qmd",
+    "paper": "https://doi.org/10.1038/s41467-021-21246-9"
+  },
+  {
+    "id": "cellchat_compare",
+    "path": "04_cell_communication/CellChat",
+    "purpose": "Compare matched cell-type communication networks across two conditions.",
+    "package": "CellChat",
+    "doc": "https://github.com/jinworks/CellChat/blob/main/tutorial/Comparison_analysis_of_multiple_datasets.Rmd",
+    "inputs": "Named list of two independently inferred CellChat objects with identical ordered cell labels, species, DB and settings.",
+    "parameters": {
+      "embedding": false,
+      "sources": "explicit cell groups",
+      "targets": "explicit cell groups",
+      "seed": 42
+    },
+    "outputs": [
+      "interaction/strength comparison",
+      "differential networks",
+      "LR deltas",
+      "pathway and optional similarity comparisons"
+    ],
+    "limits": "Second minus first direction is explicit. Missing significant pairs are encoded as zero only for descriptive deltas; this does not prove absent expression or FDR-controlled differential signaling.",
+    "alternatives": "Official liftCellChat workflow for differing compositions; donor-stratified inference before population claims.",
+    "script": "04_cell_communication/CellChat/scripts/compare.R",
+    "priority": "A",
+    "source": "projects/03_apap_mouse_liver_atlas/modules/04_cell_communication/macrophage_TNK_cellchat.qmd",
+    "paper": null
+  },
+  {
+    "id": "monocle3",
+    "path": "03_cell_dynamics/monocle3",
+    "purpose": "Learn a principal graph and order expression states from justified roots.",
+    "package": "monocle3",
+    "doc": "https://cole-trapnell-lab.github.io/monocle3/docs/trajectories/",
+    "inputs": "list(counts, aligned cell_metadata, gene_metadata with gene_short_name); explicit root cell IDs.",
+    "parameters": {
+      "num_dim": 30,
+      "root_cells": "mandatory biological choice",
+      "use_partition": true,
+      "close_loop": false,
+      "minimal_branch_len": 10,
+      "seed": 42
+    },
+    "outputs": [
+      "CDS",
+      "principal graph nodes/edges",
+      "pseudotime and reachability",
+      "trajectory and expression plots"
+    ],
+    "limits": "Pseudotime \u2260 real biological time. Disconnected partitions need justified roots. A graph branch is a hypothesis, not proof of cell fate.",
+    "alternatives": "Slingshot fits lineages through clusters; tradeSeq tests trends along supplied trajectories; RNA velocity uses splicing kinetics; CellRank estimates fate probabilities.",
+    "script": "03_cell_dynamics/monocle3/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": "https://doi.org/10.1038/s41586-019-0969-x"
+  },
+  {
+    "id": "monocle3_dynamics",
+    "path": "03_cell_dynamics/monocle3",
+    "purpose": "Find graph-associated genes and co-varying gene modules.",
+    "package": "monocle3",
+    "doc": "https://cole-trapnell-lab.github.io/monocle3/docs/differential/",
+    "inputs": "Ordered CDS; explicit branch-selected cells for optional branch exploration.",
+    "parameters": {
+      "q_value": 0.05,
+      "resolution": 0.01,
+      "cores": 1,
+      "seed": 42
+    },
+    "outputs": [
+      "Moran graph association table",
+      "gene modules",
+      "module-by-group activity",
+      "optional selected-branch association"
+    ],
+    "limits": "Graph autocorrelation is not a formal between-branch contrast. Do not replace Monocle3 analysis with Monocle2 BEAM; use tradeSeq for supported lineage contrasts.",
+    "alternatives": "tradeSeq for GAM-based lineage association/difference tests.",
+    "script": "03_cell_dynamics/monocle3/scripts/gene_dynamics.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "go_kegg_ora",
+    "path": "05_pathway_function/GO_KEGG",
+    "purpose": "Test over-representation of selected genes against the actually tested universe.",
+    "package": "clusterProfiler",
+    "doc": "https://yulab-smu.top/biomedical-knowledge-mining-book/",
+    "inputs": "list(genes, universe), matched IDs, species and database.",
+    "parameters": {
+      "ontology": "BP / MF / CC / KEGG",
+      "key_type": "database-compatible ID",
+      "organism": "explicit",
+      "p_adjust": "BH"
+    },
+    "outputs": [
+      "enrichment effect/count/FDR table",
+      "enrichResult object"
+    ],
+    "limits": "The universe is tested/detectable genes, not the whole genome by habit. GO hierarchy yields dependent terms; report database version and mapping losses. KEGG access/licensing needs review.",
+    "alternatives": "GSEA when a complete ranked test statistic is available; cell-level score for cell states.",
+    "script": "05_pathway_function/GO_KEGG/scripts/workflow.R",
+    "priority": "A",
+    "source": "projects/01_zilongjin_network_pharmacology/modules/06_functional_analysis/6-9_analysis.qmd",
+    "paper": null
+  },
+  {
+    "id": "fgsea",
+    "path": "05_pathway_function/GSEA",
+    "purpose": "Test ranked gene-set enrichment without an arbitrary DEG cutoff.",
+    "package": "fgsea",
+    "doc": "https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html",
+    "inputs": "list(ranks: complete signed named statistic, pathways: gene-set list); unique compatible IDs.",
+    "parameters": {
+      "min_size": 15,
+      "max_size": 500,
+      "seed": 42
+    },
+    "outputs": [
+      "NES, adjusted P, leading-edge table",
+      "enrichment curves"
+    ],
+    "limits": "Rank by a meaningful signed statistic, not P alone or arbitrary PPI degree for transcriptional enrichment. Record ties and mapped coverage; NES comparisons need identical gene-set definitions.",
+    "alternatives": "ORA for a justified selected list; clusterProfiler GSEA for its result/visualization interface.",
+    "script": "05_pathway_function/GSEA/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "correlation",
+    "path": "07_bulk_clinical_ml/correlation",
+    "purpose": "Estimate Pearson/Spearman associations with explicit missingness and BH adjustment.",
+    "package": "stats",
+    "doc": "https://stat.ethz.ch/R-manual/R-devel/library/stats/html/cor.test.html",
+    "inputs": "data.frame of numeric measurements on independent observational units.",
+    "parameters": {
+      "variables": "explicit numeric columns",
+      "method": "pearson / spearman",
+      "missing": "error / pairwise"
+    },
+    "outputs": [
+      "r/rho, P, BH-adjusted P, n and exclusions",
+      "Pearson CI; Spearman CI unavailable in this baseline"
+    ],
+    "limits": "Correlation \u2260 causation. Pearson evaluates linear association; Spearman evaluates monotonic rank association. Repeated or confounded observations need another model.",
+    "alternatives": "Partial/regression models for covariates; mixed models for repeated measurements.",
+    "script": "07_bulk_clinical_ml/correlation/scripts/workflow.R",
+    "priority": "A",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "survival_km",
+    "path": "07_bulk_clinical_ml/survival",
+    "purpose": "Estimate right-censored survival curves and uncertainty by explicit group.",
+    "package": "survival",
+    "doc": "https://cran.r-project.org/package=survival",
+    "inputs": "data.frame with nonnegative time, event explicitly coded 0/1 and group.",
+    "parameters": {
+      "time_column": "explicit",
+      "event_column": "explicit 0/1",
+      "group_column": "explicit"
+    },
+    "outputs": [
+      "survfit object",
+      "survival, 95% CI, risk counts and event table"
+    ],
+    "limits": "Requires appropriately independent censoring and correct time origin. KM does not adjust covariates; competing risks require cumulative-incidence methods.",
+    "alternatives": "Cox for covariates; competing-risk analysis for competing events.",
+    "script": "07_bulk_clinical_ml/survival/scripts/workflow.R",
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "cox",
+    "path": "07_bulk_clinical_ml/Cox",
+    "purpose": "Estimate adjusted/unadjusted hazard ratios and inspect proportional hazards.",
+    "package": "survival",
+    "doc": "https://cran.r-project.org/package=survival",
+    "inputs": "Complete observation table, explicit time/event and covariates.",
+    "parameters": {
+      "covariates": "one for univariate; several justified covariates for multivariate"
+    },
+    "outputs": [
+      "Cox model",
+      "HR and 95% CI table",
+      "cox.zph diagnostics"
+    ],
+    "limits": "Specify continuous-effect forms and coding; assess PH, events, influential observations and confounding. Predictive claims require independent validation.",
+    "alternatives": "Time-varying effects or alternative survival models when PH fails.",
+    "script": "07_bulk_clinical_ml/Cox/scripts/workflow.R",
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "soupx",
+    "path": "01_scrna_core/ambient_rna/SoupX",
+    "purpose": "Estimate ambient contamination using raw droplets and cluster structure.",
+    "package": "SoupX",
+    "doc": "https://github.com/constantAmateur/SoupX",
+    "inputs": "Raw and filtered count matrices, cluster labels.",
+    "parameters": {
+      "review_required": "Soup fraction; non-expressing markers."
+    },
+    "outputs": [
+      "Contamination fraction",
+      "adjusted counts."
+    ],
+    "limits": "Requires informative ambient profile; validate retained biological expression.",
+    "alternatives": "DecontX",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "slingshot",
+    "path": "03_cell_dynamics/slingshot",
+    "purpose": "Fit lineage curves through a cluster scaffold.",
+    "package": "slingshot",
+    "doc": "https://bioconductor.org/packages/slingshot",
+    "inputs": "Embedding, cluster labels, justified starting cluster.",
+    "parameters": {
+      "review_required": "start.clus; end.clus; shrinkage."
+    },
+    "outputs": [
+      "Lineages",
+      "pseudotime",
+      "curve weights."
+    ],
+    "limits": "Topology depends on clustering and starting assumptions.",
+    "alternatives": "Monocle3; tradeSeq downstream",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "tradeseq",
+    "path": "03_cell_dynamics/tradeSeq",
+    "purpose": "Test lineage-associated expression trends and differences.",
+    "package": "tradeSeq",
+    "doc": "https://bioconductor.org/packages/tradeSeq",
+    "inputs": "Counts plus trajectory pseudotime and cell weights.",
+    "parameters": {
+      "review_required": "Knots; lineage contrasts; covariates."
+    },
+    "outputs": [
+      "GAM fits",
+      "association/pattern/endpoint tests."
+    ],
+    "limits": "Uses a supplied trajectory; it does not infer lineage by itself.",
+    "alternatives": "Monocle3 graph association",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "nichenet",
+    "path": "04_cell_communication/NicheNet",
+    "purpose": "Prioritize sender ligands that explain receiver transcriptional response.",
+    "package": "nichenetr",
+    "doc": "https://github.com/saeyslab/nichenetr",
+    "inputs": "Sender/receiver expression, receiver DEG, background expressed genes, prior networks.",
+    "parameters": {
+      "review_required": "Receiver gene set/background; expression threshold; prior species."
+    },
+    "outputs": [
+      "Ligand activity ranking",
+      "ligand-target matrix",
+      "LR network",
+      "prioritization plots."
+    ],
+    "limits": "Prior model and receiver contrast matter; ligand activity is predictive evidence, not causal proof.",
+    "alternatives": "CellChat for LR network without target explanation",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "cellphonedb",
+    "path": "09_python_bridge/CellPhoneDB",
+    "purpose": "Test cell-label-dependent ligand\u2013receptor coexpression.",
+    "package": "cellphonedb",
+    "doc": "https://cellphonedb.readthedocs.io/en/latest/",
+    "inputs": "Python expression matrix, metadata, database; approved orthology map for mouse.",
+    "parameters": {
+      "review_required": "DB version; expression threshold; permutations."
+    },
+    "outputs": [
+      "Means/P values",
+      "significant LR pairs",
+      "source-target bubbles."
+    ],
+    "limits": "The legacy R LIANA MouseConsensus call is not execution of native Python CellPhoneDB.",
+    "alternatives": "CellChat; LIANA",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "liana_plus",
+    "path": "04_cell_communication/LIANA",
+    "purpose": "Compare/aggregate communication evidence with multiple methods.",
+    "package": "liana",
+    "doc": "https://liana-py.readthedocs.io/en/latest/",
+    "inputs": "AnnData or supported R interface, labels and compatible LR resource.",
+    "parameters": {
+      "review_required": "Resource; methods; ranking aggregation."
+    },
+    "outputs": [
+      "Consensus LR ranks",
+      "multi-condition/context evidence."
+    ],
+    "limits": "Newness is not default eligibility; interface and resources need validation.",
+    "alternatives": "CellChat; NicheNet",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "gsva_ssgsea",
+    "path": "05_pathway_function/GSVA_ssGSEA",
+    "purpose": "Estimate sample-level gene-set activity for replicated group comparisons.",
+    "package": "GSVA",
+    "doc": "https://bioconductor.org/packages/GSVA",
+    "inputs": "Normalized gene \u00d7 independent-sample matrix and gene sets.",
+    "parameters": {
+      "review_required": "GSVA vs ssGSEA; kernel; set sizes; installed API version."
+    },
+    "outputs": [
+      "Pathway \u00d7 sample matrix",
+      "group heatmap/violin."
+    ],
+    "limits": "Recent GSVA uses parameter objects; never assume old gsva(expr, sets) API.",
+    "alternatives": "GSEA for ranked group contrasts; UCell for cells",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "ucell_aucell",
+    "path": "05_pathway_function/UCell_AUCell",
+    "purpose": "Score signatures per cell using rank-based enrichment.",
+    "package": "UCell / AUCell",
+    "doc": "https://bioconductor.org/packages/UCell",
+    "inputs": "Cell expression ranks/counts and specified signature gene sets.",
+    "parameters": {
+      "review_required": "Rank cutoff; gene coverage; signature direction."
+    },
+    "outputs": [
+      "Cell \u00d7 signature score",
+      "UMAP/violin/heatmap."
+    ],
+    "limits": "Cell scores describe state; group significance requires donor-aware aggregation/modeling.",
+    "alternatives": "GSVA for sample-level activity",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "ppi",
+    "path": "06_gene_networks/PPI",
+    "purpose": "Analyze an actual protein-interaction graph and report network topology.",
+    "package": "igraph / ggraph / STRING",
+    "doc": "https://string-db.org/help/api/",
+    "inputs": "Species-specific mapped protein IDs and provenance-bearing STRING edges.",
+    "parameters": {
+      "review_required": "Species; STRING score; evidence channel; directedness."
+    },
+    "outputs": [
+      "Network",
+      "degree/betweenness",
+      "hub table",
+      "Cytoscape export."
+    ],
+    "limits": "MCC requires a specified CytoHubba implementation; do not substitute degree. CellChat projection is a different operation.",
+    "alternatives": "WGCNA for coexpression; SCENIC for regulons",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "wgcna",
+    "path": "06_gene_networks/WGCNA",
+    "purpose": "Find coexpression modules across independent biological samples.",
+    "package": "WGCNA",
+    "doc": "https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/",
+    "inputs": "Normalized sample \u00d7 gene matrix, QC and sample traits.",
+    "parameters": {
+      "review_required": "Soft threshold; signedness; minimum module size; covariates."
+    },
+    "outputs": [
+      "Modules",
+      "eigengenes",
+      "module-trait associations",
+      "hub candidates."
+    ],
+    "limits": "Too few samples or pooled cells produce unstable/confounded modules.",
+    "alternatives": "hdWGCNA for validated metacell designs",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "hdwgcna",
+    "path": "06_gene_networks/hdWGCNA",
+    "purpose": "Build coexpression modules using explicitly defined single-cell aggregation.",
+    "package": "hdWGCNA",
+    "doc": "https://smorabit.github.io/hdWGCNA/",
+    "inputs": "Annotated Seurat, donor/celltype design and metacell choices.",
+    "parameters": {
+      "review_required": "Metacells; donor preservation; soft threshold."
+    },
+    "outputs": [
+      "Modules",
+      "eigengene activity",
+      "module networks."
+    ],
+    "limits": "Metacells are not new independent biological replicates.",
+    "alternatives": "WGCNA on sample-level profiles",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "scenic",
+    "path": "06_gene_networks/SCENIC",
+    "purpose": "Infer candidate transcription-factor regulons and activity.",
+    "package": "SCENIC / AUCell",
+    "doc": "https://github.com/aertslab/SCENIC",
+    "inputs": "Expression, species-compatible motif databases and TF annotations.",
+    "parameters": {
+      "review_required": "Network algorithm; motif resource; AUCell thresholds."
+    },
+    "outputs": [
+      "TF-target regulons",
+      "activity matrix",
+      "regulon specificity."
+    ],
+    "limits": "Motif support and coexpression are not perturbation-validated regulation.",
+    "alternatives": "pySCENIC in separate Python environment",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "bulk_deseq2",
+    "path": "07_bulk_clinical_ml/bulk_RNAseq",
+    "purpose": "Test replicated condition changes from raw bulk/pseudobulk counts.",
+    "package": "DESeq2",
+    "doc": "https://bioconductor.org/packages/DESeq2",
+    "inputs": "Raw integer counts and aligned sample design/contrast.",
+    "parameters": {
+      "review_required": "Design formula; reference level; shrinkage; independent filtering."
+    },
+    "outputs": [
+      "DEG effects/FDR",
+      "normalized counts",
+      "dispersion/MA diagnostics."
+    ],
+    "limits": "Do not input TPM/FPKM as counts; paired design and confounding require explicit handling.",
+    "alternatives": "limma-voom; edgeR",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "limma",
+    "path": "07_bulk_clinical_ml/bulk_RNAseq/limma",
+    "purpose": "Fit sample-level linear models with empirical-Bayes variance moderation.",
+    "package": "limma",
+    "doc": "https://bioconductor.org/packages/limma",
+    "inputs": "Count matrix for voom or appropriate log expression, design and contrasts.",
+    "parameters": {
+      "review_required": "Design; voom weights; contrasts; trend."
+    },
+    "outputs": [
+      "Moderated effects/FDR",
+      "fit diagnostics."
+    ],
+    "limits": "Input scale determines workflow; technical batches cannot resolve complete design confounding.",
+    "alternatives": "DESeq2; edgeR",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "lasso",
+    "path": "07_bulk_clinical_ml/LASSO",
+    "purpose": "Fit penalized regression with separated tuning and test assessment.",
+    "package": "glmnet",
+    "doc": "https://glmnet.stanford.edu/articles/glmnet.html",
+    "inputs": "Training features/outcome, fixed sample-level folds, held-out validation.",
+    "parameters": {
+      "review_required": "Family; alpha=1; lambda.min vs lambda.1se; fold design."
+    },
+    "outputs": [
+      "CV curve",
+      "coefficient path",
+      "selected coefficients",
+      "held-out predictions."
+    ],
+    "limits": "All filtering/scaling/selection must occur inside training folds.",
+    "alternatives": "Elastic net; prespecified simpler models",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "lasso_cox",
+    "path": "07_bulk_clinical_ml/LASSO_Cox",
+    "purpose": "Fit a penalized survival model with censor-aware validation.",
+    "package": "glmnet",
+    "doc": "https://glmnet.stanford.edu/articles/Coxnet.html",
+    "inputs": "Features and Surv outcome plus patient-level folds.",
+    "parameters": {
+      "review_required": "Lambda selection; event balance; censoring-aware metrics."
+    },
+    "outputs": [
+      "CV path",
+      "risk score",
+      "held-out discrimination/calibration."
+    ],
+    "limits": "Do not select genes globally before CV or claim causality from selected features.",
+    "alternatives": "Cox; elastic-net Cox",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "random_forest",
+    "path": "07_bulk_clinical_ml/random_forest",
+    "purpose": "Predict outcomes with a baseline ensemble and held-out performance.",
+    "package": "randomForest",
+    "doc": "https://cran.r-project.org/package=randomForest",
+    "inputs": "Sample-level features/outcome and leakage-free train/test split.",
+    "parameters": {
+      "review_required": "ntree; mtry; class weights; seed."
+    },
+    "outputs": [
+      "OOB error",
+      "held-out predictions",
+      "importance",
+      "ROC when appropriate."
+    ],
+    "limits": "OOB does not replace independent external validation; importance is not mechanism.",
+    "alternatives": "ranger; regularized logistic regression",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "roc",
+    "path": "07_bulk_clinical_ml/machine_learning/ROC",
+    "purpose": "Assess discrimination from held-out binary or time-to-event predictions.",
+    "package": "pROC / timeROC",
+    "doc": "https://cran.r-project.org/package=pROC",
+    "inputs": "Held-out outcomes/scores; event times and censoring for time-dependent ROC.",
+    "parameters": {
+      "review_required": "Positive class; score direction; horizons; IPCW estimator."
+    },
+    "outputs": [
+      "ROC/AUC and CI",
+      "time-dependent AUC."
+    ],
+    "limits": "Conventional ROC is inappropriate for censored survival outcomes; horizon and calibration also matter.",
+    "alternatives": "PR curve for severe imbalance; calibration curves",
+    "script": null,
+    "priority": "B",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "differential_abundance",
+    "path": "02_differential_analysis/differential_abundance",
+    "purpose": "Test replicated abundance shifts while considering composition.",
+    "package": "Milo / scCODA",
+    "doc": "https://bioconductor.org/packages/miloR",
+    "inputs": "Counts/neighbor graph and biological-sample design.",
+    "parameters": {
+      "review_required": "Neighborhood coverage; contrasts; sample structure."
+    },
+    "outputs": [
+      "Neighborhood effect/FDR",
+      "abundance graph."
+    ],
+    "limits": "Sample size, capture bias and composition affect inference; barplots alone are descriptive.",
+    "alternatives": "Sample-level compositional models",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "scvelo",
+    "path": "09_python_bridge/scVelo",
+    "purpose": "Estimate kinetic expression-state direction from spliced/unspliced RNA.",
+    "package": "scvelo",
+    "doc": "https://scvelo.readthedocs.io/",
+    "inputs": "AnnData with spliced/unspliced layers, preprocessing/QC.",
+    "parameters": {
+      "review_required": "Steady-state/dynamical assumptions; gene filtering."
+    },
+    "outputs": [
+      "Velocity",
+      "stream/grid plots",
+      "latent time."
+    ],
+    "limits": "Velocity is not automatically causal lineage evidence; splicing data are mandatory.",
+    "alternatives": "Monocle3/Slingshot when only expression states are available",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "cellrank",
+    "path": "09_python_bridge/CellRank",
+    "purpose": "Estimate state-transition and fate probabilities using explicit kernels.",
+    "package": "cellrank",
+    "doc": "https://cellrank.readthedocs.io/",
+    "inputs": "AnnData, kernel and justified terminal-state definitions.",
+    "parameters": {
+      "review_required": "Kernel weights; estimator; terminal states."
+    },
+    "outputs": [
+      "Macrostates",
+      "absorption/fate probabilities",
+      "driver candidates."
+    ],
+    "limits": "Transition-kernel assumptions and terminal choices dominate interpretation.",
+    "alternatives": "Trajectory ordering or velocity for different questions",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "scanpy",
+    "path": "09_python_bridge/Scanpy",
+    "purpose": "Provide an independently managed Python route for core scRNA analysis.",
+    "package": "scanpy",
+    "doc": "https://scanpy.readthedocs.io/",
+    "inputs": "AnnData counts, metadata and environment specification.",
+    "parameters": {
+      "review_required": "Normalization; PCA; neighbors; clustering seeds."
+    },
+    "outputs": [
+      "AnnData",
+      "embeddings",
+      "marker tables."
+    ],
+    "limits": "R is the primary route; no shared giant Python environment is imposed.",
+    "alternatives": "Seurat",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  },
+  {
+    "id": "foundation_models",
+    "path": "09_python_bridge/foundation_models",
+    "purpose": "Evaluate pretrained representation transfer against simple baselines.",
+    "package": "model-specific",
+    "doc": "https://github.com/bowang-lab/scGPT",
+    "inputs": "Model-compatible expression tokens, checkpoints, training-domain audit.",
+    "parameters": {
+      "review_required": "Checkpoint; vocabulary; normalization; evaluation split."
+    },
+    "outputs": [
+      "Embeddings or task predictions with baseline comparison."
+    ],
+    "limits": "Experimental until domain shift, leakage and baseline benefit are audited; no default checkpoint.",
+    "alternatives": "PCA; validated integration/reference methods",
+    "script": null,
+    "priority": "C",
+    "source": null,
+    "paper": null
+  }
+]

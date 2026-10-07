@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/differential_abundance",
+  "review_required": "Neighborhood coverage; contrasts; sample structure."
+}

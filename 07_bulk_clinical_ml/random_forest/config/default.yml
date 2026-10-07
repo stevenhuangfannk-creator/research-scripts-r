@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/random_forest",
+  "review_required": "ntree; mtry; class weights; seed."
+}

@@ -1,0 +1,7 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/survival_km",
+  "time_column": "explicit",
+  "event_column": "explicit 0/1",
+  "group_column": "explicit"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "composition_sample_v1",
+  "method": "visualization",
+  "purpose": "What fraction of this capture belongs to each cluster?",
+  "script": "08_visualization/Composition/composition_sample_v1.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "pbmc_small: one captured sample",
+  "input_object": "Counts of computed clusters, not biological labels",
+  "major_parameters": {
+    "unit": "captured cells; one sample, no condition comparison",
+    "width_mm": 160,
+    "height_mm": 110,
+    "dpi": 400
+  },
+  "palette": "okabe_ito",
+  "theme": "theme_research",
+  "output_file": "08_visualization/Composition/gallery/composition_sample_v1.png",
+  "vector_file": "08_visualization/Composition/gallery/composition_sample_v1.pdf",
+  "status": "VALIDATED",
+  "selection": "CURRENT_DEFAULT",
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

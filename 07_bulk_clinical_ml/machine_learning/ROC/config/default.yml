@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/roc",
+  "review_required": "Positive class; score direction; horizons; IPCW estimator."
+}
