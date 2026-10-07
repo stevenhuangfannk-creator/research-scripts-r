@@ -1,4 +1,4 @@
-# 图形画廊
+# 图形画廊 / Visualization gallery
 
 先看预览 → 选择 Plot ID → 查找登记的代码与参数。
 

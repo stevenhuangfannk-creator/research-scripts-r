@@ -1,4 +1,29 @@
-# V1 BUILD REPORT
+# V1 构建报告 / V1 build report
+
+## 中文决策摘要 / Decision summary
+
+本页是 **2026-10-07 V1 构建时的历史快照**。后续 V1 已合并到主分支，重要指南已经汉化；下方英文记录的分支、发布步骤和“未合并 main”描述属于当时状态。此次文档更新不新增科研执行证据，原始日志与登记表保持原样。
+
+V1 总体为 `PARTIAL`（部分完成）：方法库结构、核心可复用流程及实际示例画廊已经交付，CellChat／Monocle3 原生执行、整合与富集等验证尚未全部完成。
+
+| 关键决策 | 理由与使用边界 |
+|---|---|
+| 从科研问题进入方法索引 | 先确认输入、物种、样本设计和输出，再选包；避免把不同项目脚本当成可直接互换的通用工具 |
+| 44 个入口分开标明执行状态 | 21 个有脚本、23 个尚无封装；10 个限定范围 PASS、8 个 BLOCKED、26 个 UNVALIDATED，不能把候选写成已完成 |
+| 不设置通用 DEFAULT | 小型示例通过不等于真实图谱、生物学注释、条件效应或临床预测已验证；晋升需要问题特定的比较证据 |
+| 保留原项目和历史路径 | 120 个来源文件与 28 个原 R／Quarto 脚本保留；旧的绝对路径、输入缺失和对象链问题在原项目说明中记录 |
+| 分开管理分析与图形验证 | 34 个实际画廊项包括内置数据、合成演示和原创示意图；CURRENT_DEFAULT 只表示该范围的模板优选，不认证上游分析 |
+| 原始对象与包库不进入 Git | 大型矩阵、RDS/H5、演示运行对象、安装包和缓存保留在本地，不把仓库变成数据镜像 |
+
+### 下一步先做什么 / Next steps
+
+1. 准备兼容的 R／Bioconductor 和源代码编译环境，用官方小数据完成 CellChat／Monocle3 原生流程及主要输出验证。
+2. 再用真实多供者、多条件对象检查通讯比较、整合和样本级下游分析；记录起始细胞、身份、对照、物种／数据库与质控阈值的生物学依据。
+3. 完成 ORA／fgsea 与真实富集曲线，逐项实现其他候选；比较过替代方法后再考虑 RECOMMENDED／DEFAULT。
+
+历史包版本和范围见下方原始记录。当前入门操作见[中文使用指南](USAGE_ZH_CN.md)、[环境说明](ENVIRONMENTS.md)与[方法索引](../METHOD_INDEX.md)。
+
+## 原始英文执行记录 / Original execution record
 
 Date: 2026-10-07. **V1 status: PARTIAL.** The method-first architecture, reusable core
 workflows, machine-readable registries and actual visualization/schematic gallery are
@@ -289,9 +314,8 @@ its existing project context.
 ## Git commits created
 
 - `ef94ea06bc98b4e4e9b9ae9f26ebf2a357a17abd` — `feat: initialize R-first bioinformatics method and visualization library`.
-- Final evidence/report commit — `docs: record V1 build evidence and implementation commit`.
-  Resolve its exact identity with `git log -1 --format=%H -- docs/V1_BUILD_REPORT.md`
-  after checkout; a report cannot contain its own final Git hash.
+- V1 原始最终证据提交 / original evidence commit: `ba2079c0baf57f468998c6ae11deec72f84d078a` — `docs: record V1 build evidence and implementation commit`.
+  这是 V1 的原始提交；后续文档翻译提交不计入原始 V1 构建范围。
 
 Delivery branch: `refactor/bioinformatics-skill-library-v1`. The inherited 23 local commits
 are preserved history and excluded from these two V1 commits. The branch is published

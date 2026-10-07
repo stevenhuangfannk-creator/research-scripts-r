@@ -1,8 +1,8 @@
-# 中文使用指南
+# 中文使用指南 / Usage guide
 
 这份指南帮助你确认每个方法需要什么数据、怎么配置、怎么运行以及输出在哪里。步骤依据本库现有脚本，包名、参数和方法 ID 保留英文。
 
-## 1. 找到要用的方法
+## 1. 找到要用的方法 / Choose a method
 
 先看[方法索引](../METHOD_INDEX.md)。例如“过滤低质量细胞”对应 `scrna_qc`，“批次整合”对应 `harmony`，“细胞通讯”对应 `cellchat`。进入方法目录，依次查看：
 
@@ -23,7 +23,7 @@ Rscript scripts/resolve_asset.R method scrna_qc
 
 如果登记项 `script: null`，本库尚无可执行封装。`--allow-unvalidated` 只能解除已有未验证流程的运行限制，不能运行尚未实现的方法。
 
-## 2. 准备 R 与工作目录
+## 2. 准备 R 与工作目录 / Environment and working directory
 
 使用自己的 R／RStudio，下载或克隆仓库。在终端进入包含 `README.md`、`scripts/` 和 `registry/` 的仓库根目录；RStudio 用户也可以把工作目录设到这里。包版本见[环境说明](ENVIRONMENTS.md)。
 
@@ -37,7 +37,7 @@ Rscript scripts/resolve_asset.R method scrna_qc
 
 通用命令读取配置需要 `yaml`；小示例生成脚本还需要 `jsonlite`。`Seurat`、`survival`、`CellChat` 等按所选方法分别准备。已有包也应检查 namespace 是否能加载，见[环境检查代码](ENVIRONMENTS.md)。
 
-## 3. 跑通完整的小示例
+## 3. 跑通完整的小示例 / Run the small example
 
 这个示例无需外部科研数据，使用 R 自带 `iris`。在仓库根目录执行：
 
@@ -66,7 +66,7 @@ missing: error
 
 `method: spearman` 改为秩相关；`missing: error` 遇缺失值停止，`pairwise` 按变量对排除缺失并记录数量。Spearman 分支当前不提供置信区间。示例混合了不同鸢尾物种，关联可能受物种混杂，主要用于练习运行。
 
-## 4. 换成自己的数据
+## 4. 换成自己的数据 / Configure your own input
 
 复制所选方法的配置到自己的本地工作目录，再修改参数。许多默认配置含提示性占位文字，必须替换为真实值；不要直接运行，也不要套用别人的样本字段和生物学选择。
 
@@ -94,7 +94,7 @@ Rscript scripts/run_method.R cellchat local_config/cellchat.yml --allow-unvalida
 
 通用命令仅在 `result$object` 非 `NULL` 时保存 `object.rds`，把 `result$tables` 中每张表保存为同名 `.tsv`，并保存运行环境和元数据。相关性与 cluster marker 流程只返回表格，不生成 `object.rds`。某些方法还有专属文件或后续绘图脚本，详见对应中文说明。
 
-## 5. 常用包在本库里怎么用
+## 5. 常用包在本库里怎么用 / Package entry points
 
 | 工具／方法 | 需要准备什么 | 中文说明 |
 |---|---|---|
@@ -113,7 +113,7 @@ Rscript scripts/run_method.R cellchat local_config/cellchat.yml --allow-unvalida
 
 这些说明面向本库封装，不代替包的完整手册。缺依赖、未验证或尚无脚本的方法，保持原登记状态。
 
-## 6. 找到并复用图形
+## 6. 找到并复用图形 / Reuse plots
 
 从[画廊](../GALLERY.md)选择 Plot ID，再查询代码和数据：
 
@@ -126,7 +126,7 @@ Rscript scripts/resolve_asset.R palette okabe_ito
 
 画廊生成器 `scripts/generate_gallery.R` 使用固定演示数据，依赖已生成的 smoke 对象，也会写入已有画廊和登记表。只想查看图时，直接打开预览；用自己的数据时调用对应函数。图中英文标签保留原样，需要中文图标签时应准备中文字体并重新检查导出。
 
-## 7. 常见问题
+## 7. 常见问题 / Troubleshooting
 
 | 提示／现象 | 如何处理 |
 |---|---|

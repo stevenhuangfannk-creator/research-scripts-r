@@ -1,4 +1,4 @@
-# 配色索引
+# 配色索引 / Palette index
 
 期刊风格配色来自 ggsci，不是期刊官方要求。实际使用时应结合任务、文字标签与对比度检查色觉障碍（CVD）可读性；`not_certified` 表示尚未认证，`designed_for_common_CVD` 也不能替代具体图形检查。
 

@@ -1,8 +1,8 @@
-# 运行环境与依赖
+# 运行环境与依赖 / Environments and dependencies
 
 本库以 R 为主，按方法准备依赖。包版本证据见 [package_status.tsv](validation/package_status.tsv) 和 [sessionInfo.txt](validation/sessionInfo.txt)；它们记录 V1 构建时的环境，不保证在新电脑上直接可用。入门步骤见[中文使用指南](USAGE_ZH_CN.md)。
 
-## R 环境
+## R 环境 / R environment
 
 V1 使用 R 4.3.1，并通过 `R_LIBS` 加载额外的独立包库，补充 Matrix 1.6-5 与缺少的 CRAN Windows 二进制包，没有覆盖原有包库。包二进制文件和缓存位于仓库之外，本机路径只作为构建证据，不能作为流程依赖。
 
@@ -21,7 +21,7 @@ for (pkg in packages) {
 
 “已经安装”与“能成功加载”是不同状态。例如 Matrix／Seurat 的版本不兼容时，包可能存在，但 namespace 仍加载失败。
 
-## 尚未完成的环境
+## 尚未完成的环境 / Unresolved dependencies
 
 V1 的 CellChat 目标为 tag `v2.1.2`，Monocle3 目标为 `v1.4.27`。既有官方接口审查还记录了 CellChat 开发文档版本 `2.2.0.9001`；这些是已记录的目标与审查版本，不是自动追踪的最新版本。
 

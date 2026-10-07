@@ -1,8 +1,10 @@
-# Research Scripts R｜科研方法与绘图库
+# Research Scripts R｜科研方法与绘图库 / Research methods library
 
 以 R 为主的个人生物信息学方法库：从科研问题出发，找到方法、准备数据、运行可复用流程，再生成图表。方法与图形是主要入口，原始项目保留来源和验证上下文。
 
-## 从这里开始
+English summary: An R-first bioinformatics methods and visualization library. Start with the method index, check the input contract and validation scope, then configure and run the workflow. Chinese-first guidance retains English package names, commands and stable asset IDs.
+
+## 从这里开始 / Start here
 
 - [中文使用指南](docs/USAGE_ZH_CN.md)：第一次使用、依赖检查、配置参数、完整小示例与常见报错。
 - [方法索引](METHOD_INDEX.md)：按“我想研究什么”选择方法或包。
@@ -12,7 +14,7 @@
 
 包名、函数名、文件路径、方法 ID 和配置字段保留英文，便于直接运行命令和查阅官方文档；用途、输入要求、参数解释和操作步骤采用中文。
 
-## 这个库能做什么
+## 功能与选择 / Capabilities and choices
 
 | 想做的分析 | 中文说明入口 | 主要工具或内容 |
 |---|---|---|
@@ -27,7 +29,7 @@
 | Python 工具衔接 | [Python 桥接](09_python_bridge/README.md) | 独立环境规划；尚无可运行封装 |
 | 可编辑科研示意图 | [示意图](10_scientific_schematics/README.md) | 原创 R/grid 组件、PNG/PDF/SVG 示例 |
 
-## 先跑通一个小示例
+## 快速开始 / Quick start
 
 在仓库根目录打开终端，确认 `Rscript` 可用，且 `yaml`、`jsonlite` 已安装，然后运行：
 
@@ -38,7 +40,7 @@ Rscript scripts/run_method.R correlation results/demo/correlation.yml
 
 示例读取 R 内置 `iris` 数据，计算四个数值变量之间的相关性，将表格和运行信息写入 `results/demo/correlation/`。这是验证操作方式的小示例；混合物种的相关性可能受物种影响，不能直接解释为科研结论。Windows 找不到 `Rscript` 时见[中文指南](docs/USAGE_ZH_CN.md)。
 
-## 使用自己的数据
+## 使用自己的数据 / Use your own data
 
 1. 在[方法索引](METHOD_INDEX.md)选择方法，阅读它的 `README.md`、`METHOD_CARD.md`（方法卡）和 `OUTPUT_CATALOG.md`（输出说明）。
 2. 检查物种、表达量尺度、样本设计、依赖版本和已验证范围。
@@ -52,7 +54,7 @@ Rscript scripts/resolve_asset.R plot umap_clean_v1
 Rscript scripts/validate_library.R
 ```
 
-## 哪些已经验证
+## 验证范围与限制 / Validation and limitations
 
 V1 登记 44 个方法入口：21 个有可执行脚本，23 个目前只有方法说明和规划。10 个方法有小型数据或内置数据上的限定范围 `PASS`，8 个记录为 `BLOCKED`，26 个为 `UNVALIDATED`。准确版本和各方法的具体证据见[登记表](registry/methods.yml)及[V1 交付报告](docs/V1_BUILD_REPORT.md)。
 
@@ -62,8 +64,10 @@ V1 登记 44 个方法入口：21 个有可执行脚本，23 个目前只有方�
 - CellChat、Monocle3 的本机完整执行和原生结果画廊仍受依赖与数据条件阻塞；汉化文档不改变它们的状态。
 - 画廊包含 34 个实际渲染的示例。`SYNTHETIC` 表示合成风格演示，不能作为实验结果。
 
-## 维护与历史项目
+## 维护与历史项目 / Maintenance and provenance
 
 新增方法按[添加方法说明](docs/HOW_TO_ADD_METHOD.md)记录输入、参数、输出、来源和验证范围；自动化复用遵循[仓库使用规则](CODEX_RULES.md)。[登记表说明](registry/README.md)解释稳定 ID 和状态字段。
+
+后续重要指南遵循[双语文档规则](AGENTS.md)：中文正文完整说明操作和决策，英文术语与命令保持可直接查阅和运行。
 
 [历史项目索引](99_legacy_projects/README.md)保留三个原始项目的路径；[示例与验证上下文](90_examples/README.md)、[原始项目](projects/)、[论文复现](reproductions/README.md)保留各自的历史说明。原始数据、大型中间对象、凭据和本机包库不进入 Git。旧项目缺少输入或有硬编码路径时，应先阅读对应 README，再考虑运行。
