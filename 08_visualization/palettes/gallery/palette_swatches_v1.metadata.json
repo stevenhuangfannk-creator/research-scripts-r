@@ -1,0 +1,28 @@
+{
+  "id": "palette_swatches_v1",
+  "method": "visualization",
+  "purpose": "Palette reference swatches",
+  "script": "scripts/generate_gallery.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "Installed ggsci/viridisLite and documented color specifications",
+  "input_object": "registry/palettes.yml",
+  "major_parameters": {
+    "source_versions": "3.2.0",
+    "width_mm": 180,
+    "height_mm": 150,
+    "dpi": 400
+  },
+  "palette": "okabe_ito",
+  "theme": "theme_research",
+  "output_file": "08_visualization/palettes/gallery/palette_swatches_v1.png",
+  "vector_file": "08_visualization/palettes/gallery/palette_swatches_v1.pdf",
+  "status": "VALIDATED",
+  "selection": null,
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "schematics": [
+    {
+      "id": "schematic_workflow_v1",
+      "method": "schematic",
+      "purpose": "schematic_workflow_v1",
+      "script": "10_scientific_schematics/workflow_diagrams/workflow_v1.R",
+      "example_script": "scripts/generate_gallery.R",
+      "dataset": "Original workflow template",
+      "input_object": "Original vector components / explicit fixture",
+      "major_parameters": {
+        "width_in": 9,
+        "height_in": 3.5,
+        "dpi": 400
+      },
+      "palette": "celltype_registry / okabe_ito",
+      "theme": "original grid vector",
+      "output_file": "10_scientific_schematics/workflow_diagrams/gallery/schematic_workflow_v1.png",
+      "vector_file": "10_scientific_schematics/workflow_diagrams/gallery/schematic_workflow_v1.pdf",
+      "svg_file": "10_scientific_schematics/workflow_diagrams/gallery/schematic_workflow_v1.svg",
+      "status": "VALIDATED",
+      "selection": null,
+      "synthetic": true,
+      "validation": {
+        "status": "PASS",
+        "scope": "Original schematic/style rendering only; no mechanism certification"
+      },
+      "source_inspiration": "Original repository drawing; no external art",
+      "last_generated": "2026-10-07",
+      "inspiration": "Original generic vector composition",
+      "layout": "schematic_workflow_v1",
+      "components": "10_scientific_schematics/reusable_components/components.R",
+      "editable_source": "10_scientific_schematics/workflow_diagrams/workflow_v1.R",
+      "license_provenance": "Original repository code/art; no third-party icons. Owner redistribution license not specified."
+    },
+    {
+      "id": "schematic_cell_interaction_v1",
+      "method": "schematic",
+      "purpose": "schematic_cell_interaction_v1",
+      "script": "10_scientific_schematics/cell_interaction/cell_interaction_v1.R",
+      "example_script": "scripts/generate_gallery.R",
+      "dataset": "Hypothesis scaffold; no specific LR mechanism",
+      "input_object": "Original vector components / explicit fixture",
+      "major_parameters": {
+        "width_in": 7,
+        "height_in": 4,
+        "dpi": 400
+      },
+      "palette": "celltype_registry / okabe_ito",
+      "theme": "original grid vector",
+      "output_file": "10_scientific_schematics/cell_interaction/gallery/schematic_cell_interaction_v1.png",
+      "vector_file": "10_scientific_schematics/cell_interaction/gallery/schematic_cell_interaction_v1.pdf",
+      "svg_file": "10_scientific_schematics/cell_interaction/gallery/schematic_cell_interaction_v1.svg",
+      "status": "VALIDATED",
+      "selection": null,
+      "synthetic": true,
+      "validation": {
+        "status": "PASS",
+        "scope": "Original schematic/style rendering only; no mechanism certification"
+      },
+      "source_inspiration": "Original repository drawing; no external art",
+      "last_generated": "2026-10-07",
+      "inspiration": "Original generic vector composition",
+      "layout": "schematic_cell_interaction_v1",
+      "components": "10_scientific_schematics/reusable_components/components.R",
+      "editable_source": "10_scientific_schematics/cell_interaction/cell_interaction_v1.R",
+      "license_provenance": "Original repository code/art; no third-party icons. Owner redistribution license not specified."
+    },
+    {
+      "id": "schematic_mechanism_v1",
+      "method": "schematic",
+      "purpose": "schematic_mechanism_v1",
+      "script": "10_scientific_schematics/mechanism_diagrams/mechanism_v1.R",
+      "example_script": "scripts/generate_gallery.R",
+      "dataset": "Original generic mechanism hypothesis template",
+      "input_object": "Original vector components / explicit fixture",
+      "major_parameters": {
+        "width_in": 5,
+        "height_in": 7,
+        "dpi": 400
+      },
+      "palette": "celltype_registry / okabe_ito",
+      "theme": "original grid vector",
+      "output_file": "10_scientific_schematics/mechanism_diagrams/gallery/schematic_mechanism_v1.png",
+      "vector_file": "10_scientific_schematics/mechanism_diagrams/gallery/schematic_mechanism_v1.pdf",
+      "svg_file": "10_scientific_schematics/mechanism_diagrams/gallery/schematic_mechanism_v1.svg",
+      "status": "VALIDATED",
+      "selection": null,
+      "synthetic": true,
+      "validation": {
+        "status": "PASS",
+        "scope": "Original schematic/style rendering only; no mechanism certification"
+      },
+      "source_inspiration": "Original repository drawing; no external art",
+      "last_generated": "2026-10-07",
+      "inspiration": "Original generic vector composition",
+      "layout": "schematic_mechanism_v1",
+      "components": "10_scientific_schematics/reusable_components/components.R",
+      "editable_source": "10_scientific_schematics/mechanism_diagrams/mechanism_v1.R",
+      "license_provenance": "Original repository code/art; no third-party icons. Owner redistribution license not specified."
+    },
+    {
+      "id": "schematic_components_v1",
+      "method": "schematic",
+      "purpose": "schematic_components_v1",
+      "script": "10_scientific_schematics/reusable_components/components.R",
+      "example_script": "scripts/generate_gallery.R",
+      "dataset": "11 original grid components",
+      "input_object": "Original vector components / explicit fixture",
+      "major_parameters": {
+        "width_in": 8,
+        "height_in": 5.5,
+        "dpi": 400
+      },
+      "palette": "celltype_registry / okabe_ito",
+      "theme": "original grid vector",
+      "output_file": "10_scientific_schematics/reusable_components/gallery/schematic_components_v1.png",
+      "vector_file": "10_scientific_schematics/reusable_components/gallery/schematic_components_v1.pdf",
+      "svg_file": "10_scientific_schematics/reusable_components/gallery/schematic_components_v1.svg",
+      "status": "VALIDATED",
+      "selection": null,
+      "synthetic": true,
+      "validation": {
+        "status": "PASS",
+        "scope": "Original schematic/style rendering only; no mechanism certification"
+      },
+      "source_inspiration": "Original repository drawing; no external art",
+      "last_generated": "2026-10-07",
+      "inspiration": "Original generic vector composition",
+      "layout": "schematic_components_v1",
+      "components": "10_scientific_schematics/reusable_components/components.R",
+      "editable_source": "10_scientific_schematics/reusable_components/components.R",
+      "license_provenance": "Original repository code/art; no third-party icons. Owner redistribution license not specified."
+    }
+  ]
+}

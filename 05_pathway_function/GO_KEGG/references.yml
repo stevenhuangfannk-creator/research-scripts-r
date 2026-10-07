@@ -1,0 +1,9 @@
+{
+  "audited_date": "2026-10-07",
+  "official_documentation": "https://yulab-smu.top/biomedical-knowledge-mining-book/",
+  "original_paper": null,
+  "legacy_source": "projects/01_zilongjin_network_pharmacology/modules/06_functional_analysis/6-9_analysis.qmd",
+  "base_commit": "2f12bd7",
+  "adaptation": "Original parameterized implementation of the documented API; legacy data-specific paths, labels and patches are not copied.",
+  "upstream_license": "Review package license before redistribution; no upstream repository is vendored."
+}

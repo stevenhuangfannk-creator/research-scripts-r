@@ -1,0 +1,7 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/sctransform",
+  "vst_flavor": "v2",
+  "vars_to_regress": null,
+  "seed": 42
+}

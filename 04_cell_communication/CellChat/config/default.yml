@@ -1,0 +1,22 @@
+{
+  "input": "data/cellchat_input.rds",
+  "output_dir": "results/cellchat",
+  "species": "mouse",
+  "expression_scale": "lognormalized_RNA",
+  "group_column": "celltype",
+  "average": "triMean",
+  "population_size": false,
+  "min_cells": 10,
+  "nboot": 100,
+  "seed": 42,
+  "ppi_projection": false,
+  "db_annotation": null,
+  "pathways": [],
+  "pair": null,
+  "pair_pathway": null,
+  "sources": null,
+  "targets": null,
+  "receiver_indices": null,
+  "patterns": false,
+  "pattern_k": null
+}

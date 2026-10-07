@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/limma",
+  "review_required": "Design; voom weights; contrasts; trend."
+}

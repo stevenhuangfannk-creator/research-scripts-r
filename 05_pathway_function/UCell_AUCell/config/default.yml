@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/ucell_aucell",
+  "review_required": "Rank cutoff; gene coverage; signature direction."
+}

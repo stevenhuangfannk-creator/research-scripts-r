@@ -1,0 +1,13 @@
+{
+  "audited_date": "2026-10-07",
+  "official_documentation": "https://github.com/jinworks/CellChat",
+  "original_paper": "https://doi.org/10.1038/s41467-021-21246-9",
+  "legacy_source": "projects/03_apap_mouse_liver_atlas/modules/04_cell_communication/mouse_liver_ccc_cellchat_cellphonedb.qmd",
+  "base_commit": "2f12bd7",
+  "adaptation": "Original parameterized implementation of the documented API; legacy data-specific paths, labels and patches are not copied.",
+  "upstream_license": "GPL-3",
+  "target_tag": "v2.1.2",
+  "target_commit": "a0d3b2d231d46c8787177fffeac908270c253747",
+  "current_docs_commit": "75253cd0c9e68410e6e721a6d3a0419a1d7e358f",
+  "current_docs_version": "2.2.0.9001 (development; not installed)"
+}

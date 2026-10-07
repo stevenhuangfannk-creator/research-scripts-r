@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/bulk_deseq2",
+  "review_required": "Design formula; reference level; shrinkage; independent filtering."
+}

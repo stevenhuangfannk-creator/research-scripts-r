@@ -1,0 +1,34 @@
+Nature Figure Static Preflight
+source: outputs\research-scripts-r\scripts\generate_gallery.R
+backend: r
+
+[WARN] SOURCE-SYNTAX: Basic R delimiter check passed; run Rscript parse() when R is available
+[PASS] FONT-FAMILY: A publication-safe sans-serif family is configured
+  - Arial
+[PASS] FONT-SIZE: All detected text sizes are at least 5 pt (minimum 9 pt)
+[PASS] FONT-GLYPH-FLOOR: Python mathtext superscript scaling is not applicable
+[WARN] LEGEND-LABEL-CASE: Literal legend labels should start with display-style capitalization while preserving canonical model names
+  - group=1
+  - group=2
+[PASS] COLOR-MAP: No rainbow/jet/hsv color mapping detected
+[PASS] EDITABLE-TEXT: svglite and cairo_pdf editable-text devices are configured
+[PASS] EXPORT-VECTOR: Both SVG and PDF exports are present
+[WARN] EXPORT-RASTER: PNG preview is present but no TIFF submission raster was found
+[WARN] RASTER-DPI: Raster export meets the 300 dpi floor but not the 600 dpi default
+  - 400
+[WARN] FINAL-WIDTH: Detected width 160.0 mm is not near the common 89/183 mm defaults; verify the target journal
+[PASS] DATA-SAMPLING: No high-confidence row-sampling operation detected
+[PASS] DATA-EXCLUSION: No high-confidence missing-data exclusion detected
+[WARN] DEMO-DATA: Simulated data is present behind an apparent demo path; keep it out of production runs
+  - rnorm(
+[PASS] LOG-GUARD: No logarithmic transform or axis detected
+[PASS] INTERP-MONOTONIC: No NumPy interpolation requiring an increasing x-grid detected
+[PASS] UNCERTAINTY-ENCODING: A stochastic aggregate and uncertainty encoding are both present; still verify every comparable panel
+  - geom_ribbon(
+[PASS] ROTATION-ANCHOR: Matplotlib rotation anchoring is not applicable
+[PASS] ANNOTATION-WORKAROUND: No Matplotlib annotation workaround audit required
+[PASS] BACKEND-EXCLUSIVE: No obvious cross-backend plotting reference found for r
+
+summary: 14 pass, 6 warn, 0 fail
+verdict: READY FOR VISUAL QA
+note: static preflight does not validate statistics, source-data truth, or rendered appearance

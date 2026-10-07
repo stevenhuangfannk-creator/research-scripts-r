@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "palettes": [
+    {
+      "id": "npg_ggsci",
+      "type": "categorical",
+      "recommended_n": 6,
+      "hex_colors": ["#E64B35FF", "#4DBBD5FF", "#00A087FF", "#3C5488FF", "#F39B7FFF", "#8491B4FF", "#91D1C2FF", "#DC0000FF", "#7E6148FF", "#B09C85FF"],
+      "best_for": "Small separated categories",
+      "avoid_when": "Many touching categories or continuous values",
+      "colorblind_safe": "not_certified",
+      "source": "https://nanx.me/ggsci/ (journal-inspired package palettes, not official journal prescriptions)"
+    },
+    {
+      "id": "aaas_ggsci",
+      "type": "categorical",
+      "recommended_n": 6,
+      "hex_colors": ["#3B4992FF", "#EE0000FF", "#008B45FF", "#631879FF", "#008280FF", "#BB0021FF", "#5F559BFF", "#A20056FF", "#808180FF", "#1B1919FF"],
+      "best_for": "Categorical overview",
+      "avoid_when": "Accessibility-critical distinctions without redundant labels",
+      "colorblind_safe": "not_certified",
+      "source": "https://nanx.me/ggsci/ (journal-inspired package palettes, not official journal prescriptions)"
+    },
+    {
+      "id": "nejm_ggsci",
+      "type": "categorical",
+      "recommended_n": 5,
+      "hex_colors": ["#BC3C29FF", "#0072B5FF", "#E18727FF", "#20854EFF", "#7876B1FF", "#6F99ADFF", "#FFDC91FF", "#EE4C97FF"],
+      "best_for": "Small clinical groups",
+      "avoid_when": "More than 8 categories",
+      "colorblind_safe": "not_certified",
+      "source": "https://nanx.me/ggsci/ (journal-inspired package palettes, not official journal prescriptions)"
+    },
+    {
+      "id": "lancet_ggsci",
+      "type": "categorical",
+      "recommended_n": 5,
+      "hex_colors": ["#00468BFF", "#ED0000FF", "#42B540FF", "#0099B4FF", "#925E9FFF", "#FDAF91FF", "#AD002AFF", "#ADB6B6FF", "#1B1919FF"],
+      "best_for": "Categorical groups",
+      "avoid_when": "Quantitative continuous magnitude",
+      "colorblind_safe": "not_certified",
+      "source": "https://nanx.me/ggsci/ (journal-inspired package palettes, not official journal prescriptions)"
+    },
+    {
+      "id": "jama_ggsci",
+      "type": "categorical",
+      "recommended_n": 5,
+      "hex_colors": ["#374E55FF", "#DF8F44FF", "#00A1D5FF", "#B24745FF", "#79AF97FF", "#6A6599FF", "#80796BFF"],
+      "best_for": "Small muted categories",
+      "avoid_when": "More than 7 categories",
+      "colorblind_safe": "not_certified",
+      "source": "https://nanx.me/ggsci/ (journal-inspired package palettes, not official journal prescriptions)"
+    },
+    {
+      "id": "okabe_ito",
+      "type": "categorical",
+      "recommended_n": 8,
+      "hex_colors": ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#000000"],
+      "best_for": "Up to 8 discrete groups, with labels/shapes",
+      "avoid_when": "Yellow thin lines on white; excess categories",
+      "colorblind_safe": "designed_for_common_CVD; verify task contrast",
+      "source": "https://jfly.uni-koeln.de/color/"
+    },
+    {
+      "id": "viridis",
+      "type": "continuous",
+      "recommended_n": null,
+      "hex_colors": ["#440154FF", "#414487FF", "#2A788EFF", "#22A884FF", "#7AD151FF", "#FDE725FF"],
+      "best_for": "Nonnegative expression/activity",
+      "avoid_when": "Signed contrasts around zero",
+      "colorblind_safe": "designed_for_common_CVD",
+      "source": "https://cran.r-project.org/package=viridisLite"
+    },
+    {
+      "id": "cividis",
+      "type": "continuous",
+      "recommended_n": null,
+      "hex_colors": ["#00204DFF", "#31446BFF", "#666970FF", "#958F78FF", "#CBBA69FF", "#FFEA46FF"],
+      "best_for": "Accessible ordered magnitude",
+      "avoid_when": "Unrelated categories",
+      "colorblind_safe": "designed_for_common_CVD",
+      "source": "https://cran.r-project.org/package=viridisLite"
+    },
+    {
+      "id": "blue_white_red",
+      "type": "diverging",
+      "recommended_n": null,
+      "hex_colors": ["#2166AC", "#F7F7F7", "#B2182B"],
+      "best_for": "Signed differences with meaningful zero",
+      "avoid_when": "Unsigned expression levels",
+      "colorblind_safe": "not_certified; add signed labels",
+      "source": "https://colorbrewer2.org/"
+    }
+  ]
+}

@@ -1,0 +1,352 @@
+[
+  {
+    "id": "seurat_ingestion",
+    "url": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "retrieved_status": 200,
+    "bytes": 81248,
+    "title": "Seurat - Guided Clustering Tutorial \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "scrna_qc",
+    "url": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "retrieved_status": 200,
+    "bytes": 81248,
+    "title": "Seurat - Guided Clustering Tutorial \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "scdblfinder",
+    "url": "https://bioconductor.org/packages/release/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html",
+    "retrieved_status": 200,
+    "bytes": 733129,
+    "title": "scDblFinder",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "decontx",
+    "url": "https://bioconductor.org/packages/release/bioc/vignettes/celda/inst/doc/decontX.html",
+    "retrieved_status": 200,
+    "bytes": 2012044,
+    "title": "Decontamination of ambient RNA in single-cell genomic data with DecontX",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "lognormalize",
+    "url": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "retrieved_status": 200,
+    "bytes": 81248,
+    "title": "Seurat - Guided Clustering Tutorial \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "sctransform",
+    "url": "https://satijalab.org/seurat/articles/sctransform_vignette",
+    "retrieved_status": 200,
+    "bytes": 37688,
+    "title": "Using sctransform in Seurat \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "harmony",
+    "url": "https://portals.broadinstitute.org/harmony/articles/quickstart.html",
+    "retrieved_status": 200,
+    "bytes": 27760,
+    "title": "Quick start to Harmony \u00e2\u0080\u00a2 harmony",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "seurat_integration",
+    "url": "https://satijalab.org/seurat/articles/integration_introduction",
+    "retrieved_status": 200,
+    "bytes": 67013,
+    "title": "Introduction to scRNA-seq integration \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "seurat_clustering",
+    "url": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "retrieved_status": 200,
+    "bytes": 81248,
+    "title": "Seurat - Guided Clustering Tutorial \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "hierarchical_annotation",
+    "url": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "retrieved_status": 200,
+    "bytes": 81248,
+    "title": "Seurat - Guided Clustering Tutorial \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "cell_markers",
+    "url": "https://satijalab.org/seurat/articles/pbmc3k_tutorial",
+    "retrieved_status": 200,
+    "bytes": 81248,
+    "title": "Seurat - Guided Clustering Tutorial \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "pseudobulk",
+    "url": "https://satijalab.org/seurat/reference/aggregateexpression",
+    "retrieved_status": 200,
+    "bytes": 16166,
+    "title": "Aggregated feature expression by identity class \u2014 AggregateExpression \u2022 Seurat",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "cellchat",
+    "url": "https://github.com/jinworks/CellChat",
+    "retrieved_status": 200,
+    "bytes": 333256,
+    "title": "GitHub - jinworks/CellChat: R toolkit for inference, visualization and analysis of cell-cell communication from single-cell and spatially resolved transcriptomics \u00b7 GitHub",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "cellchat_compare",
+    "url": "https://github.com/jinworks/CellChat/blob/main/tutorial/Comparison_analysis_of_multiple_datasets.Rmd",
+    "retrieved_status": 200,
+    "bytes": 456252,
+    "title": "CellChat/tutorial/Comparison_analysis_of_multiple_datasets.Rmd at main \u00b7 jinworks/CellChat \u00b7 GitHub",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "monocle3",
+    "url": "https://cole-trapnell-lab.github.io/monocle3/docs/trajectories/",
+    "retrieved_status": 200,
+    "bytes": 38427,
+    "title": "Monocle 3",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "monocle3_dynamics",
+    "url": "https://cole-trapnell-lab.github.io/monocle3/docs/differential/",
+    "retrieved_status": 200,
+    "bytes": 92976,
+    "title": "Monocle 3",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "go_kegg_ora",
+    "url": "https://yulab-smu.top/biomedical-knowledge-mining-book/",
+    "retrieved_status": 200,
+    "bytes": 56651,
+    "title": "Biomedical Knowledge Mining Toolkit",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "fgsea",
+    "url": "https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html",
+    "retrieved_status": 200,
+    "bytes": 940211,
+    "title": "Using fgsea package",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "correlation",
+    "url": "https://stat.ethz.ch/R-manual/R-devel/library/stats/html/cor.test.html",
+    "retrieved_status": 200,
+    "bytes": 10272,
+    "title": "R: Test for Association/Correlation Between Paired Samples",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "survival_km",
+    "url": "https://cran.r-project.org/package=survival",
+    "retrieved_status": 200,
+    "bytes": 97851,
+    "title": "CRAN: Package survival",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "cox",
+    "url": "https://cran.r-project.org/package=survival",
+    "retrieved_status": 200,
+    "bytes": 97851,
+    "title": "CRAN: Package survival",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "soupx",
+    "url": "https://github.com/constantAmateur/SoupX",
+    "retrieved_status": 200,
+    "bytes": 336460,
+    "title": "GitHub - constantAmateur/SoupX: R package to quantify and remove cell free mRNAs from droplet based scRNA-seq data \u00b7 GitHub",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "slingshot",
+    "url": "https://bioconductor.org/packages/slingshot",
+    "retrieved_status": 200,
+    "bytes": 23473,
+    "title": "Bioconductor - slingshot",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "tradeseq",
+    "url": "https://bioconductor.org/packages/tradeSeq",
+    "retrieved_status": 200,
+    "bytes": 24139,
+    "title": "Bioconductor - tradeSeq",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "nichenet",
+    "url": "https://github.com/saeyslab/nichenetr",
+    "retrieved_status": 200,
+    "bytes": 328641,
+    "title": "GitHub - saeyslab/nichenetr: NicheNet: predict active ligand-target links between interacting cells \u00b7 GitHub",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "cellphonedb",
+    "url": "https://cellphonedb.readthedocs.io/en/latest/",
+    "retrieved_status": 200,
+    "bytes": 24599,
+    "title": "Welcome to CellphoneDB\u2019s documentation. &mdash; cellphonedb  documentation",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "liana_plus",
+    "url": "https://liana-py.readthedocs.io/en/latest/",
+    "retrieved_status": 200,
+    "bytes": 48641,
+    "title": "LIANA+ &#8212; liana",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "gsva_ssgsea",
+    "url": "https://bioconductor.org/packages/GSVA",
+    "retrieved_status": 200,
+    "bytes": 29077,
+    "title": "Bioconductor - GSVA",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "ucell_aucell",
+    "url": "https://bioconductor.org/packages/UCell",
+    "retrieved_status": 200,
+    "bytes": 23396,
+    "title": "Bioconductor - UCell",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "ppi",
+    "url": "https://string-db.org/help/api/",
+    "retrieved_status": 200,
+    "bytes": 131513,
+    "title": "API - STRING Help",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "wgcna",
+    "url": "https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/",
+    "retrieved_status": null,
+    "blocker": "SSLError"
+  },
+  {
+    "id": "hdwgcna",
+    "url": "https://smorabit.github.io/hdWGCNA/",
+    "retrieved_status": 200,
+    "bytes": 16669,
+    "title": "hdWGCNA \u2022 hdWGCNA",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "scenic",
+    "url": "https://github.com/aertslab/SCENIC",
+    "retrieved_status": 200,
+    "bytes": 289745,
+    "title": "GitHub - aertslab/SCENIC: SCENIC is an R package to infer Gene Regulatory Networks and cell types from single-cell RNA-seq data. \u00b7 GitHub",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "bulk_deseq2",
+    "url": "https://bioconductor.org/packages/DESeq2",
+    "retrieved_status": 200,
+    "bytes": 43006,
+    "title": "Bioconductor - DESeq2",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "limma",
+    "url": "https://bioconductor.org/packages/limma",
+    "retrieved_status": 200,
+    "bytes": 61170,
+    "title": "Bioconductor - limma",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "lasso",
+    "url": "https://glmnet.stanford.edu/articles/glmnet.html",
+    "retrieved_status": 200,
+    "bytes": 239882,
+    "title": "An Introduction to `glmnet` \u2022 glmnet",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "lasso_cox",
+    "url": "https://glmnet.stanford.edu/articles/Coxnet.html",
+    "retrieved_status": 200,
+    "bytes": 75789,
+    "title": "Regularized Cox Regression \u2022 glmnet",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "random_forest",
+    "url": "https://cran.r-project.org/package=randomForest",
+    "retrieved_status": 200,
+    "bytes": 32875,
+    "title": "CRAN: Package randomForest",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "roc",
+    "url": "https://cran.r-project.org/package=pROC",
+    "retrieved_status": 200,
+    "bytes": 23128,
+    "title": "CRAN: Package pROC",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "differential_abundance",
+    "url": "https://bioconductor.org/packages/miloR",
+    "retrieved_status": 200,
+    "bytes": 25728,
+    "title": "Bioconductor - miloR",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "scvelo",
+    "url": "https://scvelo.readthedocs.io/",
+    "retrieved_status": 200,
+    "bytes": 17393,
+    "title": "scVelo - RNA velocity generalized through dynamical modeling &mdash; scVelo  documentation",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "cellrank",
+    "url": "https://cellrank.readthedocs.io/",
+    "retrieved_status": 200,
+    "bytes": 33415,
+    "title": "cellrank documentation",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "scanpy",
+    "url": "https://scanpy.readthedocs.io/",
+    "retrieved_status": 200,
+    "bytes": 73771,
+    "title": "Scanpy \u2013 Single-Cell Analysis in Python &#8212; scanpy",
+    "review": "candidate/API reference; see specific limitations"
+  },
+  {
+    "id": "foundation_models",
+    "url": "https://github.com/bowang-lab/scGPT",
+    "retrieved_status": 200,
+    "bytes": 328202,
+    "title": "GitHub - bowang-lab/scGPT \u00b7 GitHub",
+    "review": "candidate/API reference; see specific limitations"
+  }
+]

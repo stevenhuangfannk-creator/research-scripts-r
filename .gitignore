@@ -46,6 +46,22 @@ ccc_outputs/
 **/.ipynb_checkpoints/
 reproductions/**/models/
 
+# New skill-library galleries contain only reviewed lightweight previews/vectors.
+!**/gallery/**/*.png
+!**/gallery/**/*.pdf
+!**/gallery/**/*.svg
+# Analysis inputs/intermediate objects remain excluded, including Python bridges.
+*.h5ad
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.cram
+*.npz
+*.7z
+**/R-library/
+
 # Keep lightweight documentation inside ignored reproduction data/output folders.
 !reproductions/**/data/
 reproductions/**/data/*

@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/ppi",
+  "review_required": "Species; STRING score; evidence channel; directedness."
+}

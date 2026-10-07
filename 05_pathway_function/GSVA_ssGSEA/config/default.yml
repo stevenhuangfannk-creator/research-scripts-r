@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/gsva_ssgsea",
+  "review_required": "GSVA vs ssGSEA; kernel; set sizes; installed API version."
+}

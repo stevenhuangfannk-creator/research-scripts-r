@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/soupx",
+  "review_required": "Soup fraction; non-expressing markers."
+}

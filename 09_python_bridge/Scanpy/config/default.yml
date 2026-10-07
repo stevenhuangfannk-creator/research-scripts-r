@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/scanpy",
+  "review_required": "Normalization; PCA; neighbors; clustering seeds."
+}

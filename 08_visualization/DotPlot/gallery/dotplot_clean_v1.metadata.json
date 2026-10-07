@@ -1,0 +1,36 @@
+{
+  "id": "dotplot_clean_v1",
+  "method": "cell_markers",
+  "purpose": "Which selected markers distinguish clusters?",
+  "script": "08_visualization/DotPlot/dotplot_clean_v1.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "pbmc_small",
+  "input_object": "RNA expression summarized by computed cluster",
+  "major_parameters": {
+    "genes": [
+      "LYZ",
+      "CD3E",
+      "MS4A1",
+      "PPBP",
+      "GNLY"
+    ],
+    "size": "percent > 0",
+    "color": "mean log expression",
+    "width_mm": 160,
+    "height_mm": 110,
+    "dpi": 400
+  },
+  "palette": "viridis",
+  "theme": "theme_research",
+  "output_file": "08_visualization/DotPlot/gallery/dotplot_clean_v1.png",
+  "vector_file": "08_visualization/DotPlot/gallery/dotplot_clean_v1.pdf",
+  "status": "VALIDATED",
+  "selection": "CURRENT_DEFAULT",
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

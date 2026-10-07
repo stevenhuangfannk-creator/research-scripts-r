@@ -1,0 +1,8 @@
+{
+  "input": "data/cellchat_conditions.rds",
+  "output_dir": "results/cellchat_comparison",
+  "seed": 42,
+  "sources": null,
+  "targets": null,
+  "embedding": false
+}

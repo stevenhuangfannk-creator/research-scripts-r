@@ -1,0 +1,27 @@
+{
+  "id": "enrichment_dot_style_v1",
+  "method": "visualization",
+  "purpose": "Enrichment dot style",
+  "script": "scripts/generate_gallery.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "Synthetic fixture",
+  "input_object": "Artificial set ranking",
+  "major_parameters": {
+    "width_mm": 160,
+    "height_mm": 110,
+    "dpi": 400
+  },
+  "palette": "viridis",
+  "theme": "theme_research",
+  "output_file": "08_visualization/Enrichment/gallery/enrichment_dot_style_v1.png",
+  "vector_file": "08_visualization/Enrichment/gallery/enrichment_dot_style_v1.pdf",
+  "status": "VALIDATED",
+  "selection": null,
+  "synthetic": true,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

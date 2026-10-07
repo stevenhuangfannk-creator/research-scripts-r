@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='504.00pt' height='288.00pt' viewBox='0 0 504.00 288.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw1MDQuMDB8MC4wMHwyODguMDA='>
+    <rect x='0.00' y='0.00' width='504.00' height='288.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw1MDQuMDB8MC4wMHwyODguMDA=)'>
+<text x='252.00' y='27.69' text-anchor='middle' style='font-size: 13.00px; font-weight: bold; font-family: "Arial";' textLength='166.15px' lengthAdjust='spacingAndGlyphs'>Cell interaction hypothesis</text>
+<circle cx='115.92' cy='138.24' r='40.32' style='stroke-width: 0.60; stroke: #333333; fill: #D55E00;' />
+<circle cx='115.92' cy='138.24' r='13.86' style='stroke-width: 0.52; stroke: #333333; fill: #FFFFFF;' />
+<text x='115.92' y='211.16' text-anchor='middle' style='font-size: 9.00px; font-family: "Arial";' textLength='50.02px' lengthAdjust='spacingAndGlyphs'>Macrophage</text>
+<polygon points='337.68,185.76 375.48,114.48 438.48,90.72 400.68,162.00 ' style='stroke-width: 0.60; stroke: #333333; fill: #8C6BB1;' />
+<circle cx='388.08' cy='138.24' r='13.86' style='stroke-width: 0.52; stroke: #333333; fill: #FFFFFF;' />
+<text x='388.08' y='211.16' text-anchor='middle' style='font-size: 9.00px; font-family: "Arial";' textLength='39.51px' lengthAdjust='spacingAndGlyphs'>Fibroblast</text>
+<line x1='171.36' y1='138.24' x2='327.60' y2='138.24' style='stroke-width: 0.75; stroke: #333333;' />
+<polyline points='322.69,141.07 327.60,138.24 322.69,135.41 ' style='stroke-width: 0.75; stroke: #333333;' />
+<text x='252.00' y='106.90' text-anchor='middle' style='font-size: 9.00px; font-family: "Arial";' textLength='72.53px' lengthAdjust='spacingAndGlyphs'>Ligand to receptor</text>
+<text x='252.00' y='250.55' text-anchor='middle' style='font-size: 8.00px;fill: #555555; font-family: "Arial";' textLength='218.84px' lengthAdjust='spacingAndGlyphs'>Template relationship only; no specific mechanism is asserted</text>
+</g>
+</svg>

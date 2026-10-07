@@ -1,0 +1,1340 @@
+{
+  "schema_version": 1,
+  "statuses": [
+    "CANDIDATE",
+    "VALIDATED",
+    "RECOMMENDED",
+    "DEFAULT",
+    "EXPERIMENTAL",
+    "DEPRECATED"
+  ],
+  "methods": [
+    {
+      "id": "seurat_ingestion",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "Seurat::pbmc_small (230 genes, 80 cells)",
+        "scope": "Counts/metadata alignment and counts preservation only",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.13
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/data_ingestion",
+      "script": "01_scrna_core/data_ingestion/scripts/workflow.R",
+      "config": "01_scrna_core/data_ingestion/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "feature inventory",
+        "cell/sample inventory",
+        "Seurat counts object"
+      ],
+      "gallery": "01_scrna_core/data_ingestion/gallery",
+      "source": "projects/02_gse255834_scrna_pipeline/modules/01_data_ingestion/build_GSE255834_seurat.R",
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "scrna_qc",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "pbmc_small plus explicit three-gene arithmetic fixture",
+        "scope": "pbmc_small lacks mitochondrial/ribosomal genes; audit/filter and exact arithmetic guards only",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.1
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/quality_control",
+      "script": "01_scrna_core/quality_control/scripts/workflow.R",
+      "config": "01_scrna_core/quality_control/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "per-cell QC table",
+        "retention audit",
+        "QC-marked or explicitly filtered Seurat object"
+      ],
+      "gallery": "01_scrna_core/quality_control/gallery",
+      "source": "projects/02_gse255834_scrna_pipeline/modules/02_quality_control/diagnose_qc_distributions.R",
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "scdblfinder",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'scDblFinder'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/doublet_detection/scDblFinder",
+      "script": "01_scrna_core/doublet_detection/scDblFinder/scripts/workflow.R",
+      "config": "01_scrna_core/doublet_detection/scDblFinder/config/default.yml",
+      "package": "scDblFinder",
+      "outputs": [
+        "per-cell doublet score/class",
+        "labeled object"
+      ],
+      "gallery": "01_scrna_core/doublet_detection/scDblFinder/gallery",
+      "source": "projects/02_gse255834_scrna_pipeline/modules/02_quality_control/add_scDblFinder_to_GSE255834.R",
+      "package_versions": {
+        "scDblFinder": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "decontx",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'celda'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/ambient_rna/DecontX",
+      "script": "01_scrna_core/ambient_rna/DecontX/scripts/workflow.R",
+      "config": "01_scrna_core/ambient_rna/DecontX/config/default.yml",
+      "package": "celda",
+      "outputs": [
+        "corrected counts per capture",
+        "contamination estimates"
+      ],
+      "gallery": "01_scrna_core/ambient_rna/DecontX/gallery",
+      "source": "projects/02_gse255834_scrna_pipeline/modules/03_decontamination/decontX_GSE255834.R",
+      "package_versions": {
+        "celda": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "lognormalize",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "Seurat::pbmc_small",
+        "scope": "LogNormalize branch; preserves counts and creates finite RNA data layer",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.37
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/normalization/lognormalize",
+      "script": "01_scrna_core/normalization/lognormalize/scripts/workflow.R",
+      "config": "01_scrna_core/normalization/lognormalize/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "RNA data layer with log-normalized expression"
+      ],
+      "gallery": "01_scrna_core/normalization/lognormalize/gallery",
+      "source": "projects/02_gse255834_scrna_pipeline/modules/01_data_ingestion/build_GSE255834_seurat.R",
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "sctransform",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/normalization/SCTransform",
+      "script": "01_scrna_core/normalization/SCTransform/scripts/workflow.R",
+      "config": "01_scrna_core/normalization/SCTransform/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "SCT assay",
+        "residuals and variable features"
+      ],
+      "gallery": "01_scrna_core/normalization/SCTransform/gallery",
+      "source": null,
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "harmony",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/batch_integration/Harmony",
+      "script": "01_scrna_core/batch_integration/Harmony/scripts/workflow.R",
+      "config": "01_scrna_core/batch_integration/Harmony/config/default.yml",
+      "package": "harmony",
+      "outputs": [
+        "Harmony embedding"
+      ],
+      "gallery": "01_scrna_core/batch_integration/Harmony/gallery",
+      "source": "projects/03_apap_mouse_liver_atlas/modules/02_integration_clustering/integrate_GSE280652_2022.qmd",
+      "package_versions": {
+        "harmony": "1.2.3"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "seurat_integration",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/batch_integration/Seurat",
+      "script": "01_scrna_core/batch_integration/Seurat/scripts/workflow.R",
+      "config": "01_scrna_core/batch_integration/Seurat/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "integrated assay",
+        "retained RNA assay"
+      ],
+      "gallery": "01_scrna_core/batch_integration/Seurat/gallery",
+      "source": null,
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "seurat_clustering",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "Seurat::pbmc_small",
+        "scope": "PCA/neighbors/clustering/UMAP on all 80 cells; not full-atlas robustness",
+        "date": "2026-10-07",
+        "elapsed_seconds": 1.83
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/clustering",
+      "script": "01_scrna_core/clustering/scripts/workflow.R",
+      "config": "01_scrna_core/clustering/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "PCA and UMAP embeddings",
+        "cluster labels",
+        "neighbor graph"
+      ],
+      "gallery": "01_scrna_core/clustering/gallery",
+      "source": "projects/02_gse255834_scrna_pipeline/modules/02_quality_control/strict_qc_umap_70_workers.R",
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "hierarchical_annotation",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "Seurat::pbmc_small",
+        "scope": "Label writeback and Unknown fallback; biological annotations are not validated",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.02
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "01_scrna_core/annotation",
+      "script": "01_scrna_core/annotation/scripts/workflow.R",
+      "config": "01_scrna_core/annotation/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "annotation audit",
+        "labeled object; unmapped clusters remain Unknown"
+      ],
+      "gallery": "01_scrna_core/annotation/gallery",
+      "source": "projects/03_apap_mouse_liver_atlas/modules/03_annotation/mouse_liver_level1_annotation.qmd",
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "cell_markers",
+      "category": "02_differential_analysis",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "Seurat::pbmc_small",
+        "scope": "Exploratory cluster-marker table; no sample-level treatment inference",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.22
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "02_differential_analysis/differential_expression",
+      "script": "02_differential_analysis/differential_expression/scripts/workflow.R",
+      "config": "02_differential_analysis/differential_expression/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "marker effect/test table"
+      ],
+      "gallery": "02_differential_analysis/differential_expression/gallery",
+      "source": null,
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "pseudobulk",
+      "category": "02_differential_analysis",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "Seurat::pbmc_small (one original sample)",
+        "scope": "Raw-count summation/count conservation only; replicated condition testing is unvalidated",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.03
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "02_differential_analysis/pseudobulk",
+      "script": "02_differential_analysis/pseudobulk/scripts/workflow.R",
+      "config": "02_differential_analysis/pseudobulk/config/default.yml",
+      "package": "Seurat",
+      "outputs": [
+        "pseudobulk count matrix",
+        "library-size audit"
+      ],
+      "gallery": "02_differential_analysis/pseudobulk/gallery",
+      "source": null,
+      "package_versions": {
+        "Seurat": "5.2.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "cellchat",
+      "category": "04_cell_communication",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'CellChat'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "04_cell_communication/CellChat",
+      "script": "04_cell_communication/CellChat/scripts/workflow.R",
+      "config": "04_cell_communication/CellChat/config/default.yml",
+      "package": "CellChat",
+      "outputs": [
+        "LR probabilities and native permutation P values",
+        "count/strength matrices",
+        "pathway aggregation",
+        "network roles and optional patterns"
+      ],
+      "gallery": "04_cell_communication/CellChat/gallery",
+      "source": "projects/03_apap_mouse_liver_atlas/modules/04_cell_communication/mouse_liver_ccc_cellchat_cellphonedb.qmd",
+      "package_versions": {
+        "CellChat": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "cellchat_compare",
+      "category": "04_cell_communication",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'CellChat'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "04_cell_communication/CellChat",
+      "script": "04_cell_communication/CellChat/scripts/compare.R",
+      "config": "04_cell_communication/CellChat/config/compare.yml",
+      "package": "CellChat",
+      "outputs": [
+        "interaction/strength comparison",
+        "differential networks",
+        "LR deltas",
+        "pathway and optional similarity comparisons"
+      ],
+      "gallery": "04_cell_communication/CellChat/gallery",
+      "source": "projects/03_apap_mouse_liver_atlas/modules/04_cell_communication/macrophage_TNK_cellchat.qmd",
+      "package_versions": {
+        "CellChat": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "monocle3",
+      "category": "03_cell_dynamics",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'monocle3'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "03_cell_dynamics/monocle3",
+      "script": "03_cell_dynamics/monocle3/scripts/workflow.R",
+      "config": "03_cell_dynamics/monocle3/config/default.yml",
+      "package": "monocle3",
+      "outputs": [
+        "CDS",
+        "principal graph nodes/edges",
+        "pseudotime and reachability",
+        "trajectory and expression plots"
+      ],
+      "gallery": "03_cell_dynamics/monocle3/gallery",
+      "source": null,
+      "package_versions": {
+        "monocle3": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "monocle3_dynamics",
+      "category": "03_cell_dynamics",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'monocle3'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "03_cell_dynamics/monocle3",
+      "script": "03_cell_dynamics/monocle3/scripts/gene_dynamics.R",
+      "config": "03_cell_dynamics/monocle3/config/dynamics.yml",
+      "package": "monocle3",
+      "outputs": [
+        "Moran graph association table",
+        "gene modules",
+        "module-by-group activity",
+        "optional selected-branch association"
+      ],
+      "gallery": "03_cell_dynamics/monocle3/gallery",
+      "source": null,
+      "package_versions": {
+        "monocle3": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "go_kegg_ora",
+      "category": "05_pathway_function",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'clusterProfiler'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "05_pathway_function/GO_KEGG",
+      "script": "05_pathway_function/GO_KEGG/scripts/workflow.R",
+      "config": "05_pathway_function/GO_KEGG/config/default.yml",
+      "package": "clusterProfiler",
+      "outputs": [
+        "enrichment effect/count/FDR table",
+        "enrichResult object"
+      ],
+      "gallery": "05_pathway_function/GO_KEGG/gallery",
+      "source": "projects/01_zilongjin_network_pharmacology/modules/06_functional_analysis/6-9_analysis.qmd",
+      "package_versions": {
+        "clusterProfiler": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "fgsea",
+      "category": "05_pathway_function",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "BLOCKED",
+        "dataset": null,
+        "scope": "Workflow not executed; required namespace/data unavailable",
+        "date": null,
+        "blocker": "there is no package called 'fgsea'"
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "05_pathway_function/GSEA",
+      "script": "05_pathway_function/GSEA/scripts/workflow.R",
+      "config": "05_pathway_function/GSEA/config/default.yml",
+      "package": "fgsea",
+      "outputs": [
+        "NES, adjusted P, leading-edge table",
+        "enrichment curves"
+      ],
+      "gallery": "05_pathway_function/GSEA/gallery",
+      "source": null,
+      "package_versions": {
+        "fgsea": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "correlation",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "datasets::iris (150 observed flowers)",
+        "scope": "Pearson/Spearman tests, BH adjustment and missing/constant-input regression cases; pooled species are confounded",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.03
+      },
+      "default_for": [],
+      "priority": "A",
+      "path": "07_bulk_clinical_ml/correlation",
+      "script": "07_bulk_clinical_ml/correlation/scripts/workflow.R",
+      "config": "07_bulk_clinical_ml/correlation/config/default.yml",
+      "package": "stats",
+      "outputs": [
+        "r/rho, P, BH-adjusted P, n and exclusions",
+        "Pearson CI; Spearman CI unavailable in this baseline"
+      ],
+      "gallery": "07_bulk_clinical_ml/correlation/gallery",
+      "source": null,
+      "package_versions": {
+        "stats": "4.3.1"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "survival_km",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "survival::lung (228 public clinical records)",
+        "scope": "Right-censored KM curve/CI table with explicit 0/1 event mapping; no new clinical interpretation",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.01
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/survival",
+      "script": "07_bulk_clinical_ml/survival/scripts/workflow.R",
+      "config": "07_bulk_clinical_ml/survival/config/default.yml",
+      "package": "survival",
+      "outputs": [
+        "survfit object",
+        "survival, 95% CI, risk counts and event table"
+      ],
+      "gallery": "07_bulk_clinical_ml/survival/gallery",
+      "source": null,
+      "package_versions": {
+        "survival": "3.8.3"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "cox",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "VALIDATED",
+      "validated": true,
+      "validation": {
+        "status": "PASS",
+        "dataset": "survival::lung (age and sex covariates)",
+        "scope": "Cox HR/CI and proportional-hazards diagnostic output only; no predictive or causal certification",
+        "date": "2026-10-07",
+        "elapsed_seconds": 0.02
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/Cox",
+      "script": "07_bulk_clinical_ml/Cox/scripts/workflow.R",
+      "config": "07_bulk_clinical_ml/Cox/config/default.yml",
+      "package": "survival",
+      "outputs": [
+        "Cox model",
+        "HR and 95% CI table",
+        "cox.zph diagnostics"
+      ],
+      "gallery": "07_bulk_clinical_ml/Cox/gallery",
+      "source": null,
+      "package_versions": {
+        "survival": "3.8.3"
+      },
+      "last_validated": "2026-10-07"
+    },
+    {
+      "id": "soupx",
+      "category": "01_scrna_core",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "01_scrna_core/ambient_rna/SoupX",
+      "script": null,
+      "config": "01_scrna_core/ambient_rna/SoupX/config/default.yml",
+      "package": "SoupX",
+      "outputs": [
+        "Contamination fraction",
+        "adjusted counts."
+      ],
+      "gallery": "01_scrna_core/ambient_rna/SoupX/gallery",
+      "source": null,
+      "package_versions": {
+        "SoupX": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "slingshot",
+      "category": "03_cell_dynamics",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "03_cell_dynamics/slingshot",
+      "script": null,
+      "config": "03_cell_dynamics/slingshot/config/default.yml",
+      "package": "slingshot",
+      "outputs": [
+        "Lineages",
+        "pseudotime",
+        "curve weights."
+      ],
+      "gallery": "03_cell_dynamics/slingshot/gallery",
+      "source": null,
+      "package_versions": {
+        "slingshot": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "tradeseq",
+      "category": "03_cell_dynamics",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "03_cell_dynamics/tradeSeq",
+      "script": null,
+      "config": "03_cell_dynamics/tradeSeq/config/default.yml",
+      "package": "tradeSeq",
+      "outputs": [
+        "GAM fits",
+        "association/pattern/endpoint tests."
+      ],
+      "gallery": "03_cell_dynamics/tradeSeq/gallery",
+      "source": null,
+      "package_versions": {
+        "tradeSeq": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "nichenet",
+      "category": "04_cell_communication",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "04_cell_communication/NicheNet",
+      "script": null,
+      "config": "04_cell_communication/NicheNet/config/default.yml",
+      "package": "nichenetr",
+      "outputs": [
+        "Ligand activity ranking",
+        "ligand-target matrix",
+        "LR network",
+        "prioritization plots."
+      ],
+      "gallery": "04_cell_communication/NicheNet/gallery",
+      "source": null,
+      "package_versions": {
+        "nichenetr": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "cellphonedb",
+      "category": "09_python_bridge",
+      "language": "Python",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "09_python_bridge/CellPhoneDB",
+      "script": null,
+      "config": "09_python_bridge/CellPhoneDB/config/default.yml",
+      "package": "cellphonedb",
+      "outputs": [
+        "Means/P values",
+        "significant LR pairs",
+        "source-target bubbles."
+      ],
+      "gallery": "09_python_bridge/CellPhoneDB/gallery",
+      "source": null,
+      "package_versions": {
+        "cellphonedb": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "liana_plus",
+      "category": "04_cell_communication",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "04_cell_communication/LIANA",
+      "script": null,
+      "config": "04_cell_communication/LIANA/config/default.yml",
+      "package": "liana",
+      "outputs": [
+        "Consensus LR ranks",
+        "multi-condition/context evidence."
+      ],
+      "gallery": "04_cell_communication/LIANA/gallery",
+      "source": null,
+      "package_versions": {
+        "liana": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "gsva_ssgsea",
+      "category": "05_pathway_function",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "05_pathway_function/GSVA_ssGSEA",
+      "script": null,
+      "config": "05_pathway_function/GSVA_ssGSEA/config/default.yml",
+      "package": "GSVA",
+      "outputs": [
+        "Pathway \u00d7 sample matrix",
+        "group heatmap/violin."
+      ],
+      "gallery": "05_pathway_function/GSVA_ssGSEA/gallery",
+      "source": null,
+      "package_versions": {
+        "GSVA": ""
+      },
+      "last_validated": null
+    },
+    {
+      "id": "ucell_aucell",
+      "category": "05_pathway_function",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "05_pathway_function/UCell_AUCell",
+      "script": null,
+      "config": "05_pathway_function/UCell_AUCell/config/default.yml",
+      "package": "UCell / AUCell",
+      "outputs": [
+        "Cell \u00d7 signature score",
+        "UMAP/violin/heatmap."
+      ],
+      "gallery": "05_pathway_function/UCell_AUCell/gallery",
+      "source": null,
+      "package_versions": {
+        "UCell": "",
+        "AUCell": "1.24.0"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "ppi",
+      "category": "06_gene_networks",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "06_gene_networks/PPI",
+      "script": null,
+      "config": "06_gene_networks/PPI/config/default.yml",
+      "package": "igraph / ggraph / STRING",
+      "outputs": [
+        "Network",
+        "degree/betweenness",
+        "hub table",
+        "Cytoscape export."
+      ],
+      "gallery": "06_gene_networks/PPI/gallery",
+      "source": null,
+      "package_versions": {
+        "igraph": "2.1.4",
+        "ggraph": "2.2.1",
+        "STRING": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "wgcna",
+      "category": "06_gene_networks",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "06_gene_networks/WGCNA",
+      "script": null,
+      "config": "06_gene_networks/WGCNA/config/default.yml",
+      "package": "WGCNA",
+      "outputs": [
+        "Modules",
+        "eigengenes",
+        "module-trait associations",
+        "hub candidates."
+      ],
+      "gallery": "06_gene_networks/WGCNA/gallery",
+      "source": null,
+      "package_versions": {
+        "WGCNA": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "hdwgcna",
+      "category": "06_gene_networks",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "06_gene_networks/hdWGCNA",
+      "script": null,
+      "config": "06_gene_networks/hdWGCNA/config/default.yml",
+      "package": "hdWGCNA",
+      "outputs": [
+        "Modules",
+        "eigengene activity",
+        "module networks."
+      ],
+      "gallery": "06_gene_networks/hdWGCNA/gallery",
+      "source": null,
+      "package_versions": {
+        "hdWGCNA": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "scenic",
+      "category": "06_gene_networks",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "06_gene_networks/SCENIC",
+      "script": null,
+      "config": "06_gene_networks/SCENIC/config/default.yml",
+      "package": "SCENIC / AUCell",
+      "outputs": [
+        "TF-target regulons",
+        "activity matrix",
+        "regulon specificity."
+      ],
+      "gallery": "06_gene_networks/SCENIC/gallery",
+      "source": null,
+      "package_versions": {
+        "SCENIC": null,
+        "AUCell": "1.24.0"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "bulk_deseq2",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/bulk_RNAseq",
+      "script": null,
+      "config": "07_bulk_clinical_ml/bulk_RNAseq/config/default.yml",
+      "package": "DESeq2",
+      "outputs": [
+        "DEG effects/FDR",
+        "normalized counts",
+        "dispersion/MA diagnostics."
+      ],
+      "gallery": "07_bulk_clinical_ml/bulk_RNAseq/gallery",
+      "source": null,
+      "package_versions": {
+        "DESeq2": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "limma",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/bulk_RNAseq/limma",
+      "script": null,
+      "config": "07_bulk_clinical_ml/bulk_RNAseq/limma/config/default.yml",
+      "package": "limma",
+      "outputs": [
+        "Moderated effects/FDR",
+        "fit diagnostics."
+      ],
+      "gallery": "07_bulk_clinical_ml/bulk_RNAseq/limma/gallery",
+      "source": null,
+      "package_versions": {
+        "limma": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "lasso",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/LASSO",
+      "script": null,
+      "config": "07_bulk_clinical_ml/LASSO/config/default.yml",
+      "package": "glmnet",
+      "outputs": [
+        "CV curve",
+        "coefficient path",
+        "selected coefficients",
+        "held-out predictions."
+      ],
+      "gallery": "07_bulk_clinical_ml/LASSO/gallery",
+      "source": null,
+      "package_versions": {
+        "glmnet": "4.1.8"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "lasso_cox",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/LASSO_Cox",
+      "script": null,
+      "config": "07_bulk_clinical_ml/LASSO_Cox/config/default.yml",
+      "package": "glmnet",
+      "outputs": [
+        "CV path",
+        "risk score",
+        "held-out discrimination/calibration."
+      ],
+      "gallery": "07_bulk_clinical_ml/LASSO_Cox/gallery",
+      "source": null,
+      "package_versions": {
+        "glmnet": "4.1.8"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "random_forest",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/random_forest",
+      "script": null,
+      "config": "07_bulk_clinical_ml/random_forest/config/default.yml",
+      "package": "randomForest",
+      "outputs": [
+        "OOB error",
+        "held-out predictions",
+        "importance",
+        "ROC when appropriate."
+      ],
+      "gallery": "07_bulk_clinical_ml/random_forest/gallery",
+      "source": null,
+      "package_versions": {
+        "randomForest": "4.7.1.2"
+      },
+      "last_validated": null
+    },
+    {
+      "id": "roc",
+      "category": "07_bulk_clinical_ml",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "B",
+      "path": "07_bulk_clinical_ml/machine_learning/ROC",
+      "script": null,
+      "config": "07_bulk_clinical_ml/machine_learning/ROC/config/default.yml",
+      "package": "pROC / timeROC",
+      "outputs": [
+        "ROC/AUC and CI",
+        "time-dependent AUC."
+      ],
+      "gallery": "07_bulk_clinical_ml/machine_learning/ROC/gallery",
+      "source": null,
+      "package_versions": {
+        "pROC": "1.18.5",
+        "timeROC": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "differential_abundance",
+      "category": "02_differential_analysis",
+      "language": "R",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "02_differential_analysis/differential_abundance",
+      "script": null,
+      "config": "02_differential_analysis/differential_abundance/config/default.yml",
+      "package": "Milo / scCODA",
+      "outputs": [
+        "Neighborhood effect/FDR",
+        "abundance graph."
+      ],
+      "gallery": "02_differential_analysis/differential_abundance/gallery",
+      "source": null,
+      "package_versions": {
+        "Milo": null,
+        "scCODA": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "scvelo",
+      "category": "09_python_bridge",
+      "language": "Python",
+      "status": "EXPERIMENTAL",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "09_python_bridge/scVelo",
+      "script": null,
+      "config": "09_python_bridge/scVelo/config/default.yml",
+      "package": "scvelo",
+      "outputs": [
+        "Velocity",
+        "stream/grid plots",
+        "latent time."
+      ],
+      "gallery": "09_python_bridge/scVelo/gallery",
+      "source": null,
+      "package_versions": {
+        "scvelo": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "cellrank",
+      "category": "09_python_bridge",
+      "language": "Python",
+      "status": "EXPERIMENTAL",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "09_python_bridge/CellRank",
+      "script": null,
+      "config": "09_python_bridge/CellRank/config/default.yml",
+      "package": "cellrank",
+      "outputs": [
+        "Macrostates",
+        "absorption/fate probabilities",
+        "driver candidates."
+      ],
+      "gallery": "09_python_bridge/CellRank/gallery",
+      "source": null,
+      "package_versions": {
+        "cellrank": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "scanpy",
+      "category": "09_python_bridge",
+      "language": "Python",
+      "status": "CANDIDATE",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "09_python_bridge/Scanpy",
+      "script": null,
+      "config": "09_python_bridge/Scanpy/config/default.yml",
+      "package": "scanpy",
+      "outputs": [
+        "AnnData",
+        "embeddings",
+        "marker tables."
+      ],
+      "gallery": "09_python_bridge/Scanpy/gallery",
+      "source": null,
+      "package_versions": {
+        "scanpy": null
+      },
+      "last_validated": null
+    },
+    {
+      "id": "foundation_models",
+      "category": "09_python_bridge",
+      "language": "Python",
+      "status": "EXPERIMENTAL",
+      "validated": false,
+      "validation": {
+        "status": "UNVALIDATED",
+        "scope": "No executable evidence in this build",
+        "dataset": null,
+        "date": null
+      },
+      "default_for": [],
+      "priority": "C",
+      "path": "09_python_bridge/foundation_models",
+      "script": null,
+      "config": "09_python_bridge/foundation_models/config/default.yml",
+      "package": "model-specific",
+      "outputs": [
+        "Embeddings or task predictions with baseline comparison."
+      ],
+      "gallery": "09_python_bridge/foundation_models/gallery",
+      "source": null,
+      "package_versions": {
+        "model-specific": null
+      },
+      "last_validated": null
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/foundation_models",
+  "review_required": "Checkpoint; vocabulary; normalization; evaluation split."
+}

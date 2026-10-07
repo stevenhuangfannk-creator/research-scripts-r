@@ -1,0 +1,157 @@
+{
+  "seurat_ingestion": {
+    "status": "PASS",
+    "dataset": "Seurat::pbmc_small (230 genes, 80 cells)",
+    "scope": "Counts/metadata alignment and counts preservation only",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.12,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "scrna_qc": {
+    "status": "PASS",
+    "dataset": "pbmc_small plus explicit three-gene arithmetic fixture",
+    "scope": "pbmc_small lacks mitochondrial/ribosomal genes; audit/filter and exact arithmetic guards only",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.09,
+    "warning_count": 1,
+    "warnings": "Data is of class matrix. Coercing to dgCMatrix."
+  },
+  "lognormalize": {
+    "status": "PASS",
+    "dataset": "Seurat::pbmc_small",
+    "scope": "LogNormalize branch; preserves counts and creates finite RNA data layer",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.36,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "seurat_clustering": {
+    "status": "PASS",
+    "dataset": "Seurat::pbmc_small",
+    "scope": "PCA/neighbors/clustering/UMAP on all 80 cells; not full-atlas robustness",
+    "date": "2026-10-07",
+    "elapsed_seconds": 1.83,
+    "warning_count": 1,
+    "warnings": "The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric\nTo use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'\nThis message will be shown once per session"
+  },
+  "hierarchical_annotation": {
+    "status": "PASS",
+    "dataset": "Seurat::pbmc_small",
+    "scope": "Label writeback and Unknown fallback; biological annotations are not validated",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.02,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "cell_markers": {
+    "status": "PASS",
+    "dataset": "Seurat::pbmc_small",
+    "scope": "Exploratory cluster-marker table; no sample-level treatment inference",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.23,
+    "warning_count": 187,
+    "warnings": "cannot compute exact p-value with ties"
+  },
+  "pseudobulk": {
+    "status": "PASS",
+    "dataset": "Seurat::pbmc_small (one original sample)",
+    "scope": "Raw-count summation/count conservation only; replicated condition testing is unvalidated",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.05,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "registry_unicode": {
+    "status": "PASS",
+    "dataset": "UTF-8 parser regression fixture",
+    "scope": "Registry Unicode preserved under Windows C locale",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "correlation": {
+    "status": "PASS",
+    "dataset": "datasets::iris (150 observed flowers)",
+    "scope": "Pearson/Spearman tests, BH adjustment and missing/constant-input regression cases; pooled species are confounded",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.03,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "survival_km": {
+    "status": "PASS",
+    "dataset": "survival::lung (228 public clinical records)",
+    "scope": "Right-censored KM curve/CI table with explicit 0/1 event mapping; no new clinical interpretation",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.02,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "cox": {
+    "status": "PASS",
+    "dataset": "survival::lung (age and sex covariates)",
+    "scope": "Cox HR/CI and proportional-hazards diagnostic output only; no predictive or causal certification",
+    "date": "2026-10-07",
+    "elapsed_seconds": 0.03,
+    "warning_count": 0,
+    "warnings": []
+  },
+  "cellchat": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'CellChat'"
+  },
+  "cellchat_compare": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'CellChat'"
+  },
+  "monocle3": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'monocle3'"
+  },
+  "monocle3_dynamics": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'monocle3'"
+  },
+  "scdblfinder": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'scDblFinder'"
+  },
+  "decontx": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'celda'"
+  },
+  "go_kegg_ora": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'clusterProfiler'"
+  },
+  "fgsea": {
+    "status": "BLOCKED",
+    "dataset": null,
+    "scope": "Workflow not executed; required namespace/data unavailable",
+    "date": null,
+    "blocker": "there is no package called 'fgsea'"
+  }
+}

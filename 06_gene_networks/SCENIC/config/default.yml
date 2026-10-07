@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/scenic",
+  "review_required": "Network algorithm; motif resource; AUCell thresholds."
+}

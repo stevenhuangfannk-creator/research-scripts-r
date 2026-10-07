@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "colors": {
+    "Macrophage": "#D55E00",
+    "Monocyte": "#E69F00",
+    "Neutrophil": "#CC79A7",
+    "T cell": "#0072B2",
+    "B cell": "#56B4E9",
+    "NK": "#009E73",
+    "Fibroblast": "#8C6BB1",
+    "Endothelial": "#4D4D4D",
+    "Epithelial": "#66A61E",
+    "Plasma cell": "#A6761D"
+  },
+  "caveat": "Stable identity mapping; >8 colors are not certified CVD-safe. Use labels/facets as well.",
+  "condition_colors": {
+    "Control": "#0072B2",
+    "Treatment": "#D55E00"
+  }
+}

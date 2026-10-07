@@ -1,0 +1,7 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/harmony",
+  "batch_column": "technical batch",
+  "npcs": 30,
+  "theta": 2
+}

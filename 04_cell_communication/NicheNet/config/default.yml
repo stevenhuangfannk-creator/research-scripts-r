@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/nichenet",
+  "review_required": "Receiver gene set/background; expression threshold; prior species."
+}

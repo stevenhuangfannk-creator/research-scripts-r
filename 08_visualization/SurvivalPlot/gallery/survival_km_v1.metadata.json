@@ -1,0 +1,29 @@
+{
+  "id": "survival_km_v1",
+  "method": "survival_km",
+  "purpose": "KM survival with uncertainty and risk counts",
+  "script": "scripts/generate_gallery.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "survival::lung; 228 records",
+  "input_object": "Time, explicit event status=2, sex strata",
+  "major_parameters": {
+    "time_origin": "dataset time",
+    "event": "status == 2",
+    "width_mm": 160,
+    "height_mm": 150,
+    "dpi": 400
+  },
+  "palette": "okabe_ito",
+  "theme": "theme_research",
+  "output_file": "08_visualization/SurvivalPlot/gallery/survival_km_v1.png",
+  "vector_file": "08_visualization/SurvivalPlot/gallery/survival_km_v1.pdf",
+  "status": "VALIDATED",
+  "selection": null,
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Rendering on the declared demo only; no study-level analytical certification"
+  },
+  "source_inspiration": "Original repository implementation using official R APIs",
+  "last_generated": "2026-10-07"
+}

@@ -1,0 +1,10 @@
+{
+  "input": "results/monocle3/object.rds",
+  "output_dir": "results/monocle3_dynamics",
+  "cores": 1,
+  "q_value": 0.05,
+  "resolution": 0.01,
+  "seed": 42,
+  "celltype_column": "celltype",
+  "branch_cells": null
+}

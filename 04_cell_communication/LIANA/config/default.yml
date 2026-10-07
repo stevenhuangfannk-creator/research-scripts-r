@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/liana_plus",
+  "review_required": "Resource; methods; ranking aggregation."
+}

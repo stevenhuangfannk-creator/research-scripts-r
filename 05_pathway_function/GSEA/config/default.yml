@@ -1,0 +1,7 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/fgsea",
+  "min_size": 15,
+  "max_size": 500,
+  "seed": 42
+}

@@ -1,0 +1,28 @@
+{
+  "id": "chord_style_v1",
+  "method": "visualization",
+  "purpose": "chord_style_v1",
+  "script": "scripts/generate_gallery.R",
+  "example_script": "scripts/generate_gallery.R",
+  "dataset": "Synthetic directed matrix",
+  "input_object": "Original vector components / explicit fixture",
+  "major_parameters": {
+    "width_in": 7,
+    "height_in": 4,
+    "dpi": 400
+  },
+  "palette": "celltype_registry / okabe_ito",
+  "theme": "original grid vector",
+  "output_file": "08_visualization/Circle_Chord/gallery/chord_style_v1.png",
+  "vector_file": "08_visualization/Circle_Chord/gallery/chord_style_v1.pdf",
+  "svg_file": "08_visualization/Circle_Chord/gallery/chord_style_v1.svg",
+  "status": "VALIDATED",
+  "selection": null,
+  "synthetic": true,
+  "validation": {
+    "status": "PASS",
+    "scope": "Original schematic/style rendering only; no mechanism certification"
+  },
+  "source_inspiration": "Original repository drawing; no external art",
+  "last_generated": "2026-10-07"
+}

@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/cellrank",
+  "review_required": "Kernel weights; estimator; terminal states."
+}

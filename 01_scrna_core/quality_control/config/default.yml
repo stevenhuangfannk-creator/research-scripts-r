@@ -1,0 +1,8 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/scrna_qc",
+  "mt_pattern": "^MT- (human) / ^mt- (mouse); review IDs",
+  "ribo_pattern": "^RP[SL] / ^Rp[sl]",
+  "thresholds": "mandatory, study-specific",
+  "filter": false
+}

@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/scvelo",
+  "review_required": "Steady-state/dynamical assumptions; gene filtering."
+}

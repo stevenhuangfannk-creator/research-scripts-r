@@ -1,0 +1,5 @@
+{
+  "input": "data/input.rds",
+  "output_dir": "results/wgcna",
+  "review_required": "Soft threshold; signedness; minimum module size; covariates."
+}
