@@ -77,7 +77,7 @@ destructive history operation was used. The refactor starts from existing local 
 `2f12bd7850407fdae44497a116fab8368613526b`, retaining 23 earlier commits beyond the observed
 remote main `3868aefa81d4d9ff635f20aa95675cb7cbe398df`. These are inherited work, not V1 changes.
 Main was not merged or rewritten. Publish-history inspection found no prohibited data
-extensions or blobs above 10 MiB in the inherited range; see [history check](validation/publish_history_check.json).
+extensions or blobs above 10 MiB in the inherited and V1 implementation range; see [history check](validation/publish_history_check.json).
 
 ## Methods extracted
 
@@ -288,7 +288,11 @@ its existing project context.
 
 ## Git commits created
 
-The V1 implementation is prepared on `refactor/bioinformatics-skill-library-v1`.
-The implementation commit identity is appended after the commit is created; a subsequent
-documentation commit records that identity without inventing a self-referential hash.
-The inherited 23 local commits are preserved history and are excluded from the V1 change count.
+- `ef94ea06bc98b4e4e9b9ae9f26ebf2a357a17abd` — `feat: initialize R-first bioinformatics method and visualization library`.
+- Final evidence/report commit — `docs: record V1 build evidence and implementation commit`.
+  Resolve its exact identity with `git log -1 --format=%H -- docs/V1_BUILD_REPORT.md`
+  after checkout; a report cannot contain its own final Git hash.
+
+Delivery branch: `refactor/bioinformatics-skill-library-v1`. The inherited 23 local commits
+are preserved history and excluded from these two V1 commits. The branch is published
+without merging or rewriting main. The final terminal status includes the delivery HEAD.
