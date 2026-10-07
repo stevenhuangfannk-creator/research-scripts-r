@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** fgsea
+**方法 ID：** fgsea
 
-**Category:** 05_pathway_function
+**分类：** 05_pathway_function
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** fgsea
+**依赖包：** fgsea
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html
+**官方文档：** [fgsea](https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Test ranked gene-set enrichment without an arbitrary DEG cutoff.
+**目的：** 使用完整的基因排序统计量检验基因集富集，避免任意 DEG 阈值。
 
-**Biological question:** Test ranked gene-set enrichment without an arbitrary DEG cutoff.
+**生物学问题：** 使用完整的基因排序统计量检验基因集富集，避免任意 DEG 阈值。
 
-**When to use:** list(ranks: complete signed named statistic, pathways: gene-set list); unique compatible IDs.
+**适用条件：** RDS 保存的 list(ranks, pathways)。ranks 为命名、有限的带方向数值向量，基因名唯一；pathways 为命名基因集列表，两者须使用兼容的基因 ID。
 
-**When NOT to use:** Rank by a meaningful signed statistic, not P alone or arbitrary PPI degree for transcriptional enrichment. Record ties and mapped coverage; NES comparisons need identical gene-set definitions.
+**不适用条件与结论边界：** 排序必须使用有意义的带方向统计量，不能只用 P 值或任意 PPI 度数解释转录富集。记录并列值和映射覆盖率；比较 NES 时须使用相同基因集定义。
 
-**Required input:** list(ranks: complete signed named statistic, pathways: gene-set list); unique compatible IDs.
+**必需输入：** RDS 保存的 list(ranks, pathways)。ranks 为命名、有限的带方向数值向量，基因名唯一；pathways 为命名基因集列表，两者须使用兼容的基因 ID。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** min_size = 15; max_size = 500; seed = 42
+**主要参数：** min_size = 15；max_size = 500；seed = 42。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Rank by a meaningful signed statistic, not P alone or arbitrary PPI degree for transcriptional enrichment. Record ties and mapped coverage; NES comparisons need identical gene-set definitions.
+**需要生物学判断的内容：** 排序必须使用有意义的带方向统计量，不能只用 P 值或任意 PPI 度数解释转录富集。记录并列值和映射覆盖率；比较 NES 时须使用相同基因集定义。
 
-**Outputs:** NES, adjusted P, leading-edge table; enrichment curves
+**输出：** gsea.tsv 包括 NES、校正 P 值和 leadingEdge；leadingEdge 以分号拼接。当前脚本不生成富集曲线，也不返回分析对象。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Rank by a meaningful signed statistic, not P alone or arbitrary PPI degree for transcriptional enrichment. Record ties and mapped coverage; NES comparisons need identical gene-set definitions.
+**局限：** 排序必须使用有意义的带方向统计量，不能只用 P 值或任意 PPI 度数解释转录富集。记录并列值和映射覆盖率；比较 NES 时须使用相同基因集定义。
 
-**Assumptions:** Rank by a meaningful signed statistic, not P alone or arbitrary PPI degree for transcriptional enrichment. Record ties and mapped coverage; NES comparisons need identical gene-set definitions.
+**假设：** 使用者必须确认上述输入和研究设计适用；排序必须使用有意义的带方向统计量，不能只用 P 值或任意 PPI 度数解释转录富集。记录并列值和映射覆盖率；比较 NES 时须使用相同基因集定义。
 
-**Common pitfalls:** Rank by a meaningful signed statistic, not P alone or arbitrary PPI degree for transcriptional enrichment. Record ties and mapped coverage; NES comparisons need identical gene-set definitions.
+**常见误区：** 排序必须使用有意义的带方向统计量，不能只用 P 值或任意 PPI 度数解释转录富集。记录并列值和映射覆盖率；比较 NES 时须使用相同基因集定义。
 
-**Alternatives:** ORA for a justified selected list; clusterProfiler GSEA for its result/visualization interface.
+**替代方案：** 有明确选择依据的基因清单可用 ORA；需要相应结果/绘图接口时可考虑 clusterProfiler GSEA（本目录未实现）。
 
-**When to prefer alternatives:** ORA for a justified selected list; clusterProfiler GSEA for its result/visualization interface.
+**何时考虑替代方案：** 有明确选择依据的基因清单可用 ORA；需要相应结果/绘图接口时可考虑 clusterProfiler GSEA（本目录未实现）。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** BLOCKED — Workflow not executed; required namespace/data unavailable
+**验证状态：** BLOCKED — 工作流未执行，所需依赖/数据尚未就绪。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** 05_pathway_function/GSEA/scripts/workflow.R
+**推荐脚本：** [`workflow.R`](scripts/workflow.R)；具体运行和限制见 [README](README.md)。
 
-**References:** https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html
+**参考来源：** [官方文档](https://bioconductor.org/packages/release/bioc/vignettes/fgsea/inst/doc/fgsea-tutorial.html)。

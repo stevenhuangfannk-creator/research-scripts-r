@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：scVelo RNA velocity
 
-**Method:** scvelo
+**方法 ID:** scvelo
 
-**Category:** 09_python_bridge
+**分类:** 09_python_bridge
 
-**Status:** EXPERIMENTAL
+**状态:** EXPERIMENTAL
 
-**Language:** Python
+**语言:** Python
 
-**Package:** scvelo
+**包 / 工具:** scvelo
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://scvelo.readthedocs.io/
+**官方文档:** [scvelo 官方文档](https://scvelo.readthedocs.io/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Estimate kinetic expression-state direction from spliced/unspliced RNA.
+**目的:** 从已剪接 / 未剪接 RNA 估计表达状态变化方向。
 
-**Biological question:** Estimate kinetic expression-state direction from spliced/unspliced RNA.
+**科研问题:** 从已剪接 / 未剪接 RNA 估计表达状态变化方向。
 
-**When to use:** AnnData with spliced/unspliced layers, preprocessing/QC.
+**适用情况:** 含 spliced / unspliced 层的 AnnData 对象，以及预处理和质量控制信息。
 
-**When NOT to use:** Velocity is not automatically causal lineage evidence; splicing data are mandatory.
+**不适用情况 / 使用边界:** velocity 不能自动视为因果谱系证据；必须具有剪接相关数据。
 
-**Required input:** AnnData with spliced/unspliced layers, preprocessing/QC.
+**必需输入:** 含 spliced / unspliced 层的 AnnData 对象，以及预处理和质量控制信息。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = Steady-state/dynamical assumptions; gene filtering.
+**主要参数:** review_required = 稳态 / 动态模型假设；基因过滤。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Velocity is not automatically causal lineage evidence; splicing data are mandatory.
+**需要科研判断的参数:** velocity 不能自动视为因果谱系证据；必须具有剪接相关数据。 具体配置见 [README](README.md)。
 
-**Outputs:** Velocity; stream/grid plots; latent time.
+**输出:** RNA velocity；流线图 / 网格图；潜在时间（latent time）。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Velocity is not automatically causal lineage evidence; splicing data are mandatory.
+**局限:** velocity 不能自动视为因果谱系证据；必须具有剪接相关数据。
 
-**Assumptions:** Velocity is not automatically causal lineage evidence; splicing data are mandatory.
+**假设:** velocity 不能自动视为因果谱系证据；必须具有剪接相关数据。
 
-**Common pitfalls:** Velocity is not automatically causal lineage evidence; splicing data are mandatory.
+**常见问题:** velocity 不能自动视为因果谱系证据；必须具有剪接相关数据。
 
-**Alternatives:** Monocle3/Slingshot when only expression states are available
+**替代方法:** 只有表达状态时，考虑 Monocle3 / Slingshot
 
-**When to prefer alternatives:** Monocle3/Slingshot when only expression states are available
+**何时选择替代方案:** 只有表达状态时，考虑 Monocle3 / Slingshot；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://scvelo.readthedocs.io/
+**参考资料:** [scvelo 官方文档](https://scvelo.readthedocs.io/)

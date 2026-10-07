@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** gsva_ssgsea
+**方法 ID：** gsva_ssgsea
 
-**Category:** 05_pathway_function
+**分类：** 05_pathway_function
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** GSVA
+**依赖包：** GSVA
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://bioconductor.org/packages/GSVA
+**官方文档：** [GSVA](https://bioconductor.org/packages/GSVA)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Estimate sample-level gene-set activity for replicated group comparisons.
+**目的：** 估计样本层面的基因集活性，用于有生物学重复的组间比较。
 
-**Biological question:** Estimate sample-level gene-set activity for replicated group comparisons.
+**生物学问题：** 估计样本层面的基因集活性，用于有生物学重复的组间比较。
 
-**When to use:** Normalized gene × independent-sample matrix and gene sets.
+**适用条件：** 归一化的基因 × 独立样本表达矩阵，以及基因集。
 
-**When NOT to use:** Recent GSVA uses parameter objects; never assume old gsva(expr, sets) API.
+**不适用条件与结论边界：** 较新的 GSVA API 使用参数对象；不能假定旧式 gsva(expr, sets) 调用仍可用。组间推断需要独立样本层面的重复。
 
-**Required input:** Normalized gene × independent-sample matrix and gene sets.
+**必需输入：** 归一化的基因 × 独立样本表达矩阵，以及基因集。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** review_required = GSVA vs ssGSEA; kernel; set sizes; installed API version.
+**主要参数：** review_required：GSVA 或 ssGSEA、核函数、基因集大小和已安装的 API 版本。当前只是待核对清单，尚未接入可执行脚本。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Recent GSVA uses parameter objects; never assume old gsva(expr, sets) API.
+**需要生物学判断的内容：** 较新的 GSVA API 使用参数对象；不能假定旧式 gsva(expr, sets) 调用仍可用。组间推断需要独立样本层面的重复。
 
-**Outputs:** Pathway × sample matrix; group heatmap/violin.
+**输出：** 通路 × 样本矩阵、组间热图/小提琴图（规划输出）。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Recent GSVA uses parameter objects; never assume old gsva(expr, sets) API.
+**局限：** 较新的 GSVA API 使用参数对象；不能假定旧式 gsva(expr, sets) 调用仍可用。组间推断需要独立样本层面的重复。
 
-**Assumptions:** Recent GSVA uses parameter objects; never assume old gsva(expr, sets) API.
+**假设：** 使用者必须确认上述输入和研究设计适用；较新的 GSVA API 使用参数对象；不能假定旧式 gsva(expr, sets) 调用仍可用。组间推断需要独立样本层面的重复。
 
-**Common pitfalls:** Recent GSVA uses parameter objects; never assume old gsva(expr, sets) API.
+**常见误区：** 较新的 GSVA API 使用参数对象；不能假定旧式 gsva(expr, sets) 调用仍可用。组间推断需要独立样本层面的重复。
 
-**Alternatives:** GSEA for ranked group contrasts; UCell for cells
+**替代方案：** 有排序的组间对比统计量时用 GSEA；细胞级评分考虑 UCell。
 
-**When to prefer alternatives:** GSEA for ranked group contrasts; UCell for cells
+**何时考虑替代方案：** 有排序的组间对比统计量时用 GSEA；细胞级评分考虑 UCell。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态：** UNVALIDATED — 本次构建没有可执行实现或运行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本：** 无；此处仅记录候选能力。
 
-**References:** https://bioconductor.org/packages/GSVA
+**参考来源：** [官方文档](https://bioconductor.org/packages/GSVA)。

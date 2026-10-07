@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：SCTransform 方差稳定化
 
-**Method:** sctransform
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | sctransform |
+| 分类 | 01_scrna_core |
+| 状态 | CANDIDATE |
+| 语言 | R |
+| 包 | Seurat |
+| 最近验证 | 尚未验证 |
 
-**Category:** 01_scrna_core
+包版本见[构建环境记录](../../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** CANDIDATE
+官方文档：https://satijalab.org/seurat/articles/sctransform_vignette
 
-**Language:** R
+原始论文：原始论文见官方文档所列引用；本次构建未独立核验论文元数据。
 
-**Package:** Seurat
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../../docs/validation/package_status.tsv); never infer a version from package presence.
+建模测序深度效应，生成用于后续探索的 SCT assay 和变量基因。
 
-**Last validated:** Not validated
+## 适用条件与输入契约
 
-**Official documentation:** https://satijalab.org/seurat/articles/sctransform_vignette
+含 RNA counts 的 Seurat 对象（RDS）。若指定 vars_to_regress，相应协变量须存在于元数据。
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Model count-depth effects and stabilize variance.
+## 实际调用与主要参数
 
-**Biological question:** Model count-depth effects and stabilize variance.
+Seurat::SCTransform(assay = "RNA", vst.flavor = "v2", vars.to.regress = ..., seed.use = ...) 返回带 SCT assay 的对象。
 
-**When to use:** Seurat RNA counts.
+vars_to_regress 默认为 null；seed 固定随机种子。配置中的 vst_flavor 当前不被读取，脚本固定 vst.flavor = "v2"。
 
-**When NOT to use:** Regression covariates need biological justification. Preserve RNA for communication; sparse tiny demos may not exercise model fitting reliably.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** Seurat RNA counts.
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+回归协变量需要生物学理由，避免把研究目标相关信号一并去掉。保留 RNA assay 供后续需要该表达尺度的通信分析；极小稀疏示例不能代表真实模型拟合可靠性。
 
-**Major parameters:** vst_flavor = v2; vars_to_regress = None; seed = 42
+优点是输入、参数和输出范围明确，便于复用与追溯；该小型工作流不覆盖完整科研分析流程。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Regression covariates need biological justification. Preserve RNA for communication; sparse tiny demos may not exercise model fitting reliably.
+简单的探索路线可用 LogNormalize；正式推断可选与设计匹配的计数模型。
 
-**Outputs:** SCT assay; residuals and variable features
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+实际输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Regression covariates need biological justification. Preserve RNA for communication; sparse tiny demos may not exercise model fitting reliably.
+## 验证证据
 
-**Assumptions:** Regression covariates need biological justification. Preserve RNA for communication; sparse tiny demos may not exercise model fitting reliably.
+验证数据：无。
 
-**Common pitfalls:** Regression covariates need biological justification. Preserve RNA for communication; sparse tiny demos may not exercise model fitting reliably.
+UNVALIDATED：本构建没有可执行验证证据，也没有已验证的数据集。
 
-**Alternatives:** LogNormalize; appropriate count-based models for inference.
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** LogNormalize; appropriate count-based models for inference.
+## 脚本与参考
 
-**Validated datasets:** None
+脚本：[workflow.R](scripts/workflow.R)（01_scrna_core/normalization/SCTransform/scripts/workflow.R）。运行命令与配置说明见 [README](README.md)。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** 01_scrna_core/normalization/SCTransform/scripts/workflow.R
-
-**References:** https://satijalab.org/seurat/articles/sctransform_vignette
+参考：https://satijalab.org/seurat/articles/sctransform_vignette

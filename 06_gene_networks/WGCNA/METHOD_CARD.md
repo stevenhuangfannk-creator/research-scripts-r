@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：WGCNA 共表达网络
 
-**Method:** wgcna
+**方法 ID:** wgcna
 
-**Category:** 06_gene_networks
+**分类:** 06_gene_networks
 
-**Status:** CANDIDATE
+**状态:** CANDIDATE
 
-**Language:** R
+**语言:** R
 
-**Package:** WGCNA
+**包 / 工具:** WGCNA
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
+**官方文档:** [WGCNA 官方文档](https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Find coexpression modules across independent biological samples.
+**目的:** 在独立生物学样本之间寻找共表达模块。
 
-**Biological question:** Find coexpression modules across independent biological samples.
+**科研问题:** 在独立生物学样本之间寻找共表达模块。
 
-**When to use:** Normalized sample × gene matrix, QC and sample traits.
+**适用情况:** 标准化的“样本 × 基因”矩阵、质量控制信息及样本性状。
 
-**When NOT to use:** Too few samples or pooled cells produce unstable/confounded modules.
+**不适用情况 / 使用边界:** 样本过少或混合不同细胞来源，可能产生不稳定或受混杂影响的模块。
 
-**Required input:** Normalized sample × gene matrix, QC and sample traits.
+**必需输入:** 标准化的“样本 × 基因”矩阵、质量控制信息及样本性状。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = Soft threshold; signedness; minimum module size; covariates.
+**主要参数:** review_required = 软阈值；有符号 / 无符号网络；最小模块大小；协变量。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Too few samples or pooled cells produce unstable/confounded modules.
+**需要科研判断的参数:** 样本过少或混合不同细胞来源，可能产生不稳定或受混杂影响的模块。 具体配置见 [README](README.md)。
 
-**Outputs:** Modules; eigengenes; module-trait associations; hub candidates.
+**输出:** 共表达模块；模块特征基因（eigengene）；模块—性状关联；候选枢纽基因。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Too few samples or pooled cells produce unstable/confounded modules.
+**局限:** 样本过少或混合不同细胞来源，可能产生不稳定或受混杂影响的模块。
 
-**Assumptions:** Too few samples or pooled cells produce unstable/confounded modules.
+**假设:** 样本过少或混合不同细胞来源，可能产生不稳定或受混杂影响的模块。
 
-**Common pitfalls:** Too few samples or pooled cells produce unstable/confounded modules.
+**常见问题:** 样本过少或混合不同细胞来源，可能产生不稳定或受混杂影响的模块。
 
-**Alternatives:** hdWGCNA for validated metacell designs
+**替代方法:** metacell 设计已经过验证时，可考虑 hdWGCNA
 
-**When to prefer alternatives:** hdWGCNA for validated metacell designs
+**何时选择替代方案:** metacell 设计已经过验证时，可考虑 hdWGCNA；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
+**参考资料:** [WGCNA 官方文档](https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/)

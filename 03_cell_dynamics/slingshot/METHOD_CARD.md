@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** slingshot
+**方法 ID：** slingshot
 
-**Category:** 03_cell_dynamics
+**分类：** 03_cell_dynamics
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** slingshot
+**依赖包：** slingshot
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://bioconductor.org/packages/slingshot
+**官方文档：** [slingshot](https://bioconductor.org/packages/slingshot)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Fit lineage curves through a cluster scaffold.
+**目的：** 沿聚类骨架拟合细胞谱系曲线。
 
-**Biological question:** Fit lineage curves through a cluster scaffold.
+**生物学问题：** 沿聚类骨架拟合细胞谱系曲线。
 
-**When to use:** Embedding, cluster labels, justified starting cluster.
+**适用条件：** 低维嵌入、聚类标签，以及有生物学依据的起始聚类。
 
-**When NOT to use:** Topology depends on clustering and starting assumptions.
+**不适用条件与结论边界：** 推断拓扑依赖聚类结果和起点假设。
 
-**Required input:** Embedding, cluster labels, justified starting cluster.
+**必需输入：** 低维嵌入、聚类标签，以及有生物学依据的起始聚类。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** review_required = start.clus; end.clus; shrinkage.
+**主要参数：** review_required：start.clus；end.clus；shrinkage。当前只是待核对清单，尚未接入可执行脚本。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Topology depends on clustering and starting assumptions.
+**需要生物学判断的内容：** 推断拓扑依赖聚类结果和起点假设。
 
-**Outputs:** Lineages; pseudotime; curve weights.
+**输出：** 谱系、拟时序和曲线权重（规划输出）。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Topology depends on clustering and starting assumptions.
+**局限：** 推断拓扑依赖聚类结果和起点假设。
 
-**Assumptions:** Topology depends on clustering and starting assumptions.
+**假设：** 使用者必须确认上述输入和研究设计适用；推断拓扑依赖聚类结果和起点假设。
 
-**Common pitfalls:** Topology depends on clustering and starting assumptions.
+**常见误区：** 推断拓扑依赖聚类结果和起点假设。
 
-**Alternatives:** Monocle3; tradeSeq downstream
+**替代方案：** Monocle3；下游使用 tradeSeq。
 
-**When to prefer alternatives:** Monocle3; tradeSeq downstream
+**何时考虑替代方案：** Monocle3；下游使用 tradeSeq。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态：** UNVALIDATED — 本次构建没有可执行实现或运行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本：** 无；此处仅记录候选能力。
 
-**References:** https://bioconductor.org/packages/slingshot
+**参考来源：** [官方文档](https://bioconductor.org/packages/slingshot)。

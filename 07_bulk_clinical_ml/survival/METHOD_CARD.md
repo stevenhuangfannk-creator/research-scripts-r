@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：Kaplan–Meier 生存分析
 
-**Method:** survival_km
+**方法 ID:** survival_km
 
-**Category:** 07_bulk_clinical_ml
+**分类:** 07_bulk_clinical_ml
 
-**Status:** VALIDATED
+**状态:** VALIDATED
 
-**Language:** R
+**语言:** R
 
-**Package:** survival
+**包 / 工具:** survival
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。本次已有验证记录为 survival 3.8.3。
 
-**Last validated:** 2026-10-07
+**最近验证:** 2026-10-07
 
-**Official documentation:** https://cran.r-project.org/package=survival
+**官方文档:** [survival 官方文档](https://cran.r-project.org/package=survival)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Estimate right-censored survival curves and uncertainty by explicit group.
+**目的:** 按明确分组估计右删失生存曲线及其不确定性。
 
-**Biological question:** Estimate right-censored survival curves and uncertainty by explicit group.
+**科研问题:** 按明确分组估计右删失生存曲线及其不确定性。
 
-**When to use:** data.frame with nonnegative time, event explicitly coded 0/1 and group.
+**适用情况:** 包含非负生存时间、明确编码为 0 / 1 的事件，以及分组列的 data.frame。
 
-**When NOT to use:** Requires appropriately independent censoring and correct time origin. KM does not adjust covariates; competing risks require cumulative-incidence methods.
+**不适用情况 / 使用边界:** 需要合理的独立删失假设和正确的时间起点。KM 不调整协变量；存在竞争事件时应采用累积发生函数等竞争风险方法。
 
-**Required input:** data.frame with nonnegative time, event explicitly coded 0/1 and group.
+**必需输入:** 包含非负生存时间、明确编码为 0 / 1 的事件，以及分组列的 data.frame。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 仅限 workflow.R 和配置实际支持的字段；该封装未实现的方法或参数不能仅凭包的功能推断。
 
-**Major parameters:** time_column = explicit; event_column = explicit 0/1; group_column = explicit
+**主要参数:** time_column = 时间列名；event_column = 0 / 1 事件列名；group_column = 分组列名
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Requires appropriately independent censoring and correct time origin. KM does not adjust covariates; competing risks require cumulative-incidence methods.
+**需要科研判断的参数:** 需要合理的独立删失假设和正确的时间起点。KM 不调整协变量；存在竞争事件时应采用累积发生函数等竞争风险方法。 具体配置见 [README](README.md)。
 
-**Outputs:** survfit object; survival, 95% CI, risk counts and event table
+**输出:** survfit 模型对象；生存率、95% 置信区间、风险集人数与事件数表。实际文件和字段见[输出目录](OUTPUT_CATALOG.md)。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Requires appropriately independent censoring and correct time origin. KM does not adjust covariates; competing risks require cumulative-incidence methods.
+**局限:** 需要合理的独立删失假设和正确的时间起点。KM 不调整协变量；存在竞争事件时应采用累积发生函数等竞争风险方法。
 
-**Assumptions:** Requires appropriately independent censoring and correct time origin. KM does not adjust covariates; competing risks require cumulative-incidence methods.
+**假设:** 需要合理的独立删失假设和正确的时间起点。KM 不调整协变量；存在竞争事件时应采用累积发生函数等竞争风险方法。
 
-**Common pitfalls:** Requires appropriately independent censoring and correct time origin. KM does not adjust covariates; competing risks require cumulative-incidence methods.
+**常见问题:** 需要合理的独立删失假设和正确的时间起点。KM 不调整协变量；存在竞争事件时应采用累积发生函数等竞争风险方法。
 
-**Alternatives:** Cox for covariates; competing-risk analysis for competing events.
+**替代方法:** 需要调整协变量时使用 Cox；存在竞争事件时使用竞争风险分析。
 
-**When to prefer alternatives:** Cox for covariates; competing-risk analysis for competing events.
+**何时选择替代方案:** 需要调整协变量时使用 Cox；存在竞争事件时使用竞争风险分析。；仍需核对其输入和验证范围。
 
-**Validated datasets:** survival::lung (228 public clinical records)
+**已验证数据:** survival::lung（228 条公开临床记录）
 
-**Validation status:** PASS — Right-censored KM curve/CI table with explicit 0/1 event mapping; no new clinical interpretation
+**验证状态:** PASS — 使用明确 0 / 1 事件映射的右删失 KM 曲线和置信区间表；不支持新的临床解释。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** 07_bulk_clinical_ml/survival/scripts/workflow.R
+**推荐脚本:** [workflow.R](scripts/workflow.R)
 
-**References:** https://cran.r-project.org/package=survival
+**参考资料:** [survival 官方文档](https://cran.r-project.org/package=survival)

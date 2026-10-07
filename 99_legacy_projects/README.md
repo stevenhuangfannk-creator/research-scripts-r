@@ -1,11 +1,11 @@
-# Preserved source projects
+# 保留的来源项目
 
-No project files moved or deleted. This is an architectural mapping so existing relative paths keep working.
+项目文件未移动或删除；本页只建立索引，使现有相对路径继续有效。
 
-| Historical source | Preserved path | Reusable candidates / limits |
+| 历史来源 | 保留路径 | 可复用候选／限制 |
 |---|---|---|
-| Network pharmacology | [source](../projects/01_zilongjin_network_pharmacology/README.md) | PPI and enrichment concepts; input data absent |
-| GSE255834 scRNA | [source](../projects/02_gse255834_scrna_pipeline/README.md) | Ingestion, QC, doublet, DecontX, normalization and labels; actual objects absent |
-| APAP liver atlas | [source](../projects/03_apap_mouse_liver_atlas/README.md) | Integration, hierarchical annotation and communication; species/selection remain source-specific |
+| 紫龙金网络药理学 | [原项目](../projects/01_zilongjin_network_pharmacology/README.md) | PPI 与富集分析思路；输入数据缺失 |
+| GSE255834 单细胞分析 | [原项目](../projects/02_gse255834_scrna_pipeline/README.md) | 数据导入、质控、双细胞、DecontX、标准化和标签；实际对象缺失 |
+| APAP 小鼠肝脏图谱 | [原项目](../projects/03_apap_mouse_liver_atlas/README.md) | 整合、分层注释和通讯；物种与筛选条件保留原项目上下文 |
 
-Detailed original inventory: [script catalog](../docs/script-catalog.md). SHA-256 preservation evidence: [audit](../docs/validation/preservation.json). Other reproduction/library files are also preserved unchanged.
+原始清单见[脚本目录](../docs/script-catalog.md)，SHA-256 保留证据见[记录](../docs/validation/preservation.json)。历史 `projects/`、`reproductions/` 和 `library/` 文件保持原样，其既有说明和验证记录不随此次方法库汉化改写。

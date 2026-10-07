@@ -1,7 +1,8 @@
-# SurvivalPlot assets
+# 生存图资产
 
-| Plot ID | Purpose | Code | Preference / evidence |
+| Plot ID | 用途 | 代码 | 优先级／证据 |
 |---|---|---|---|
-| `survival_km_v1` | KM survival with uncertainty and risk counts | [code](../../scripts/generate_gallery.R) | demo; rendering only |
+| `survival_km_v1` | KM 生存曲线、置信区间与风险人数 | [代码](../../scripts/generate_gallery.R) | 演示；仅验证渲染 |
 
-See the [global Gallery](../../GALLERY.md) for previews and complete input/parameter/source metadata. All supplied numeric observations are retained; synthetic fixtures are explicitly labeled.
+预览与完整输入／参数／来源元数据见[总画廊](../../GALLERY.md)。保留提供的全部数值观测，合成数据明确标记。`CURRENT_DEFAULT` 表示该输入范围内的优选模板，不表示分析结论已验证；
+演示生成器使用固定数据，用自己的结果时请调用对应图形函数，步骤见[中文指南](../../docs/USAGE_ZH_CN.md)。

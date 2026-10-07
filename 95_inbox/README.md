@@ -1,3 +1,3 @@
-# Method inbox
+# 方法收件箱
 
-Store a small Markdown idea with question, source URL, license, expected input, output examples, alternative comparison and reproduction plan. No automatic promotion or large data downloads.
+用一份小型 Markdown 记录想法：科研问题、来源 URL、许可、预期输入、输出示例、替代方法比较和复现计划。暂不自动晋升，也不为记录想法下载大型数据。

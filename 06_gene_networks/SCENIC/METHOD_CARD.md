@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：SCENIC 转录调控网络
 
-**Method:** scenic
+**方法 ID:** scenic
 
-**Category:** 06_gene_networks
+**分类:** 06_gene_networks
 
-**Status:** CANDIDATE
+**状态:** CANDIDATE
 
-**Language:** R
+**语言:** R
 
-**Package:** SCENIC / AUCell
+**包 / 工具:** SCENIC / AUCell
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://github.com/aertslab/SCENIC
+**官方文档:** [SCENIC / AUCell 官方文档](https://github.com/aertslab/SCENIC)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Infer candidate transcription-factor regulons and activity.
+**目的:** 推断候选转录因子调控子（regulon）及其活性。
 
-**Biological question:** Infer candidate transcription-factor regulons and activity.
+**科研问题:** 推断候选转录因子调控子（regulon）及其活性。
 
-**When to use:** Expression, species-compatible motif databases and TF annotations.
+**适用情况:** 表达数据、与物种匹配的 motif 数据库，以及转录因子注释。
 
-**When NOT to use:** Motif support and coexpression are not perturbation-validated regulation.
+**不适用情况 / 使用边界:** motif 支持和共表达证据不等于经过扰动实验验证的调控关系。
 
-**Required input:** Expression, species-compatible motif databases and TF annotations.
+**必需输入:** 表达数据、与物种匹配的 motif 数据库，以及转录因子注释。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = Network algorithm; motif resource; AUCell thresholds.
+**主要参数:** review_required = 网络算法；motif 资源；AUCell 阈值。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Motif support and coexpression are not perturbation-validated regulation.
+**需要科研判断的参数:** motif 支持和共表达证据不等于经过扰动实验验证的调控关系。 具体配置见 [README](README.md)。
 
-**Outputs:** TF-target regulons; activity matrix; regulon specificity.
+**输出:** 转录因子—靶基因调控子；调控子活性矩阵；调控子特异性。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Motif support and coexpression are not perturbation-validated regulation.
+**局限:** motif 支持和共表达证据不等于经过扰动实验验证的调控关系。
 
-**Assumptions:** Motif support and coexpression are not perturbation-validated regulation.
+**假设:** motif 支持和共表达证据不等于经过扰动实验验证的调控关系。
 
-**Common pitfalls:** Motif support and coexpression are not perturbation-validated regulation.
+**常见问题:** motif 支持和共表达证据不等于经过扰动实验验证的调控关系。
 
-**Alternatives:** pySCENIC in separate Python environment
+**替代方法:** 在独立 Python 环境中使用 pySCENIC
 
-**When to prefer alternatives:** pySCENIC in separate Python environment
+**何时选择替代方案:** 在独立 Python 环境中使用 pySCENIC；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://github.com/aertslab/SCENIC
+**参考资料:** [SCENIC / AUCell 官方文档](https://github.com/aertslab/SCENIC)

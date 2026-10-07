@@ -1,3 +1,7 @@
-# Gallery
+# 图例入口：SCTransform 方差稳定化
 
-Actual previews are indexed in the [global gallery](../../../../GALLERY.md). No preview is claimed merely because this directory exists. Method validation: **UNVALIDATED**.
+实际预览统一索引在[全局图例](../../../../GALLERY.md)。目录存在不代表已有预览，也不代表分析结果经过验证。
+
+方法执行验证为 UNVALIDATED；其范围见[方法卡](../METHOD_CARD.md)。方法验证状态与图形预览状态分开记录，不能据此推断本目录已有图形。
+
+查看[输出说明](../OUTPUT_CATALOG.md)后，按全局图例的 Plot ID 和状态选择已登记的模板。

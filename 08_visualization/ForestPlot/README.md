@@ -1,7 +1,8 @@
-# ForestPlot assets
+# 森林图资产
 
-| Plot ID | Purpose | Code | Preference / evidence |
+| Plot ID | 用途 | 代码 | 优先级／证据 |
 |---|---|---|---|
-| `forest_cox_v1` | Hazard ratios with 95% confidence intervals | [code](../../08_visualization/ForestPlot/forest_cox_v1.R) | CURRENT_DEFAULT; rendering only |
+| `forest_cox_v1` | 风险比及 95% 置信区间 | [代码](../../08_visualization/ForestPlot/forest_cox_v1.R) | CURRENT_DEFAULT；仅验证渲染 |
 
-See the [global Gallery](../../GALLERY.md) for previews and complete input/parameter/source metadata. All supplied numeric observations are retained; synthetic fixtures are explicitly labeled.
+预览与完整输入／参数／来源元数据见[总画廊](../../GALLERY.md)。保留提供的全部数值观测，合成数据明确标记。`CURRENT_DEFAULT` 表示该输入范围内的优选模板，不表示分析结论已验证；
+演示生成器使用固定数据，用自己的结果时请调用对应图形函数，步骤见[中文指南](../../docs/USAGE_ZH_CN.md)。

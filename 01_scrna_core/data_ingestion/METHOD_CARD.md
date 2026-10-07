@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：创建 Seurat 对象
 
-**Method:** seurat_ingestion
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | seurat_ingestion |
+| 分类 | 01_scrna_core |
+| 状态 | VALIDATED |
+| 语言 | R |
+| 包 | Seurat |
+| 最近验证 | 2026-10-07 |
 
-**Category:** 01_scrna_core
+包版本见[构建环境记录](../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** VALIDATED
+官方文档：https://satijalab.org/seurat/articles/pbmc3k_tutorial
 
-**Language:** R
+原始论文：原始论文见官方文档所列引用；本次构建未独立核验论文元数据。
 
-**Package:** Seurat
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+将原始计数矩阵与细胞元数据对齐，创建可追溯的 Seurat 对象。
 
-**Last validated:** 2026-10-07
+## 适用条件与输入契约
 
-**Official documentation:** https://satijalab.org/seurat/articles/pbmc3k_tutorial
+一个 RDS 文件，内容为 list(counts = counts, metadata = metadata)。counts 是非负、有限的基因 × 细胞计数矩阵，须有唯一的行名和列名；metadata 是 data.frame，其行名须与细胞条形码集合一致。
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Build an auditable Seurat object from aligned counts and sample metadata.
+## 实际调用与主要参数
 
-**Biological question:** Build an auditable Seurat object from aligned counts and sample metadata.
+Seurat::CreateSeuratObject() 创建 RNA assay；元数据按 counts 的列名重排。该工作流不会直接读取 10x 文件、判定细胞条形码或替换基因 ID。
 
-**When to use:** RDS list(counts: nonnegative gene × barcode matrix, metadata: barcode-indexed data.frame).
+project 为项目标签。配置中的 min.cells、min.features 当前不被脚本读取；脚本固定为 0，建对象时不进行这两类过滤。
 
-**When NOT to use:** Barcode calling on raw droplets is a separate upstream decision. Do not invent symbols or collapse duplicated IDs silently.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** RDS list(counts: nonnegative gene × barcode matrix, metadata: barcode-indexed data.frame).
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+原始液滴中的细胞判定需要上游单独处理。不要静默合并重复基因 ID 或自行补造基因名；本步骤仅检查计数非负且有限，不验证整数性或其来源。
 
-**Major parameters:** project = user label; min.cells = 0; min.features = 0
+优点是输入、参数和输出范围明确，便于复用与追溯；该小型工作流不覆盖完整科研分析流程。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Barcode calling on raw droplets is a separate upstream decision. Do not invent symbols or collapse duplicated IDs silently.
+10x 文件可先用 Read10X()/Read10X_h5() 读取，再按本输入契约组织；Bioconductor 路线可考虑 SingleCellExperiment。
 
-**Outputs:** feature inventory; cell/sample inventory; Seurat counts object
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+实际输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Barcode calling on raw droplets is a separate upstream decision. Do not invent symbols or collapse duplicated IDs silently.
+## 验证证据
 
-**Assumptions:** Barcode calling on raw droplets is a separate upstream decision. Do not invent symbols or collapse duplicated IDs silently.
+验证数据：Seurat::pbmc_small（230 个基因、80 个细胞）。
 
-**Common pitfalls:** Barcode calling on raw droplets is a separate upstream decision. Do not invent symbols or collapse duplicated IDs silently.
+PASS：仅验证 counts/metadata 对齐与计数保留，测试数据为 pbmc_small（230 个基因、80 个细胞）；不代表任意真实数据都完成了预处理。
 
-**Alternatives:** Read10X/Read10X_h5 for supported 10x files; SingleCellExperiment for Bioconductor workflows.
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** Read10X/Read10X_h5 for supported 10x files; SingleCellExperiment for Bioconductor workflows.
+## 脚本与参考
 
-**Validated datasets:** Seurat::pbmc_small (230 genes, 80 cells)
+脚本：[workflow.R](scripts/workflow.R)（01_scrna_core/data_ingestion/scripts/workflow.R）。运行命令与配置说明见 [README](README.md)。
 
-**Validation status:** PASS — Counts/metadata alignment and counts preservation only
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** 01_scrna_core/data_ingestion/scripts/workflow.R
-
-**References:** https://satijalab.org/seurat/articles/pbmc3k_tutorial
+参考：https://satijalab.org/seurat/articles/pbmc3k_tutorial

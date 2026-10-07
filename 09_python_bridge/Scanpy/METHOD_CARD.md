@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：Scanpy 单细胞分析路线
 
-**Method:** scanpy
+**方法 ID:** scanpy
 
-**Category:** 09_python_bridge
+**分类:** 09_python_bridge
 
-**Status:** CANDIDATE
+**状态:** CANDIDATE
 
-**Language:** Python
+**语言:** Python
 
-**Package:** scanpy
+**包 / 工具:** scanpy
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://scanpy.readthedocs.io/
+**官方文档:** [scanpy 官方文档](https://scanpy.readthedocs.io/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Provide an independently managed Python route for core scRNA analysis.
+**目的:** 为单细胞 RNA 分析提供独立管理的 Python 路线。
 
-**Biological question:** Provide an independently managed Python route for core scRNA analysis.
+**科研问题:** 为单细胞 RNA 分析提供独立管理的 Python 路线。
 
-**When to use:** AnnData counts, metadata and environment specification.
+**适用情况:** AnnData 原始计数、细胞元数据，以及 Python 环境说明。
 
-**When NOT to use:** R is the primary route; no shared giant Python environment is imposed.
+**不适用情况 / 使用边界:** 本仓库以 R 为主要路线；Python 方法应使用各自独立的环境，不合并为一个庞大环境。
 
-**Required input:** AnnData counts, metadata and environment specification.
+**必需输入:** AnnData 原始计数、细胞元数据，以及 Python 环境说明。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = Normalization; PCA; neighbors; clustering seeds.
+**主要参数:** review_required = 标准化方法；PCA；近邻图；聚类随机种子。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** R is the primary route; no shared giant Python environment is imposed.
+**需要科研判断的参数:** 本仓库以 R 为主要路线；Python 方法应使用各自独立的环境，不合并为一个庞大环境。 具体配置见 [README](README.md)。
 
-**Outputs:** AnnData; embeddings; marker tables.
+**输出:** AnnData 对象；降维坐标；标记基因表。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** R is the primary route; no shared giant Python environment is imposed.
+**局限:** 本仓库以 R 为主要路线；Python 方法应使用各自独立的环境，不合并为一个庞大环境。
 
-**Assumptions:** R is the primary route; no shared giant Python environment is imposed.
+**假设:** 本仓库以 R 为主要路线；Python 方法应使用各自独立的环境，不合并为一个庞大环境。
 
-**Common pitfalls:** R is the primary route; no shared giant Python environment is imposed.
+**常见问题:** 本仓库以 R 为主要路线；Python 方法应使用各自独立的环境，不合并为一个庞大环境。
 
-**Alternatives:** Seurat
+**替代方法:** Seurat
 
-**When to prefer alternatives:** Seurat
+**何时选择替代方案:** Seurat；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://scanpy.readthedocs.io/
+**参考资料:** [scanpy 官方文档](https://scanpy.readthedocs.io/)

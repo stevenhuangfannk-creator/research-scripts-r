@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：SoupX 环境 RNA 去污染（候选）
 
-**Method:** soupx
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | soupx |
+| 分类 | 01_scrna_core |
+| 状态 | CANDIDATE |
+| 语言 | R |
+| 包 | SoupX |
+| 最近验证 | 尚未验证 |
 
-**Category:** 01_scrna_core
+包版本见[构建环境记录](../../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** CANDIDATE
+官方文档：https://github.com/constantAmateur/SoupX
 
-**Language:** R
+原始论文：原始论文见官方文档所列引用；本次构建未独立核验论文元数据。
 
-**Package:** SoupX
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../../docs/validation/package_status.tsv); never infer a version from package presence.
+结合原始液滴、过滤后细胞与 cluster 结构估计环境 RNA 污染。
 
-**Last validated:** Not validated
+## 适用条件与输入契约
 
-**Official documentation:** https://github.com/constantAmateur/SoupX
+规划输入为原始/过滤后的计数矩阵和 cluster 标签；当前仓库尚无实现该输入契约的 workflow。
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Estimate ambient contamination using raw droplets and cluster structure.
+## 实际调用与主要参数
 
-**Biological question:** Estimate ambient contamination using raw droplets and cluster structure.
+当前没有 scripts/workflow.R；run_method.R 会直接提示此方法无可执行工作流。先依据官方文档复现、验证，再提炼可复用代码。
 
-**When to use:** Raw and filtered count matrices, cluster labels.
+review_required 只是审核提示，涉及污染比例（soup fraction）与不表达 marker；不是可运行的包参数配置。
 
-**When NOT to use:** Requires informative ambient profile; validate retained biological expression.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** Raw and filtered count matrices, cluster labels.
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+依赖有信息量的环境 RNA 谱，应核查校正后真实生物表达的保留情况。
 
-**Major parameters:** review_required = Soup fraction; non-expressing markers.
+当前仅整理候选能力、输入要求和文档，尚无可复用工作流或验证证据。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Requires informative ambient profile; validate retained biological expression.
+可评估 DecontX；本仓库该工作流仍为 BLOCKED，不能视为已验证替代。
 
-**Outputs:** Contamination fraction; adjusted counts.
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+规划输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Requires informative ambient profile; validate retained biological expression.
+## 验证证据
 
-**Assumptions:** Requires informative ambient profile; validate retained biological expression.
+验证数据：无。
 
-**Common pitfalls:** Requires informative ambient profile; validate retained biological expression.
+UNVALIDATED：没有可执行工作流、已验证数据集或执行结果。
 
-**Alternatives:** DecontX
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** DecontX
+## 脚本与参考
 
-**Validated datasets:** None
+无可执行脚本；须先复现、验证后再实现或提升状态。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** None: capability is a documented candidate.
-
-**References:** https://github.com/constantAmateur/SoupX
+参考：https://github.com/constantAmateur/SoupX

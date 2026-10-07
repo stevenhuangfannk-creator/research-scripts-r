@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：Cox 比例风险回归
 
-**Method:** cox
+**方法 ID:** cox
 
-**Category:** 07_bulk_clinical_ml
+**分类:** 07_bulk_clinical_ml
 
-**Status:** VALIDATED
+**状态:** VALIDATED
 
-**Language:** R
+**语言:** R
 
-**Package:** survival
+**包 / 工具:** survival
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。本次已有验证记录为 survival 3.8.3。
 
-**Last validated:** 2026-10-07
+**最近验证:** 2026-10-07
 
-**Official documentation:** https://cran.r-project.org/package=survival
+**官方文档:** [survival 官方文档](https://cran.r-project.org/package=survival)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Estimate adjusted/unadjusted hazard ratios and inspect proportional hazards.
+**目的:** 估计未调整 / 已调整的风险比，并检查比例风险假设。
 
-**Biological question:** Estimate adjusted/unadjusted hazard ratios and inspect proportional hazards.
+**科研问题:** 估计未调整 / 已调整的风险比，并检查比例风险假设。
 
-**When to use:** Complete observation table, explicit time/event and covariates.
+**适用情况:** 每行一个独立观测单位的 data.frame；明确 time_column、event_column 和 covariates。所用列必须无缺失；事件编码为 0 / 1，时间非负。运行前另行检查时间和协变量的有限值及编码。
 
-**When NOT to use:** Specify continuous-effect forms and coding; assess PH, events, influential observations and confounding. Predictive claims require independent validation.
+**不适用情况 / 使用边界:** 需明确连续变量的效应形式和分类编码，检查比例风险假设、事件数、有影响的观测和混杂。预测用途还需独立验证。
 
-**Required input:** Complete observation table, explicit time/event and covariates.
+**必需输入:** 每行一个独立观测单位的 data.frame；明确 time_column、event_column 和 covariates。所用列必须无缺失；事件编码为 0 / 1，时间非负。运行前另行检查时间和协变量的有限值及编码。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 仅限 workflow.R 和配置实际支持的字段；该封装未实现的方法或参数不能仅凭包的功能推断。
 
-**Major parameters:** covariates = one for univariate; several justified covariates for multivariate
+**主要参数:** time_column = 时间列名；event_column = 0 / 1 事件列名；covariates = 单因素时一个协变量，多因素时多个有依据的协变量
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Specify continuous-effect forms and coding; assess PH, events, influential observations and confounding. Predictive claims require independent validation.
+**需要科研判断的参数:** 需明确连续变量的效应形式和分类编码，检查比例风险假设、事件数、有影响的观测和混杂。预测用途还需独立验证。 具体配置见 [README](README.md)。
 
-**Outputs:** Cox model; HR and 95% CI table; cox.zph diagnostics
+**输出:** Cox 模型对象；风险比（HR）及 95% 置信区间表；cox.zph 比例风险诊断。实际文件和字段见[输出目录](OUTPUT_CATALOG.md)。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Specify continuous-effect forms and coding; assess PH, events, influential observations and confounding. Predictive claims require independent validation.
+**局限:** 需明确连续变量的效应形式和分类编码，检查比例风险假设、事件数、有影响的观测和混杂。预测用途还需独立验证。
 
-**Assumptions:** Specify continuous-effect forms and coding; assess PH, events, influential observations and confounding. Predictive claims require independent validation.
+**假设:** 需明确连续变量的效应形式和分类编码，检查比例风险假设、事件数、有影响的观测和混杂。预测用途还需独立验证。
 
-**Common pitfalls:** Specify continuous-effect forms and coding; assess PH, events, influential observations and confounding. Predictive claims require independent validation.
+**常见问题:** 需明确连续变量的效应形式和分类编码，检查比例风险假设、事件数、有影响的观测和混杂。预测用途还需独立验证。
 
-**Alternatives:** Time-varying effects or alternative survival models when PH fails.
+**替代方法:** 比例风险假设不成立时，考虑时变效应或其他生存模型。
 
-**When to prefer alternatives:** Time-varying effects or alternative survival models when PH fails.
+**何时选择替代方案:** 比例风险假设不成立时，考虑时变效应或其他生存模型。；仍需核对其输入和验证范围。
 
-**Validated datasets:** survival::lung (age and sex covariates)
+**已验证数据:** survival::lung（age 与 sex 协变量）
 
-**Validation status:** PASS — Cox HR/CI and proportional-hazards diagnostic output only; no predictive or causal certification
+**验证状态:** PASS — 仅验证 Cox HR / CI 和比例风险诊断输出；未验证预测能力或因果解释。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** 07_bulk_clinical_ml/Cox/scripts/workflow.R
+**推荐脚本:** [workflow.R](scripts/workflow.R)
 
-**References:** https://cran.r-project.org/package=survival
+**参考资料:** [survival 官方文档](https://cran.r-project.org/package=survival)

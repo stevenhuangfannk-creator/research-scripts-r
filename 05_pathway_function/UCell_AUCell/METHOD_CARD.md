@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** ucell_aucell
+**方法 ID：** ucell_aucell
 
-**Category:** 05_pathway_function
+**分类：** 05_pathway_function
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** UCell / AUCell
+**依赖包：** UCell / AUCell
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://bioconductor.org/packages/UCell
+**官方文档：** [UCell / AUCell](https://bioconductor.org/packages/UCell)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Score signatures per cell using rank-based enrichment.
+**目的：** 基于表达排序的富集为每个细胞计算基因签名评分。
 
-**Biological question:** Score signatures per cell using rank-based enrichment.
+**生物学问题：** 基于表达排序的富集为每个细胞计算基因签名评分。
 
-**When to use:** Cell expression ranks/counts and specified signature gene sets.
+**适用条件：** 细胞表达排序/计数和指定的签名基因集。
 
-**When NOT to use:** Cell scores describe state; group significance requires donor-aware aggregation/modeling.
+**不适用条件与结论边界：** 细胞评分描述状态；组间显著性需要按供者聚合或使用考虑供者结构的模型。
 
-**Required input:** Cell expression ranks/counts and specified signature gene sets.
+**必需输入：** 细胞表达排序/计数和指定的签名基因集。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** review_required = Rank cutoff; gene coverage; signature direction.
+**主要参数：** review_required：排序截断、基因覆盖率和签名方向。当前只是待核对清单，尚未接入可执行脚本。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Cell scores describe state; group significance requires donor-aware aggregation/modeling.
+**需要生物学判断的内容：** 细胞评分描述状态；组间显著性需要按供者聚合或使用考虑供者结构的模型。
 
-**Outputs:** Cell × signature score; UMAP/violin/heatmap.
+**输出：** 细胞 × 签名评分、UMAP/小提琴图/热图（规划输出）。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Cell scores describe state; group significance requires donor-aware aggregation/modeling.
+**局限：** 细胞评分描述状态；组间显著性需要按供者聚合或使用考虑供者结构的模型。
 
-**Assumptions:** Cell scores describe state; group significance requires donor-aware aggregation/modeling.
+**假设：** 使用者必须确认上述输入和研究设计适用；细胞评分描述状态；组间显著性需要按供者聚合或使用考虑供者结构的模型。
 
-**Common pitfalls:** Cell scores describe state; group significance requires donor-aware aggregation/modeling.
+**常见误区：** 细胞评分描述状态；组间显著性需要按供者聚合或使用考虑供者结构的模型。
 
-**Alternatives:** GSVA for sample-level activity
+**替代方案：** 样本级活性可考虑 GSVA。
 
-**When to prefer alternatives:** GSVA for sample-level activity
+**何时考虑替代方案：** 样本级活性可考虑 GSVA。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态：** UNVALIDATED — 本次构建没有可执行实现或运行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本：** 无；此处仅记录候选能力。
 
-**References:** https://bioconductor.org/packages/UCell
+**参考来源：** [官方文档](https://bioconductor.org/packages/UCell)。

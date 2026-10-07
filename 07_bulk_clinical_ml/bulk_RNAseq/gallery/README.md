@@ -1,3 +1,5 @@
-# Gallery
+# 图例与预览
 
-Actual previews are indexed in the [global gallery](../../../GALLERY.md). No preview is claimed merely because this directory exists. Method validation: **UNVALIDATED**.
+真实预览登记在[全局图例](../../../GALLERY.md)。仅有本目录不代表已经生成或验证了此方法的图片。
+
+方法执行状态：**UNVALIDATED**。当前没有此方法的可执行证据；图形仍属于规划目标。

@@ -1,10 +1,10 @@
-# Output Catalog
+# GO/KEGG ORA 输出目录
 
-| Output | Scientific use / question | Figure | Code | Parameters | Main / Supplement | Execution |
-|---|---|---|---|---|---|---|
-| enrichment effect/count/FDR table | Test over-representation of selected genes against the actually tested universe. | Match the numerical scale; use a table when no chart adds evidence | [workflow](scripts/workflow.R) | See method card | Main if it supports the study claim; QC/details in Supplement | BLOCKED |
-| enrichResult object | Test over-representation of selected genes against the actually tested universe. | Match the numerical scale; use a table when no chart adds evidence | [workflow](scripts/workflow.R) | See method card | Main if it supports the study claim; QC/details in Supplement | BLOCKED |
+当前 **BLOCKED**，工作流未执行；以下是现有脚本可返回的内容，不是已完成分析。
 
-CORE OUTPUTS: above. OPTIONAL/ADVANCED/COMPARISON OUTPUTS: only those described in the method card; unimplemented features require a separate candidate.
+| 输出 | 科学用途 | 代码 | 参数审查 | 正文/补充材料 | 执行证据 |
+|---|---|---|---|---|---|
+| enrichment.tsv | 以实际受检背景评估所选基因的富集；包含包返回的效应/计数/校正 P 值等字段 | [工作流](scripts/workflow.R) | 背景、ID、ontology、数据库/物种；代码固定 BH | 重点结果放正文，完整表/映射损失放补充材料 | BLOCKED |
+| object.rds（enrichResult） | 本地检查和复用富集结果对象 | [工作流](scripts/workflow.R) | 同上及实际包版本 | 本地存档，不提交 Git | BLOCKED |
 
-VISUAL OUTPUTS: source-linked entries in the global gallery. TABLE OUTPUTS: the above numeric audits/results. OBJECT OUTPUTS: the workflow object, when supported.
+核心输出为表格和对象；当前没有自动绘图脚本或原生分析预览。图形选择应匹配数值尺度，只有增加证据时才作图；表格足够时不必绘图。可选/高级/比较功能仅限已实现且经验证的能力。GO 依赖条目、数据库版本、映射损失及 KEGG 条件见[方法卡](METHOD_CARD.md)，配置占位符及 orgdb_package 要求见[使用说明](README.md)。

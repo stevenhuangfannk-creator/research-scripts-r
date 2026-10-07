@@ -1,15 +1,7 @@
-# V1 gallery contract
+# V1 图形约定
 
-These are reusable styles and workflow demonstrations, not new biological findings.
-R is the only rendering backend. Each item declares a real built-in dataset or explicitly
-synthetic demonstration. No APAP/GSE255834 result is asserted in the absence of its input.
+这些资产是可复用风格与流程演示，不是新的生物学发现。R 是唯一绘图后端；每个示例说明使用真实内置数据还是合成演示。缺少输入时不声称产生 APAP／GSE255834 结果。
 
-Quantitative grid: one visual question per panel; preserve all observations unless the method
-requires a recorded exclusion. Default: 160 × 110 mm, sans, 9 pt, minimum glyph 5 pt,
-400 dpi PNG and editable-text Cairo PDF. Schematics use original grid components and
-express a workflow or supplied hypothesis, not estimated effect sizes.
+定量图每个面板回答一个问题，除方法要求并记录排除外，保留全部观测。默认导出：160 × 110 mm、无衬线字体、基准 9 pt、最低字形 5 pt、400 dpi PNG 和文本可编辑的 Cairo PDF。示意图使用原创 grid 组件表达流程或已有假说，不表示估计出的效应大小。
 
-Use named colors across UMAP, composition, network and schematic. Export legends outside
-data, avoid rainbow scales and unnecessary 3D. Display sample/donor units explicitly;
-cell counts are not independent replicates for condition inference. Apply adjusted P values
-only from an actual analysis, never from illustrative fixture data.
+UMAP、组成图、网络和示意图保持命名颜色一致。图例放在数据外，避免彩虹色和不必要的 3D。明确样本／供者单位，条件推断时不能把细胞数当独立重复。校正 P 值来自实际分析，不来自演示数据。

@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** go_kegg_ora
+**方法 ID：** go_kegg_ora
 
-**Category:** 05_pathway_function
+**分类：** 05_pathway_function
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** clusterProfiler
+**依赖包：** clusterProfiler
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://yulab-smu.top/biomedical-knowledge-mining-book/
+**官方文档：** [clusterProfiler](https://yulab-smu.top/biomedical-knowledge-mining-book/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Test over-representation of selected genes against the actually tested universe.
+**目的：** 以实际参与检验的背景基因集为参照，检验所选基因的过度代表性富集（ORA）。
 
-**Biological question:** Test over-representation of selected genes against the actually tested universe.
+**生物学问题：** 以实际参与检验的背景基因集为参照，检验所选基因的过度代表性富集（ORA）。
 
-**When to use:** list(genes, universe), matched IDs, species and database.
+**适用条件：** RDS 保存的 list(genes, universe)。universe 非空，所有 genes 必须属于 universe；基因 ID、物种与数据库须匹配。
 
-**When NOT to use:** The universe is tested/detectable genes, not the whole genome by habit. GO hierarchy yields dependent terms; report database version and mapping losses. KEGG access/licensing needs review.
+**不适用条件与结论边界：** 背景应为实际受检/可检测基因，不能习惯性使用全基因组。GO 层级条目相互依赖；应报告数据库版本和 ID 映射损失，并核对 KEGG 访问及许可条件。
 
-**Required input:** list(genes, universe), matched IDs, species and database.
+**必需输入：** RDS 保存的 list(genes, universe)。universe 非空，所有 genes 必须属于 universe；基因 ID、物种与数据库须匹配。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** ontology = BP / MF / CC / KEGG; key_type = database-compatible ID; organism = explicit; p_adjust = BH
+**主要参数：** ontology：BP / MF / CC / KEGG 中选一个；key_type：与数据库兼容的 ID 类型；organism：KEGG 物种代码；GO 还需 orgdb_package。代码的 pAdjustMethod 固定为 BH，当前不读取 p_adjust。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** The universe is tested/detectable genes, not the whole genome by habit. GO hierarchy yields dependent terms; report database version and mapping losses. KEGG access/licensing needs review.
+**需要生物学判断的内容：** 背景应为实际受检/可检测基因，不能习惯性使用全基因组。GO 层级条目相互依赖；应报告数据库版本和 ID 映射损失，并核对 KEGG 访问及许可条件。
 
-**Outputs:** enrichment effect/count/FDR table; enrichResult object
+**输出：** enrichment.tsv 富集表及 object.rds 中的 enrichResult；当前工作流不自动绘图。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** The universe is tested/detectable genes, not the whole genome by habit. GO hierarchy yields dependent terms; report database version and mapping losses. KEGG access/licensing needs review.
+**局限：** 背景应为实际受检/可检测基因，不能习惯性使用全基因组。GO 层级条目相互依赖；应报告数据库版本和 ID 映射损失，并核对 KEGG 访问及许可条件。
 
-**Assumptions:** The universe is tested/detectable genes, not the whole genome by habit. GO hierarchy yields dependent terms; report database version and mapping losses. KEGG access/licensing needs review.
+**假设：** 使用者必须确认上述输入和研究设计适用；背景应为实际受检/可检测基因，不能习惯性使用全基因组。GO 层级条目相互依赖；应报告数据库版本和 ID 映射损失，并核对 KEGG 访问及许可条件。
 
-**Common pitfalls:** The universe is tested/detectable genes, not the whole genome by habit. GO hierarchy yields dependent terms; report database version and mapping losses. KEGG access/licensing needs review.
+**常见误区：** 背景应为实际受检/可检测基因，不能习惯性使用全基因组。GO 层级条目相互依赖；应报告数据库版本和 ID 映射损失，并核对 KEGG 访问及许可条件。
 
-**Alternatives:** GSEA when a complete ranked test statistic is available; cell-level score for cell states.
+**替代方案：** 有完整排序统计量时考虑 GSEA；描述细胞状态时考虑细胞层面的基因集评分。
 
-**When to prefer alternatives:** GSEA when a complete ranked test statistic is available; cell-level score for cell states.
+**何时考虑替代方案：** 有完整排序统计量时考虑 GSEA；描述细胞状态时考虑细胞层面的基因集评分。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** BLOCKED — Workflow not executed; required namespace/data unavailable
+**验证状态：** BLOCKED — 工作流未执行，所需依赖/数据尚未就绪。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** 05_pathway_function/GO_KEGG/scripts/workflow.R
+**推荐脚本：** [`workflow.R`](scripts/workflow.R)；具体运行和限制见 [README](README.md)。
 
-**References:** https://yulab-smu.top/biomedical-knowledge-mining-book/
+**参考来源：** [官方文档](https://yulab-smu.top/biomedical-knowledge-mining-book/)。

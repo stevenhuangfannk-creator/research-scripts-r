@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** liana_plus
+**方法 ID：** liana_plus
 
-**Category:** 04_cell_communication
+**分类：** 04_cell_communication
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** liana
+**依赖包：** liana
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://liana-py.readthedocs.io/en/latest/
+**官方文档：** [liana](https://liana-py.readthedocs.io/en/latest/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Compare/aggregate communication evidence with multiple methods.
+**目的：** 比较和汇总多种方法的细胞通讯证据。
 
-**Biological question:** Compare/aggregate communication evidence with multiple methods.
+**生物学问题：** 比较和汇总多种方法的细胞通讯证据。
 
-**When to use:** AnnData or supported R interface, labels and compatible LR resource.
+**适用条件：** AnnData 或受支持的 R 接口、细胞标签和兼容的 LR 资源。
 
-**When NOT to use:** Newness is not default eligibility; interface and resources need validation.
+**不适用条件与结论边界：** 方法较新不代表能够成为 DEFAULT；接口和资源必须验证。当前登记为 R / liana，而参考文档指向 LIANA+ Python，使用前需要明确实际接口，不能视为已实现的跨语言工作流。
 
-**Required input:** AnnData or supported R interface, labels and compatible LR resource.
+**必需输入：** AnnData 或受支持的 R 接口、细胞标签和兼容的 LR 资源。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** review_required = Resource; methods; ranking aggregation.
+**主要参数：** review_required：LR 资源、方法列表和排序汇总规则。当前只是待核对清单，尚未接入可执行脚本。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Newness is not default eligibility; interface and resources need validation.
+**需要生物学判断的内容：** 方法较新不代表能够成为 DEFAULT；接口和资源必须验证。当前登记为 R / liana，而参考文档指向 LIANA+ Python，使用前需要明确实际接口，不能视为已实现的跨语言工作流。
 
-**Outputs:** Consensus LR ranks; multi-condition/context evidence.
+**输出：** 一致性 LR 排名、多条件/情境证据（规划输出）。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Newness is not default eligibility; interface and resources need validation.
+**局限：** 方法较新不代表能够成为 DEFAULT；接口和资源必须验证。当前登记为 R / liana，而参考文档指向 LIANA+ Python，使用前需要明确实际接口，不能视为已实现的跨语言工作流。
 
-**Assumptions:** Newness is not default eligibility; interface and resources need validation.
+**假设：** 使用者必须确认上述输入和研究设计适用；方法较新不代表能够成为 DEFAULT；接口和资源必须验证。当前登记为 R / liana，而参考文档指向 LIANA+ Python，使用前需要明确实际接口，不能视为已实现的跨语言工作流。
 
-**Common pitfalls:** Newness is not default eligibility; interface and resources need validation.
+**常见误区：** 方法较新不代表能够成为 DEFAULT；接口和资源必须验证。当前登记为 R / liana，而参考文档指向 LIANA+ Python，使用前需要明确实际接口，不能视为已实现的跨语言工作流。
 
-**Alternatives:** CellChat; NicheNet
+**替代方案：** CellChat；NicheNet。
 
-**When to prefer alternatives:** CellChat; NicheNet
+**何时考虑替代方案：** CellChat；NicheNet。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态：** UNVALIDATED — 本次构建没有可执行实现或运行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本：** 无；此处仅记录候选能力。
 
-**References:** https://liana-py.readthedocs.io/en/latest/
+**参考来源：** [官方文档](https://liana-py.readthedocs.io/en/latest/)。

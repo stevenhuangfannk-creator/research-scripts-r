@@ -1,12 +1,18 @@
-# Correlation visualization
+# 相关性图形
 
-Pearson: linear association between quantitative measurements; inspect outliers and confounding.
-Spearman: monotonic rank association, useful with ordinal/skewed measurements; ties affect inference.
-Neither estimates causation. Use biological samples as independent units; repeated observations need
-an appropriate model. Explicit missingness policy, complete-pair n and BH-adjusted test family are
-recorded by [correlation workflow](../../07_bulk_clinical_ml/correlation/METHOD_CARD.md).
+Pearson 用于数值测量的线性关联，应检查离群点与混杂；Spearman 描述单调的秩关联，适用于序数或偏态测量，重复值会影响推断。两者都不能证明因果。独立单位应是生物学样本，重复观测需要合适模型。[相关性流程](../../07_bulk_clinical_ml/correlation/README.md)记录缺失值策略、完整配对数及 BH 校正检验集合。
 
-[scatter + fit / CI](scatter_fit_v1.R), density-binned scatter, two-pair panel and BH-aware correlation
-heatmap are rendered in the [Gallery](../../GALLERY.md). The iris pooled-species example is explicitly
-confounded. A linear-model CI is not a confidence interval for Spearman rho. No Spearman CI is
-claimed by the baseline cor.test implementation.
+[散点＋拟合／置信区间函数](scatter_fit_v1.R)、密度分箱散点、双变量对面板及 BH 相关热图见[画廊](../../GALLERY.md)。`iris` 示例合并物种，存在混杂；线性模型阴影是拟合的 95% 置信区间，不是 Spearman rho 的置信区间。
+
+## 调用示例
+
+在仓库根目录的 R／RStudio 控制台运行，需已安装 `ggplot2`、`ragg`：
+
+```r
+source("08_visualization/themes/theme_research.R")
+source("08_visualization/Scatter_Correlation/scatter_fit_v1.R")
+p <- plot_scatter_fit(iris, "Sepal.Length", "Petal.Length", method = "pearson")
+save_research_plot(p, "results/my_figures/iris_scatter")
+```
+
+输出为自己的 `results/my_figures/iris_scatter.png` 和 `.pdf`，不覆盖画廊。换成自己的 data.frame 和数值列名时，先处理缺失、非有限值并检查观测独立性。

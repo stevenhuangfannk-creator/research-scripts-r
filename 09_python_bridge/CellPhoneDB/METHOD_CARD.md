@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：CellPhoneDB 细胞通讯
 
-**Method:** cellphonedb
+**方法 ID:** cellphonedb
 
-**Category:** 09_python_bridge
+**分类:** 09_python_bridge
 
-**Status:** CANDIDATE
+**状态:** CANDIDATE
 
-**Language:** Python
+**语言:** Python
 
-**Package:** cellphonedb
+**包 / 工具:** cellphonedb
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://cellphonedb.readthedocs.io/en/latest/
+**官方文档:** [cellphonedb 官方文档](https://cellphonedb.readthedocs.io/en/latest/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Test cell-label-dependent ligand–receptor coexpression.
+**目的:** 检验依赖细胞类型标签的配体—受体共表达。
 
-**Biological question:** Test cell-label-dependent ligand–receptor coexpression.
+**科研问题:** 检验依赖细胞类型标签的配体—受体共表达。
 
-**When to use:** Python expression matrix, metadata, database; approved orthology map for mouse.
+**适用情况:** Python 表达矩阵、细胞元数据、数据库；小鼠数据还需经过确认的同源基因映射。
 
-**When NOT to use:** The legacy R LIANA MouseConsensus call is not execution of native Python CellPhoneDB.
+**不适用情况 / 使用边界:** 历史 R 代码中的 LIANA MouseConsensus 调用，不代表已经运行原生 Python CellPhoneDB。
 
-**Required input:** Python expression matrix, metadata, database; approved orthology map for mouse.
+**必需输入:** Python 表达矩阵、细胞元数据、数据库；小鼠数据还需经过确认的同源基因映射。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = DB version; expression threshold; permutations.
+**主要参数:** review_required = 数据库版本；表达阈值；置换次数。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** The legacy R LIANA MouseConsensus call is not execution of native Python CellPhoneDB.
+**需要科研判断的参数:** 历史 R 代码中的 LIANA MouseConsensus 调用，不代表已经运行原生 Python CellPhoneDB。 具体配置见 [README](README.md)。
 
-**Outputs:** Means/P values; significant LR pairs; source-target bubbles.
+**输出:** 均值与 P 值；显著配体—受体对；发送—接收细胞气泡图。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** The legacy R LIANA MouseConsensus call is not execution of native Python CellPhoneDB.
+**局限:** 历史 R 代码中的 LIANA MouseConsensus 调用，不代表已经运行原生 Python CellPhoneDB。
 
-**Assumptions:** The legacy R LIANA MouseConsensus call is not execution of native Python CellPhoneDB.
+**假设:** 历史 R 代码中的 LIANA MouseConsensus 调用，不代表已经运行原生 Python CellPhoneDB。
 
-**Common pitfalls:** The legacy R LIANA MouseConsensus call is not execution of native Python CellPhoneDB.
+**常见问题:** 历史 R 代码中的 LIANA MouseConsensus 调用，不代表已经运行原生 Python CellPhoneDB。
 
-**Alternatives:** CellChat; LIANA
+**替代方法:** CellChat；LIANA
 
-**When to prefer alternatives:** CellChat; LIANA
+**何时选择替代方案:** CellChat；LIANA；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://cellphonedb.readthedocs.io/en/latest/
+**参考资料:** [cellphonedb 官方文档](https://cellphonedb.readthedocs.io/en/latest/)

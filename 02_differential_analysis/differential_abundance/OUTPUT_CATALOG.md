@@ -1,10 +1,16 @@
-# Output Catalog
+# 输出说明：差异丰度分析（候选）
 
-| Output | Scientific use / question | Figure | Code | Parameters | Main / Supplement | Execution |
-|---|---|---|---|---|---|---|
-| Neighborhood effect/FDR | Test replicated abundance shifts while considering composition. | Match the numerical scale; use a table when no chart adds evidence | Planned; no executable claim | See method card | Main if it supports the study claim; QC/details in Supplement | UNVALIDATED |
-| abundance graph. | Test replicated abundance shifts while considering composition. | Match the numerical scale; use a table when no chart adds evidence | Planned; no executable claim | See method card | Main if it supports the study claim; QC/details in Supplement | UNVALIDATED |
+以下仅为规划输出；当前没有可执行工作流，未生成对应结果。执行验证：UNVALIDATED，范围以[方法卡](METHOD_CARD.md)为准。
 
-CORE OUTPUTS: above. OPTIONAL/ADVANCED/COMPARISON OUTPUTS: only those described in the method card; unimplemented features require a separate candidate.
+| 规划结果 | 内容与用途 |
+|---|---|
+| 邻域效应/FDR | 规划输出，用于检验有重复设计的邻域丰度变化；当前未生成。 |
+| 丰度图 | 规划输出，用于展示组成变化；当前未生成。 |
 
-VISUAL OUTPUTS: source-linked entries in the global gallery. TABLE OUTPUTS: the above numeric audits/results. OBJECT OUTPUTS: the workflow object, when supported.
+没有实际结果文件名或运行目录的承诺；config/default.yml 仅作规划记录。
+
+代码：尚未实现；参数及科研判断见[方法卡](METHOD_CARD.md)和[使用说明](README.md)。
+
+图形应匹配数值尺度；表格足以表达结果时无需强行画图。可视化预览见[全局图例](../../GALLERY.md)。支持研究主张的输出可放主文，QC 与细节通常放补充材料，具体由论文证据链决定。
+
+核心输出为上表。可选、高级或比较输出仅限方法卡明确支持的内容；未实现能力需要先作为独立候选复现与验证。

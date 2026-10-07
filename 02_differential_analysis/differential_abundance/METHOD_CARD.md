@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：差异丰度分析（候选）
 
-**Method:** differential_abundance
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | differential_abundance |
+| 分类 | 02_differential_analysis |
+| 状态 | CANDIDATE |
+| 语言 | R |
+| 包 | Milo / scCODA |
+| 最近验证 | 尚未验证 |
 
-**Category:** 02_differential_analysis
+包版本见[构建环境记录](../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** CANDIDATE
+官方文档：https://bioconductor.org/packages/miloR
 
-**Language:** R
+原始论文：原始论文见官方文档所列引用；本次构建未独立核验论文元数据。
 
-**Package:** Milo / scCODA
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+在有生物学重复的设计下检验细胞群/邻域丰度变化，并考虑组成效应。
 
-**Last validated:** Not validated
+## 适用条件与输入契约
 
-**Official documentation:** https://bioconductor.org/packages/miloR
+规划输入为 counts/邻域图以及生物学样本设计；当前仓库尚无实现该输入契约的 workflow。
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Test replicated abundance shifts while considering composition.
+## 实际调用与主要参数
 
-**Biological question:** Test replicated abundance shifts while considering composition.
+当前没有 scripts/workflow.R；run_method.R 会提示此方法无可执行工作流。Milo 与 scCODA 属于不同路线，尚未在此统一封装。
 
-**When to use:** Counts/neighbor graph and biological-sample design.
+review_required 是审核提示，涉及邻域覆盖、contrast 和样本结构；不是可运行的包参数配置。
 
-**When NOT to use:** Sample size, capture bias and composition affect inference; barplots alone are descriptive.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** Counts/neighbor graph and biological-sample design.
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+样本量、capture 偏差和组成效应会影响推断；细胞比例柱状图只提供描述，不能替代重复样本层级的检验。
 
-**Major parameters:** review_required = Neighborhood coverage; contrasts; sample structure.
+当前仅整理候选能力、输入要求和文档，尚无可复用工作流或验证证据。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Sample size, capture bias and composition affect inference; barplots alone are descriptive.
+可比较样本层级的组成模型；需按科研问题和实验设计选择。
 
-**Outputs:** Neighborhood effect/FDR; abundance graph.
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+规划输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Sample size, capture bias and composition affect inference; barplots alone are descriptive.
+## 验证证据
 
-**Assumptions:** Sample size, capture bias and composition affect inference; barplots alone are descriptive.
+验证数据：无。
 
-**Common pitfalls:** Sample size, capture bias and composition affect inference; barplots alone are descriptive.
+UNVALIDATED：没有可执行工作流、已验证数据集或执行结果。
 
-**Alternatives:** Sample-level compositional models
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** Sample-level compositional models
+## 脚本与参考
 
-**Validated datasets:** None
+无可执行脚本；须先复现、验证后再实现或提升状态。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** None: capability is a documented candidate.
-
-**References:** https://bioconductor.org/packages/miloR
+参考：https://bioconductor.org/packages/miloR

@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：Harmony 批次整合
 
-**Method:** harmony
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | harmony |
+| 分类 | 01_scrna_core |
+| 状态 | CANDIDATE |
+| 语言 | R |
+| 包 | harmony |
+| 最近验证 | 尚未验证 |
 
-**Category:** 01_scrna_core
+包版本见[构建环境记录](../../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** CANDIDATE
+官方文档：https://portals.broadinstitute.org/harmony/articles/quickstart.html
 
-**Language:** R
+原始论文：https://doi.org/10.1038/s41592-019-0619-0
 
-**Package:** harmony
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../../docs/validation/package_status.tsv); never infer a version from package presence.
+对已有 PCA 嵌入进行技术批次校正，获得 Harmony 嵌入。
 
-**Last validated:** Not validated
+## 适用条件与输入契约
 
-**Official documentation:** https://portals.broadinstitute.org/harmony/articles/quickstart.html
+已标准化、已有 pca reduction 的 Seurat 对象（RDS），含 batch_column 指定的技术批次列，并至少有两个批次。
 
-**Original paper:** https://doi.org/10.1038/s41592-019-0619-0
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Align a PCA embedding across measured technical batches.
+## 实际调用与主要参数
 
-**Biological question:** Align a PCA embedding across measured technical batches.
+harmony::RunHarmony(group.by.vars = ..., reduction.use = "pca", dims.use = seq_len(npcs), theta = ...) 在对象中增加 Harmony reduction。
 
-**When to use:** Normalized Seurat with PCA and explicit batch column.
+batch_column 改为真实元数据列名；npcs 不得超过已有 PCA 的维数；theta 为 Harmony 多样性惩罚参数，配置起点为 2。
 
-**When NOT to use:** Cannot recover treatment effects perfectly confounded with batch. Harmony corrects an embedding, not raw counts; evaluate mixing and lineage preservation.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** Normalized Seurat with PCA and explicit batch column.
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+批次与处理组完全混杂时，整合不能可靠恢复处理效应。Harmony 校正的是嵌入而非原始计数，须比较批次混合与谱系保留。当前 seurat_clustering 会重算并使用 pca，不会自动用 Harmony 嵌入。
 
-**Major parameters:** batch_column = technical batch; npcs = 30; theta = 2
+优点是输入、参数和输出范围明确，便于复用与追溯；该小型工作流不覆盖完整科研分析流程。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Cannot recover treatment effects perfectly confounded with batch. Harmony corrects an embedding, not raw counts; evaluate mixing and lineage preservation.
+可比较 Seurat anchors；不能分离技术批次与真实生物差异时，考虑保留未整合分析。
 
-**Outputs:** Harmony embedding
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+实际输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Cannot recover treatment effects perfectly confounded with batch. Harmony corrects an embedding, not raw counts; evaluate mixing and lineage preservation.
+## 验证证据
 
-**Assumptions:** Cannot recover treatment effects perfectly confounded with batch. Harmony corrects an embedding, not raw counts; evaluate mixing and lineage preservation.
+验证数据：无。
 
-**Common pitfalls:** Cannot recover treatment effects perfectly confounded with batch. Harmony corrects an embedding, not raw counts; evaluate mixing and lineage preservation.
+UNVALIDATED：本构建没有可执行验证证据，也没有已验证的数据集。
 
-**Alternatives:** Seurat anchors; unintegrated analysis when batch biology cannot be separated.
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** Seurat anchors; unintegrated analysis when batch biology cannot be separated.
+## 脚本与参考
 
-**Validated datasets:** None
+脚本：[workflow.R](scripts/workflow.R)（01_scrna_core/batch_integration/Harmony/scripts/workflow.R）。运行命令与配置说明见 [README](README.md)。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** 01_scrna_core/batch_integration/Harmony/scripts/workflow.R
-
-**References:** https://portals.broadinstitute.org/harmony/articles/quickstart.html; https://doi.org/10.1038/s41592-019-0619-0
+参考：https://portals.broadinstitute.org/harmony/articles/quickstart.html; https://doi.org/10.1038/s41592-019-0619-0

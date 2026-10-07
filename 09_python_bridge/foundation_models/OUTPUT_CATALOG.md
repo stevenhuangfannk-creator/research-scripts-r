@@ -1,9 +1,11 @@
-# Output Catalog
+# 输出目录：单细胞基础模型探索
 
-| Output | Scientific use / question | Figure | Code | Parameters | Main / Supplement | Execution |
-|---|---|---|---|---|---|---|
-| Embeddings or task predictions with baseline comparison. | Evaluate pretrained representation transfer against simple baselines. | Match the numerical scale; use a table when no chart adds evidence | Planned; no executable claim | See method card | Main if it supports the study claim; QC/details in Supplement | UNVALIDATED |
+以下是**规划中的输出**，不是当前已生成的结果。此方法没有可执行工作流，验证状态为 **UNVALIDATED**。
 
-CORE OUTPUTS: above. OPTIONAL/ADVANCED/COMPARISON OUTPUTS: only those described in the method card; unimplemented features require a separate candidate.
+| 目标输出 | 科研用途 | 代码 / 参数 | 主文或补充材料 | 执行证据 |
+|---|---|---|---|---|
+| 包含基线对比的嵌入或任务预测 | 将预训练表征迁移的效果与简单基线进行比较。 | 待实现；见[方法卡](METHOD_CARD.md) | 支撑核心结论时放主文；质控与细节放补充材料 | UNVALIDATED |
 
-VISUAL OUTPUTS: source-linked entries in the global gallery. TABLE OUTPUTS: the above numeric audits/results. OBJECT OUTPUTS: the workflow object, when supported.
+图形应与数值尺度匹配；如果图不能增加证据，直接使用表格。上述为核心目标输出；可选、进阶和方法对比输出限于方法卡描述，新增未实现功能应单独登记。
+
+实际预览见[全局图例](../../GALLERY.md)。本目录存在不代表已经绘图或产生分析对象。

@@ -1,16 +1,9 @@
-# Scientific schematics
+# 科研示意图
 
-Four actual original R/grid templates are available in the [Gallery](../GALLERY.md): workflow,
-cell-interaction hypothesis, mechanism scaffold and 11 reusable vector components. Each has
-editable R source and PNG/PDF/SVG, with palette/layout/provenance in [schematics registry](../registry/schematics.yml).
+[画廊](../GALLERY.md)有四类已生成的原创 R／grid 模板：研究流程、细胞相互作用假说、机制关系框架与 11 个可复用矢量组件。每项都有可编辑 R 源码和 PNG／PDF／SVG；配色、布局和来源见[示意图登记表](../registry/schematics.yml)。
 
-Use your own scientific content. When learning from a paper, analyze layout, hierarchy, arrows,
-spacing and palette; create an original composition. Do not trace protected figures or copy unknown
-BioRender/journal icons. No specific ligand/receptor/pathway mechanism is asserted by these templates.
+使用自己的科学内容。学习论文图时，可以借鉴布局、层级、箭头、间距和配色，再形成原创构图。不要描摹受保护图稿或复制来源不明的 BioRender／期刊图标；这些模板不声称任何具体配体、受体或通路机制。
 
-The vector primitives are repository-original. No external artwork was downloaded. A public
-redistribution license has not been chosen by the repository owner; this build does not relicense
-legacy material or third-party packages. Record explicit licenses when adding external SVGs.
+矢量组件是仓库原创，没有下载外部图稿。仓库所有者尚未选择公开再分发许可，本次整理不重新授权历史材料或第三方包；添加外部 SVG 时明确记录许可。
 
-Experimental-design and graphical-abstract layouts remain planned candidates; a composed
-manuscript diagram needs study-specific evidence on every relationship.
+实验设计和图形摘要布局仍是候选规划；用于稿件的关系图需要研究特定的证据支撑每条关系。

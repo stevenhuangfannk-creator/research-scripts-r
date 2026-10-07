@@ -1,3 +1,5 @@
-# Gallery
+# fgsea 图例状态
 
-Actual previews are indexed in the [global gallery](../../../GALLERY.md). No preview is claimed merely because this directory exists. Method validation: **UNVALIDATED**.
+验证状态：**BLOCKED**。原生依赖未安装，兼容运行环境和代表性输入尚未就绪；没有已执行的原生分析图例。
+
+实际预览以[全局图例](../../../GALLERY.md)为准。仅创建这个目录不代表存在预览或验证证据。[OUTPUT_CATALOG](../OUTPUT_CATALOG.md)列出能力、代码与参数；不能以合成替代图充当 fgsea 分析结果。升级前需要生成、检查并登记实际 PNG/PDF 图及运行信息。

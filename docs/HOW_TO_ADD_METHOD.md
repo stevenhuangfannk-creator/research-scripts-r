@@ -1,27 +1,15 @@
-# How to add a method
+# 如何添加一个方法
 
-Paper/Idea → 95_inbox → Candidate → Reproduce → Validate → Compare → Extract portable workflow
-→ Generate outputs → Inspect gallery → Write method card → Promote.
+论文／想法 → `95_inbox` → 候选 → 复现 → 验证 → 比较 → 提取可移植流程 → 生成输出 → 检查画廊 → 写方法卡 → 晋升。
 
-1. State the research question, expected biological unit, input type/scale and decision boundary.
-2. Audit official docs, tutorial/vignette, author repository and original paper. Record URL,
-   commit/tag, license, adaptations and unresolved differences. Community code needs a clear license.
-3. Preserve source projects. Extract only reusable logic; parameterize paths, species and decisions.
-4. Use the [method card template](templates/METHOD_CARD.md). Describe core/optional/advanced/comparison,
-   visual/table/object outputs with scientific meaning, parameters, code and proposed figure role.
-5. Use an existing user dataset first, recoverable project data second, official demo third,
-   small public data fourth. Do not download large new studies for smoke tests.
-6. Run namespaces, input alignment, workflow, table/object and PNG/vector checks. Save commands,
-   logs, versions, input provenance, exclusions and failure details. Add a meaningful regression
-   test when repairing or refactoring behavior, including the reproduced failure.
-7. Compare against the current method using the same data and biological criteria. Runtime,
-   mixing, lineage preservation, inference calibration and interpretability matter differently.
-8. Add a source-linked plot registry entry only after generating and inspecting it. Keep missing
-   outputs planned with null paths/dates. Add palettes and stable cell colors separately.
-9. Promote CANDIDATE → VALIDATED only on real execution evidence with explicit scope;
-   RECOMMENDED needs comparison; DEFAULT needs a documented question-specific preference.
-   Demote obsolete assets to DEPRECATED and point to the replacement; keep history.
+1. 说明科研问题、生物学单位、输入类型与尺度，以及方法能回答什么、不能回答什么。
+2. 核对官方文档、教程、作者仓库和原论文；记录 URL、commit/tag、许可、适配和未解决差异。社区代码必须有明确许可。
+3. 保留来源项目，只提取可复用逻辑，把路径、物种和分析决策改为参数。
+4. 使用[方法卡模板](templates/METHOD_CARD.md)，区分核心、可选、进阶和比较输出；说明图、表和对象的含义、参数、代码及拟用于哪个图版。
+5. 验证数据优先使用已有用户数据，其次可恢复项目数据、官方示例和小型公开数据；小示例测试不额外下载大型研究。
+6. 检查 namespace、输入对齐、流程、表格／对象及 PNG／矢量输出；保存命令、日志、版本、输入来源、排除记录和失败详情。修复或重构行为时，增加能复现失败的有效回归检查。
+7. 在同一数据和生物学标准下与当前方法比较；运行时间、混合程度、谱系保留、推断校准和可解释性的权重因问题而异。
+8. 实际生成并检查图后，才登记关联来源的图形入口。未生成图的路径／日期保持空值；配色与固定细胞颜色独立登记。
+9. `CANDIDATE → VALIDATED` 需要真实执行及明确范围；`RECOMMENDED` 需要比较；`DEFAULT` 需要有记录的问题特定优先选择。过时资产标为 `DEPRECATED`，指出替代项并保留历史。
 
-A method contribution includes Method + Output + Visualization + Gallery + Comparison + Registry.
-Candidate-only placeholders explicitly state the absent parts. Run `Rscript scripts/validate_library.R`
-before committing. No raw data or local dependency libraries are committed.
+一次完整贡献应包含方法、输出、可视化、画廊、比较和登记表。只有候选规划时，明确缺少哪些内容。提交前运行 `Rscript scripts/validate_library.R`；不提交原始数据和本机依赖包库。

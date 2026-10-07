@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：LASSO 正则化回归
 
-**Method:** lasso
+**方法 ID:** lasso
 
-**Category:** 07_bulk_clinical_ml
+**分类:** 07_bulk_clinical_ml
 
-**Status:** CANDIDATE
+**状态:** CANDIDATE
 
-**Language:** R
+**语言:** R
 
-**Package:** glmnet
+**包 / 工具:** glmnet
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://glmnet.stanford.edu/articles/glmnet.html
+**官方文档:** [glmnet 官方文档](https://glmnet.stanford.edu/articles/glmnet.html)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Fit penalized regression with separated tuning and test assessment.
+**目的:** 拟合惩罚回归模型，并分别进行调参和测试评价。
 
-**Biological question:** Fit penalized regression with separated tuning and test assessment.
+**科研问题:** 拟合惩罚回归模型，并分别进行调参和测试评价。
 
-**When to use:** Training features/outcome, fixed sample-level folds, held-out validation.
+**适用情况:** 训练特征与结局、固定的样本级交叉验证折，以及留出验证集。
 
-**When NOT to use:** All filtering/scaling/selection must occur inside training folds.
+**不适用情况 / 使用边界:** 所有过滤、标准化和特征选择都必须在训练折内部进行。
 
-**Required input:** Training features/outcome, fixed sample-level folds, held-out validation.
+**必需输入:** 训练特征与结局、固定的样本级交叉验证折，以及留出验证集。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = Family; alpha=1; lambda.min vs lambda.1se; fold design.
+**主要参数:** review_required = family；alpha=1；lambda.min 与 lambda.1se 的选择；交叉验证折设计。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** All filtering/scaling/selection must occur inside training folds.
+**需要科研判断的参数:** 所有过滤、标准化和特征选择都必须在训练折内部进行。 具体配置见 [README](README.md)。
 
-**Outputs:** CV curve; coefficient path; selected coefficients; held-out predictions.
+**输出:** 交叉验证曲线；系数路径；入选系数；留出集预测。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** All filtering/scaling/selection must occur inside training folds.
+**局限:** 所有过滤、标准化和特征选择都必须在训练折内部进行。
 
-**Assumptions:** All filtering/scaling/selection must occur inside training folds.
+**假设:** 所有过滤、标准化和特征选择都必须在训练折内部进行。
 
-**Common pitfalls:** All filtering/scaling/selection must occur inside training folds.
+**常见问题:** 所有过滤、标准化和特征选择都必须在训练折内部进行。
 
-**Alternatives:** Elastic net; prespecified simpler models
+**替代方法:** Elastic net；预先指定的更简单模型
 
-**When to prefer alternatives:** Elastic net; prespecified simpler models
+**何时选择替代方案:** Elastic net；预先指定的更简单模型；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://glmnet.stanford.edu/articles/glmnet.html
+**参考资料:** [glmnet 官方文档](https://glmnet.stanford.edu/articles/glmnet.html)

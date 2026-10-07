@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：探索性 cluster marker 分析
 
-**Method:** cell_markers
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | cell_markers |
+| 分类 | 02_differential_analysis |
+| 状态 | VALIDATED |
+| 语言 | R |
+| 包 | Seurat |
+| 最近验证 | 2026-10-07 |
 
-**Category:** 02_differential_analysis
+包版本见[构建环境记录](../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** VALIDATED
+官方文档：https://satijalab.org/seurat/articles/pbmc3k_tutorial
 
-**Language:** R
+原始论文：原始论文见官方文档所列引用；本次构建未独立核验论文元数据。
 
-**Package:** Seurat
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+寻找细胞/cluster 的探索性 marker，供分群解释和注释证据整理。
 
-**Last validated:** 2026-10-07
+## 适用条件与输入契约
 
-**Official documentation:** https://satijalab.org/seurat/articles/pbmc3k_tutorial
+含标准化 RNA 表达 data layer 的 Seurat 对象（RDS），元数据中存在 group_column 指定的分组列。
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Find exploratory cell/cluster markers without claiming donor-level treatment inference.
+## 实际调用与主要参数
 
-**Biological question:** Find exploratory cell/cluster markers without claiming donor-level treatment inference.
+将 DefaultAssay 设为 RNA，按 group_column 设置 Idents，再调用 Seurat::FindAllMarkers(test.use = "wilcox")。
 
-**When to use:** Normalized RNA Seurat with grouping labels.
+group_column 起点为 seurat_clusters；only_positive: true 只报告正向 marker；min_pct = 0.1 与 logfc_threshold = 0.25 是筛选起点。检验固定为 wilcox。
 
-**When NOT to use:** Cell-level P values can reflect pseudoreplication. Marker evidence does not by itself identify a cell type or treatment effect.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** Normalized RNA Seurat with grouping labels.
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+细胞级 P 值可能受伪重复影响。本输出不提供样本/供体层级处理组推断；marker 本身也不能单独证明细胞类型或处理效应。
 
-**Major parameters:** group_column = seurat_clusters; only_positive = True; min_pct = 0.1; logfc_threshold = 0.25
+优点是输入、参数和输出范围明确，便于复用与追溯；该小型工作流不覆盖完整科研分析流程。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Cell-level P values can reflect pseudoreplication. Marker evidence does not by itself identify a cell type or treatment effect.
+要回答处理组 DEG，优先准备 sample × cell type pseudobulk，并使用匹配设计的 DESeq2/edgeR/limma；细胞级混合模型需有明确设计依据。
 
-**Outputs:** marker effect/test table
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+实际输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Cell-level P values can reflect pseudoreplication. Marker evidence does not by itself identify a cell type or treatment effect.
+## 验证证据
 
-**Assumptions:** Cell-level P values can reflect pseudoreplication. Marker evidence does not by itself identify a cell type or treatment effect.
+验证数据：Seurat::pbmc_small。
 
-**Common pitfalls:** Cell-level P values can reflect pseudoreplication. Marker evidence does not by itself identify a cell type or treatment effect.
+PASS：在 pbmc_small 上验证探索性 cluster-marker 表；没有验证样本层级处理组推断。
 
-**Alternatives:** Sample × cell-type pseudobulk with DESeq2/edgeR/limma for condition effects.
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** Sample × cell-type pseudobulk with DESeq2/edgeR/limma for condition effects.
+## 脚本与参考
 
-**Validated datasets:** Seurat::pbmc_small
+脚本：[workflow.R](scripts/workflow.R)（02_differential_analysis/differential_expression/scripts/workflow.R）。运行命令与配置说明见 [README](README.md)。
 
-**Validation status:** PASS — Exploratory cluster-marker table; no sample-level treatment inference
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** 02_differential_analysis/differential_expression/scripts/workflow.R
-
-**References:** https://satijalab.org/seurat/articles/pbmc3k_tutorial
+参考：https://satijalab.org/seurat/articles/pbmc3k_tutorial

@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** tradeseq
+**方法 ID：** tradeseq
 
-**Category:** 03_cell_dynamics
+**分类：** 03_cell_dynamics
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** tradeSeq
+**依赖包：** tradeSeq
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://bioconductor.org/packages/tradeSeq
+**官方文档：** [tradeSeq](https://bioconductor.org/packages/tradeSeq)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文：** 见官方文档的引用；本次构建未独立核验论文元数据。
 
-**Purpose:** Test lineage-associated expression trends and differences.
+**目的：** 检验与谱系相关的基因表达趋势及差异。
 
-**Biological question:** Test lineage-associated expression trends and differences.
+**生物学问题：** 检验与谱系相关的基因表达趋势及差异。
 
-**When to use:** Counts plus trajectory pseudotime and cell weights.
+**适用条件：** 计数矩阵、已推断轨迹的拟时序及细胞权重。
 
-**When NOT to use:** Uses a supplied trajectory; it does not infer lineage by itself.
+**不适用条件与结论边界：** tradeSeq 使用给定轨迹，本身不推断谱系。
 
-**Required input:** Counts plus trajectory pseudotime and cell weights.
+**必需输入：** 计数矩阵、已推断轨迹的拟时序及细胞权重。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** review_required = Knots; lineage contrasts; covariates.
+**主要参数：** review_required：样条结点数、谱系对比与协变量。当前只是待核对清单，尚未接入可执行脚本。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Uses a supplied trajectory; it does not infer lineage by itself.
+**需要生物学判断的内容：** tradeSeq 使用给定轨迹，本身不推断谱系。
 
-**Outputs:** GAM fits; association/pattern/endpoint tests.
+**输出：** GAM 拟合；association/pattern/endpoint 检验（规划输出）。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Uses a supplied trajectory; it does not infer lineage by itself.
+**局限：** tradeSeq 使用给定轨迹，本身不推断谱系。
 
-**Assumptions:** Uses a supplied trajectory; it does not infer lineage by itself.
+**假设：** 使用者必须确认上述输入和研究设计适用；tradeSeq 使用给定轨迹，本身不推断谱系。
 
-**Common pitfalls:** Uses a supplied trajectory; it does not infer lineage by itself.
+**常见误区：** tradeSeq 使用给定轨迹，本身不推断谱系。
 
-**Alternatives:** Monocle3 graph association
+**替代方案：** Monocle3 的图关联分析。
 
-**When to prefer alternatives:** Monocle3 graph association
+**何时考虑替代方案：** Monocle3 的图关联分析。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态：** UNVALIDATED — 本次构建没有可执行实现或运行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本：** 无；此处仅记录候选能力。
 
-**References:** https://bioconductor.org/packages/tradeSeq
+**参考来源：** [官方文档](https://bioconductor.org/packages/tradeSeq)。

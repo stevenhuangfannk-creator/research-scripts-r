@@ -1,65 +1,67 @@
-# Method Card template
+# 方法卡模板
 
-**Method:**
+说明采用中文；方法 ID、包名、函数名、参数 key 与状态枚举保持英文。验证状态必须与登记表的实际证据一致。
 
-**Category:**
+**方法 ID：**
 
-**Status:**
+**分类：**
 
-**Language:**
+**成熟度状态：**
 
-**Package:**
+**语言：**
 
-**Package version:**
+**依赖包：**
 
-**Last validated:**
+**包版本：**
 
-**Official documentation:**
+**最后验证日期：**
 
-**Original paper:**
+**官方文档：**
 
-**Purpose:**
+**原始论文：**
 
-**Biological question:**
+**用途：**
 
-**When to use:**
+**生物学问题：**
 
-**When NOT to use:**
+**适用场景：**
 
-**Required input:**
+**不适用场景：**
 
-**Optional input:**
+**必需输入：**
 
-**Major parameters:**
+**可选输入：**
 
-**Recommended defaults:**
+**主要参数：**
 
-**Parameters requiring biological judgment:**
+**建议默认值：**
 
-**Outputs:**
+**需要生物学判断的参数：**
 
-**Strengths:**
+**输出：**
 
-**Weaknesses:**
+**优势：**
 
-**Assumptions:**
+**局限：**
 
-**Common pitfalls:**
+**假设：**
 
-**Alternatives:**
+**常见问题：**
 
-**When to prefer alternatives:**
+**替代方法：**
 
-**Validated datasets:**
+**何时优先用替代方法：**
 
-**Validation status:**
+**已验证数据集：**
 
-**Runtime notes:**
+**执行验证状态：**
 
-**Memory notes:**
+**运行时间说明：**
 
-**Best visualization:**
+**内存说明：**
 
-**Recommended scripts:**
+**推荐图形：**
 
-**References:**
+**代码入口：**
+
+**参考来源：**

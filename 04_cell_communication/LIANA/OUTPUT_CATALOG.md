@@ -1,10 +1,10 @@
-# Output Catalog
+# 输出目录
 
-| Output | Scientific use / question | Figure | Code | Parameters | Main / Supplement | Execution |
+下表为规划能力；当前 **UNVALIDATED**，没有可执行工作流或实际输出。
+
+| 规划输出 | 科学用途 | 图形选择 | 代码状态 | 参数 | 正文/补充材料 | 执行证据 |
 |---|---|---|---|---|---|---|
-| Consensus LR ranks | Compare/aggregate communication evidence with multiple methods. | Match the numerical scale; use a table when no chart adds evidence | Planned; no executable claim | See method card | Main if it supports the study claim; QC/details in Supplement | UNVALIDATED |
-| multi-condition/context evidence. | Compare/aggregate communication evidence with multiple methods. | Match the numerical scale; use a table when no chart adds evidence | Planned; no executable claim | See method card | Main if it supports the study claim; QC/details in Supplement | UNVALIDATED |
+| 一致性 LR 排名 | 比较和汇总多种方法的细胞通讯证据。 | 匹配数值尺度；不增加证据时使用表格 | 仅规划，尚无实现 | 见[方法卡](METHOD_CARD.md) | 支撑主要结论时用于正文；质控/细节放补充材料 | UNVALIDATED |
+| 多条件/情境证据 | 比较和汇总多种方法的细胞通讯证据。 | 匹配数值尺度；不增加证据时使用表格 | 仅规划，尚无实现 | 见[方法卡](METHOD_CARD.md) | 支撑主要结论时用于正文；质控/细节放补充材料 | UNVALIDATED |
 
-CORE OUTPUTS: above. OPTIONAL/ADVANCED/COMPARISON OUTPUTS: only those described in the method card; unimplemented features require a separate candidate.
-
-VISUAL OUTPUTS: source-linked entries in the global gallery. TABLE OUTPUTS: the above numeric audits/results. OBJECT OUTPUTS: the workflow object, when supported.
+上述为核心规划输出。可选、高级及比较输出仅限方法卡已描述的内容；未实现功能需要另行记录为候选能力。视觉输出以带源码链接的全局图例为准；表格是数值审计/结果；对象仅在后续工作流明确支持时产生。

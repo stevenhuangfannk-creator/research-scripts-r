@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡
 
-**Method:** cellchat
+**方法 ID：** cellchat
 
-**Category:** 04_cell_communication
+**分类：** 04_cell_communication
 
-**Status:** CANDIDATE
+**状态：** CANDIDATE
 
-**Language:** R
+**语言：** R
 
-**Package:** CellChat
+**依赖包：** CellChat
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本：** 见[构建时依赖记录](../../docs/validation/package_status.tsv)。不能仅根据包是否存在推断其版本。
 
-**Last validated:** Not validated
+**最近验证：** 尚未验证。
 
-**Official documentation:** https://github.com/jinworks/CellChat
+**官方文档：** [CellChat](https://github.com/jinworks/CellChat)
 
-**Original paper:** https://doi.org/10.1038/s41467-021-21246-9
+**原始论文：** [论文](https://doi.org/10.1038/s41467-021-21246-9)
 
-**Purpose:** Infer and visualize expression-supported ligand–receptor communication hypotheses.
+**目的：** 推断并可视化由表达数据支持的配体–受体细胞通讯假设。
 
-**Biological question:** Infer and visualize expression-supported ligand–receptor communication hypotheses.
+**生物学问题：** 推断并可视化由表达数据支持的配体–受体细胞通讯假设。
 
-**When to use:** list(expression: aligned log-normalized RNA, metadata: cell labels); human or mouse DB.
+**适用条件：** RDS 保存的 list(expression, metadata)。expression 为基因 × 细胞的非整合、对数归一化 RNA 表达矩阵；metadata 行名须与 expression 列名完全同序，且含 group_column 指定的细胞标签。使用匹配的 human 或 mouse 数据库。
 
-**When NOT to use:** Inference is not physical contact, causal signaling or donor-level inference. population.size depends on capture/sorting design. PPI projection is an optional information projection step.
+**不适用条件与结论边界：** 推断不能证明物理接触、因果信号或供者层面的处理效应。population_size 取决于捕获/分选设计；ppi_projection 是可选的信息投影步骤。原生置换 P 值不能直接视为供者级检验或 BH 校正的 LR FDR。
 
-**Required input:** list(expression: aligned log-normalized RNA, metadata: cell labels); human or mouse DB.
+**必需输入：** RDS 保存的 list(expression, metadata)。expression 为基因 × 细胞的非整合、对数归一化 RNA 表达矩阵；metadata 行名须与 expression 列名完全同序，且含 group_column 指定的细胞标签。使用匹配的 human 或 mouse 数据库。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入：** 仅使用工作流/配置明确支持的可选字段。仅有 CANDIDATE 文档的方法，其输入约定仍是规划规范。
 
-**Major parameters:** species = mandatory; expression_scale = lognormalized_RNA; average = triMean; population_size = False; min_cells = 10; nboot = 100; seed = 42; ppi_projection = False
+**主要参数：** species = human / mouse；expression_scale = lognormalized_RNA；average = triMean；population_size = false；min_cells = 10；nboot = 100；seed = 42；ppi_projection = false。路径、接收者、配体–受体对和 pattern_k 须按研究问题选择。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**建议起点：** 文档中的参数起点不等于通用生物学默认值。包知名不构成升级为 DEFAULT 的依据。
 
-**Parameters requiring biological judgment:** Inference is not physical contact, causal signaling or donor-level inference. population.size depends on capture/sorting design. PPI projection is an optional information projection step.
+**需要生物学判断的内容：** 推断不能证明物理接触、因果信号或供者层面的处理效应。population_size 取决于捕获/分选设计；ppi_projection 是可选的信息投影步骤。原生置换 P 值不能直接视为供者级检验或 BH 校正的 LR FDR。
 
-**Outputs:** LR probabilities and native permutation P values; count/strength matrices; pathway aggregation; network roles and optional patterns
+**输出：** LR 模型概率及原生置换 P 值；数量/强度矩阵；通路聚合；网络角色和可选模式图。cellchat_compare 输出见 README。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优点：** 输入约定、来源和输出明确，复用范围小。
 
-**Weaknesses:** Inference is not physical contact, causal signaling or donor-level inference. population.size depends on capture/sorting design. PPI projection is an optional information projection step.
+**局限：** 推断不能证明物理接触、因果信号或供者层面的处理效应。population_size 取决于捕获/分选设计；ppi_projection 是可选的信息投影步骤。原生置换 P 值不能直接视为供者级检验或 BH 校正的 LR FDR。
 
-**Assumptions:** Inference is not physical contact, causal signaling or donor-level inference. population.size depends on capture/sorting design. PPI projection is an optional information projection step.
+**假设：** 使用者必须确认上述输入和研究设计适用；推断不能证明物理接触、因果信号或供者层面的处理效应。population_size 取决于捕获/分选设计；ppi_projection 是可选的信息投影步骤。原生置换 P 值不能直接视为供者级检验或 BH 校正的 LR FDR。
 
-**Common pitfalls:** Inference is not physical contact, causal signaling or donor-level inference. population.size depends on capture/sorting design. PPI projection is an optional information projection step.
+**常见误区：** 推断不能证明物理接触、因果信号或供者层面的处理效应。population_size 取决于捕获/分选设计；ppi_projection 是可选的信息投影步骤。原生置换 P 值不能直接视为供者级检验或 BH 校正的 LR FDR。
 
-**Alternatives:** NicheNet for ligand → target response; CellPhoneDB/LIANA for complementary LR evidence.
+**替代方案：** 需要配体 → 靶基因响应解释时考虑 NicheNet；CellPhoneDB/LIANA 提供互补的 LR 证据。
 
-**When to prefer alternatives:** NicheNet for ligand → target response; CellPhoneDB/LIANA for complementary LR evidence.
+**何时考虑替代方案：** 需要配体 → 靶基因响应解释时考虑 NicheNet；CellPhoneDB/LIANA 提供互补的 LR 证据。
 
-**Validated datasets:** None
+**已验证数据集：** 无。
 
-**Validation status:** BLOCKED — Workflow not executed; required namespace/data unavailable
+**验证状态：** BLOCKED — 工作流未执行，所需依赖/数据尚未就绪。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间：** 小型演示不代表性能基准；在目标数据上记录耗时与线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存：** 尽量保留稀疏计数，不要将整个大型图谱转为稠密矩阵。大对象内存尚未做基准测试。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**可视化入口：** 先查[输出目录](OUTPUT_CATALOG.md)，再看已登记的图例。尚未实际生成并检查的图不能视为视觉推荐。
 
-**Recommended scripts:** 04_cell_communication/CellChat/scripts/workflow.R
+**推荐脚本：** [`workflow.R`](scripts/workflow.R)；具体运行和限制见 [README](README.md)。
 
-**References:** https://github.com/jinworks/CellChat; https://doi.org/10.1038/s41467-021-21246-9
+**参考来源：** [官方文档](https://github.com/jinworks/CellChat)；[原始论文](https://doi.org/10.1038/s41467-021-21246-9)。

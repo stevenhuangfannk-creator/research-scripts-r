@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：随机森林预测
 
-**Method:** random_forest
+**方法 ID:** random_forest
 
-**Category:** 07_bulk_clinical_ml
+**分类:** 07_bulk_clinical_ml
 
-**Status:** CANDIDATE
+**状态:** CANDIDATE
 
-**Language:** R
+**语言:** R
 
-**Package:** randomForest
+**包 / 工具:** randomForest
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://cran.r-project.org/package=randomForest
+**官方文档:** [randomForest 官方文档](https://cran.r-project.org/package=randomForest)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Predict outcomes with a baseline ensemble and held-out performance.
+**目的:** 使用基础集成模型预测结局，并在留出数据上评价性能。
 
-**Biological question:** Predict outcomes with a baseline ensemble and held-out performance.
+**科研问题:** 使用基础集成模型预测结局，并在留出数据上评价性能。
 
-**When to use:** Sample-level features/outcome and leakage-free train/test split.
+**适用情况:** 样本级特征和结局，以及没有信息泄漏的训练集 / 测试集划分。
 
-**When NOT to use:** OOB does not replace independent external validation; importance is not mechanism.
+**不适用情况 / 使用边界:** 袋外误差（OOB）不能代替独立外部验证；特征重要性不能直接解释为生物学机制。
 
-**Required input:** Sample-level features/outcome and leakage-free train/test split.
+**必需输入:** 样本级特征和结局，以及没有信息泄漏的训练集 / 测试集划分。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = ntree; mtry; class weights; seed.
+**主要参数:** review_required = ntree；mtry；类别权重；随机种子。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** OOB does not replace independent external validation; importance is not mechanism.
+**需要科研判断的参数:** 袋外误差（OOB）不能代替独立外部验证；特征重要性不能直接解释为生物学机制。 具体配置见 [README](README.md)。
 
-**Outputs:** OOB error; held-out predictions; importance; ROC when appropriate.
+**输出:** 袋外误差（OOB）；留出集预测；特征重要性；适用时的 ROC。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** OOB does not replace independent external validation; importance is not mechanism.
+**局限:** 袋外误差（OOB）不能代替独立外部验证；特征重要性不能直接解释为生物学机制。
 
-**Assumptions:** OOB does not replace independent external validation; importance is not mechanism.
+**假设:** 袋外误差（OOB）不能代替独立外部验证；特征重要性不能直接解释为生物学机制。
 
-**Common pitfalls:** OOB does not replace independent external validation; importance is not mechanism.
+**常见问题:** 袋外误差（OOB）不能代替独立外部验证；特征重要性不能直接解释为生物学机制。
 
-**Alternatives:** ranger; regularized logistic regression
+**替代方法:** ranger；正则化 Logistic 回归
 
-**When to prefer alternatives:** ranger; regularized logistic regression
+**何时选择替代方案:** ranger；正则化 Logistic 回归；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://cran.r-project.org/package=randomForest
+**参考资料:** [randomForest 官方文档](https://cran.r-project.org/package=randomForest)

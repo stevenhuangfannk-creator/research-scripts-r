@@ -1,65 +1,62 @@
-# Method Card
+# 方法卡：Seurat 降维与聚类
 
-**Method:** seurat_clustering
+| 字段 | 内容 |
+|---|---|
+| 方法 ID | seurat_clustering |
+| 分类 | 01_scrna_core |
+| 状态 | VALIDATED |
+| 语言 | R |
+| 包 | Seurat |
+| 最近验证 | 2026-10-07 |
 
-**Category:** 01_scrna_core
+包版本见[构建环境记录](../../docs/validation/package_status.tsv)；安装过某个包不等于它能够正常加载，也不等于方法经过验证。
 
-**Status:** VALIDATED
+官方文档：https://satijalab.org/seurat/articles/pbmc3k_tutorial
 
-**Language:** R
+原始论文：原始论文见官方文档所列引用；本次构建未独立核验论文元数据。
 
-**Package:** Seurat
+## 科研问题与用途
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+识别变量基因，依次完成缩放、PCA、近邻图、聚类和 UMAP。
 
-**Last validated:** 2026-10-07
+## 适用条件与输入契约
 
-**Official documentation:** https://satijalab.org/seurat/articles/pbmc3k_tutorial
+已标准化的 Seurat 对象（RDS）。脚本使用当前默认 assay，运行前须确认其适合所选流程。
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+可选输入仅限工作流与配置实际支持的字段；候选方法的输入契约是规划规格，不能视为已实现功能。
 
-**Purpose:** Find variable features, PCA, neighbors, clusters and reproducible UMAP.
+## 实际调用与主要参数
 
-**Biological question:** Find variable features, PCA, neighbors, clusters and reproducible UMAP.
+FindVariableFeatures() → ScaleData() → RunPCA() → FindNeighbors(reduction = "pca") → FindClusters() → RunUMAP(reduction = "pca")。
 
-**When to use:** Normalized Seurat object.
+nfeatures 为变量基因数；npcs 为请求的 PCA 维数；resolution 为聚类分辨率；n_neighbors 为 UMAP 邻居数；seed 为随机种子。脚本会按变量基因数/细胞数降低实际 PCA 维数，并限制 UMAP 邻居数。
 
-**When NOT to use:** Resolution is a biological decision, not a cell-type count estimator. UMAP distances are not quantitative lineage distances. Recompute after meaningful subsetting.
+参数值是起点，须结合物种、数据规模和样本设计审核。包广泛使用或参数有默认值，不意味着方法被提升为 DEFAULT。
 
-**Required input:** Normalized Seurat object.
+## 假设、局限与常见误区
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+resolution 不直接等于细胞类型数；UMAP 距离不是定量谱系距离。显著子集化后应重算。脚本固定基于 pca，不能通过当前配置选择 Harmony reduction 或其他聚类算法。
 
-**Major parameters:** nfeatures = 2000; npcs = 30; resolution = 0.5; n_neighbors = 30; seed = 42
+优点是输入、参数和输出范围明确，便于复用与追溯；该小型工作流不覆盖完整科研分析流程。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+## 替代路线与选择依据
 
-**Parameters requiring biological judgment:** Resolution is a biological decision, not a cell-type count estimator. UMAP distances are not quantitative lineage distances. Recompute after meaningful subsetting.
+Leiden 等算法需单独验证；需要批次校正分析空间时，可先评估 Harmony，再明确写下游 reduction 使用方式。
 
-**Outputs:** PCA and UMAP embeddings; cluster labels; neighbor graph
+## 输出与图形
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+实际输出见[输出说明](OUTPUT_CATALOG.md)。需要画图时先查该输出说明，再查[全局图例](../../GALLERY.md)；没有已渲染预览的图不能当作已验证图形建议。
 
-**Weaknesses:** Resolution is a biological decision, not a cell-type count estimator. UMAP distances are not quantitative lineage distances. Recompute after meaningful subsetting.
+## 验证证据
 
-**Assumptions:** Resolution is a biological decision, not a cell-type count estimator. UMAP distances are not quantitative lineage distances. Recompute after meaningful subsetting.
+验证数据：Seurat::pbmc_small。
 
-**Common pitfalls:** Resolution is a biological decision, not a cell-type count estimator. UMAP distances are not quantitative lineage distances. Recompute after meaningful subsetting.
+PASS：在 pbmc_small 的全部 80 个细胞上验证 PCA/近邻/聚类/UMAP；未验证大图谱稳健性或生物学分类。
 
-**Alternatives:** Leiden or other Seurat algorithms after validation; Harmony embedding for batch-corrected geometry.
+运行和内存：小型演示不是性能基准，目标数据需记录耗时与线程设置；尽量保留稀疏计数，不要将整张图谱转为稠密矩阵。大型对象的内存消耗尚未基准测试。
 
-**When to prefer alternatives:** Leiden or other Seurat algorithms after validation; Harmony embedding for batch-corrected geometry.
+## 脚本与参考
 
-**Validated datasets:** Seurat::pbmc_small
+脚本：[workflow.R](scripts/workflow.R)（01_scrna_core/clustering/scripts/workflow.R）。运行命令与配置说明见 [README](README.md)。
 
-**Validation status:** PASS — PCA/neighbors/clustering/UMAP on all 80 cells; not full-atlas robustness
-
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
-
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
-
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
-
-**Recommended scripts:** 01_scrna_core/clustering/scripts/workflow.R
-
-**References:** https://satijalab.org/seurat/articles/pbmc3k_tutorial
+参考：https://satijalab.org/seurat/articles/pbmc3k_tutorial

@@ -1,11 +1,5 @@
-# Provenance and licensing
+# 来源记录与许可
 
-Legacy code remains byte-for-byte preserved and mapped to its original project paths/base commit.
-New portable implementations extract API sequences and interface decisions, not entire old scripts.
-Official source/tags/licenses are recorded in references.yml. No upstream repository or unknown
-blog code is copied wholesale; no third-party figure or icon is vendored.
+历史代码按原项目路径／基准提交完整保留。新的可移植实现提取 API 调用次序和接口决策，不复制整份旧脚本。官方来源、tag 和许可记录在 `references.yml`；没有整体搬入上游仓库、许可不明的博客代码、第三方图片或图标。
 
-CellChat target source license: GPL-3; Monocle3: MIT. These package licenses do not automatically
-license the entire personal repository. The owner has not selected a blanket redistribution license;
-this build does not impose one. New grid diagram primitives are original repository assets, with no
-borrowed artwork. External assets require source URL, exact tag/commit, license and adaptation log.
+CellChat 目标源码许可为 GPL-3，Monocle3 为 MIT；包许可不自动适用于整个个人仓库。仓库所有者尚未选择统一的公开再分发许可，本次整理不替所有者指定许可。新的 grid 示意图组件是原创资产，没有借用图稿。添加外部资产时记录来源 URL、准确 tag／commit、许可与适配记录。

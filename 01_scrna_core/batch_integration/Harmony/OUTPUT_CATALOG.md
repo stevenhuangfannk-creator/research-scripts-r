@@ -1,9 +1,15 @@
-# Output Catalog
+# 输出说明：Harmony 批次整合
 
-| Output | Scientific use / question | Figure | Code | Parameters | Main / Supplement | Execution |
-|---|---|---|---|---|---|---|
-| Harmony embedding | Align a PCA embedding across measured technical batches. | Match the numerical scale; use a table when no chart adds evidence | [workflow](scripts/workflow.R) | See method card | Main if it supports the study claim; QC/details in Supplement | UNVALIDATED |
+以下是当前工作流与统一入口实际写入的结果。执行验证：UNVALIDATED，范围以[方法卡](METHOD_CARD.md)为准。
 
-CORE OUTPUTS: above. OPTIONAL/ADVANCED/COMPARISON OUTPUTS: only those described in the method card; unimplemented features require a separate candidate.
+| 文件（相对于 output_dir） | 内容与用途 |
+|---|---|
+| `object.rds` | 带 Harmony reduction 的 Seurat 对象；此工作流不另导出表格。 |
 
-VISUAL OUTPUTS: source-linked entries in the global gallery. TABLE OUTPUTS: the above numeric audits/results. OBJECT OUTPUTS: the workflow object, when supported.
+统一入口另写入 sessionInfo.txt（运行环境）与 run_metadata.yml（方法、配置、生成时间和验证范围）。
+
+代码：[workflow.R](scripts/workflow.R)；参数及科研判断见[方法卡](METHOD_CARD.md)和[使用说明](README.md)。
+
+图形应匹配数值尺度；表格足以表达结果时无需强行画图。可视化预览见[全局图例](../../../GALLERY.md)。支持研究主张的输出可放主文，QC 与细节通常放补充材料，具体由论文证据链决定。
+
+核心输出为上表。可选、高级或比较输出仅限方法卡明确支持的内容；未实现能力需要先作为独立候选复现与验证。

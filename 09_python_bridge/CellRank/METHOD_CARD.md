@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：CellRank 细胞命运概率
 
-**Method:** cellrank
+**方法 ID:** cellrank
 
-**Category:** 09_python_bridge
+**分类:** 09_python_bridge
 
-**Status:** EXPERIMENTAL
+**状态:** EXPERIMENTAL
 
-**Language:** Python
+**语言:** Python
 
-**Package:** cellrank
+**包 / 工具:** cellrank
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。
 
-**Last validated:** Not validated
+**最近验证:** 尚未验证
 
-**Official documentation:** https://cellrank.readthedocs.io/
+**官方文档:** [cellrank 官方文档](https://cellrank.readthedocs.io/)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Estimate state-transition and fate probabilities using explicit kernels.
+**目的:** 基于明确指定的转移核估计状态转移和细胞命运概率。
 
-**Biological question:** Estimate state-transition and fate probabilities using explicit kernels.
+**科研问题:** 基于明确指定的转移核估计状态转移和细胞命运概率。
 
-**When to use:** AnnData, kernel and justified terminal-state definitions.
+**适用情况:** AnnData 对象、转移核，以及有依据的终末状态定义。
 
-**When NOT to use:** Transition-kernel assumptions and terminal choices dominate interpretation.
+**不适用情况 / 使用边界:** 转移核假设和终末状态的选择会主导结果解释。
 
-**Required input:** AnnData, kernel and justified terminal-state definitions.
+**必需输入:** AnnData 对象、转移核，以及有依据的终末状态定义。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 当前输入和参数是规划规范；尚无 workflow.R 支持可选字段。
 
-**Major parameters:** review_required = Kernel weights; estimator; terminal states.
+**主要参数:** review_required = 转移核权重；估计器；终末状态。
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Transition-kernel assumptions and terminal choices dominate interpretation.
+**需要科研判断的参数:** 转移核假设和终末状态的选择会主导结果解释。 具体配置见 [README](README.md)。
 
-**Outputs:** Macrostates; absorption/fate probabilities; driver candidates.
+**输出:** 宏状态（macrostate）；吸收 / 命运概率；候选驱动因子。这些是拟实现的目标输出，当前没有执行结果。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Transition-kernel assumptions and terminal choices dominate interpretation.
+**局限:** 转移核假设和终末状态的选择会主导结果解释。
 
-**Assumptions:** Transition-kernel assumptions and terminal choices dominate interpretation.
+**假设:** 转移核假设和终末状态的选择会主导结果解释。
 
-**Common pitfalls:** Transition-kernel assumptions and terminal choices dominate interpretation.
+**常见问题:** 转移核假设和终末状态的选择会主导结果解释。
 
-**Alternatives:** Trajectory ordering or velocity for different questions
+**替代方法:** 研究问题不同时，考虑轨迹排序或 RNA velocity
 
-**When to prefer alternatives:** Trajectory ordering or velocity for different questions
+**何时选择替代方案:** 研究问题不同时，考虑轨迹排序或 RNA velocity；仍需核对其输入和验证范围。
 
-**Validated datasets:** None
+**已验证数据:** 无
 
-**Validation status:** UNVALIDATED — No executable evidence in this build
+**验证状态:** UNVALIDATED — 当前构建没有此方法的可执行证据。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** None: capability is a documented candidate.
+**推荐脚本:** 无。此目录目前是方法卡和实现规划。
 
-**References:** https://cellrank.readthedocs.io/
+**参考资料:** [cellrank 官方文档](https://cellrank.readthedocs.io/)

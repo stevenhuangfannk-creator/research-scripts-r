@@ -1,65 +1,65 @@
-# Method Card
+# 方法卡：Pearson / Spearman 相关分析
 
-**Method:** correlation
+**方法 ID:** correlation
 
-**Category:** 07_bulk_clinical_ml
+**分类:** 07_bulk_clinical_ml
 
-**Status:** VALIDATED
+**状态:** VALIDATED
 
-**Language:** R
+**语言:** R
 
-**Package:** stats
+**包 / 工具:** stats
 
-**Package version:** See [build package evidence](../../docs/validation/package_status.tsv); never infer a version from package presence.
+**包版本:** 见[包加载与版本证据](../../docs/validation/package_status.tsv)；不能仅因包已安装就推断版本或方法可用。本次已有验证记录为 stats 4.3.1。
 
-**Last validated:** 2026-10-07
+**最近验证:** 2026-10-07
 
-**Official documentation:** https://stat.ethz.ch/R-manual/R-devel/library/stats/html/cor.test.html
+**官方文档:** [stats 官方文档](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/cor.test.html)
 
-**Original paper:** See official documentation citation; paper metadata not independently certified in this build.
+**原始论文:** 从官方文档核对引用；本次整理未独立认证论文元数据。
 
-**Purpose:** Estimate Pearson/Spearman associations with explicit missingness and BH adjustment.
+**目的:** 估计 Pearson / Spearman 相关性，明确缺失值处理，并进行 BH 多重检验校正。
 
-**Biological question:** Estimate Pearson/Spearman associations with explicit missingness and BH adjustment.
+**科研问题:** 估计 Pearson / Spearman 相关性，明确缺失值处理，并进行 BH 多重检验校正。
 
-**When to use:** data.frame of numeric measurements on independent observational units.
+**适用情况:** 每行一个独立观测单位的 data.frame，至少两个不同的数值型变量列；每一对变量至少有 4 个共同的有限观测，且两列都不能为常量。
 
-**When NOT to use:** Correlation ≠ causation. Pearson evaluates linear association; Spearman evaluates monotonic rank association. Repeated or confounded observations need another model.
+**不适用情况 / 使用边界:** 相关不等于因果。Pearson 衡量线性关联，Spearman 衡量单调的秩关联；重复测量或存在混杂时需要其他模型。
 
-**Required input:** data.frame of numeric measurements on independent observational units.
+**必需输入:** 每行一个独立观测单位的 data.frame，至少两个不同的数值型变量列；每一对变量至少有 4 个共同的有限观测，且两列都不能为常量。
 
-**Optional input:** Only optional fields explicitly supported by the workflow/config; candidate contracts are planning specifications.
+**可选输入:** 仅限 workflow.R 和配置实际支持的字段；该封装未实现的方法或参数不能仅凭包的功能推断。
 
-**Major parameters:** variables = explicit numeric columns; method = pearson / spearman; missing = error / pairwise
+**主要参数:** variables = 明确指定数值列；method = pearson / spearman；missing = error / pairwise
 
-**Recommended defaults:** Documented parameter starting points are not automatic biological defaults. No method is promoted to DEFAULT merely because the package is well known.
+**推荐起点:** 文档中的参数只是起点，应结合具体数据审查。知名包不自动获得 DEFAULT 状态。
 
-**Parameters requiring biological judgment:** Correlation ≠ causation. Pearson evaluates linear association; Spearman evaluates monotonic rank association. Repeated or confounded observations need another model.
+**需要科研判断的参数:** 相关不等于因果。Pearson 衡量线性关联，Spearman 衡量单调的秩关联；重复测量或存在混杂时需要其他模型。 具体配置见 [README](README.md)。
 
-**Outputs:** r/rho, P, BH-adjusted P, n and exclusions; Pearson CI; Spearman CI unavailable in this baseline
+**输出:** r / rho、P 值、BH 校正 P 值、样本数与排除数；Pearson 置信区间；当前实现不提供 Spearman 置信区间。实际文件和字段见[输出目录](OUTPUT_CATALOG.md)。
 
-**Strengths:** Explicit data contract, provenance and outputs; small reusable scope.
+**优势:** 输入要求、来源和目标输出明确，方法范围较小。
 
-**Weaknesses:** Correlation ≠ causation. Pearson evaluates linear association; Spearman evaluates monotonic rank association. Repeated or confounded observations need another model.
+**局限:** 相关不等于因果。Pearson 衡量线性关联，Spearman 衡量单调的秩关联；重复测量或存在混杂时需要其他模型。
 
-**Assumptions:** Correlation ≠ causation. Pearson evaluates linear association; Spearman evaluates monotonic rank association. Repeated or confounded observations need another model.
+**假设:** 相关不等于因果。Pearson 衡量线性关联，Spearman 衡量单调的秩关联；重复测量或存在混杂时需要其他模型。
 
-**Common pitfalls:** Correlation ≠ causation. Pearson evaluates linear association; Spearman evaluates monotonic rank association. Repeated or confounded observations need another model.
+**常见问题:** 相关不等于因果。Pearson 衡量线性关联，Spearman 衡量单调的秩关联；重复测量或存在混杂时需要其他模型。
 
-**Alternatives:** Partial/regression models for covariates; mixed models for repeated measurements.
+**替代方法:** 需要控制协变量时使用偏相关 / 回归；重复测量使用混合模型。
 
-**When to prefer alternatives:** Partial/regression models for covariates; mixed models for repeated measurements.
+**何时选择替代方案:** 需要控制协变量时使用偏相关 / 回归；重复测量使用混合模型。；仍需核对其输入和验证范围。
 
-**Validated datasets:** datasets::iris (150 observed flowers)
+**已验证数据:** datasets::iris（150 个真实花朵观测）
 
-**Validation status:** PASS — Pearson/Spearman tests, BH adjustment and missing/constant-input regression cases; pooled species are confounded
+**验证状态:** PASS — Pearson / Spearman 检验、BH 校正，以及缺失值 / 常量列的回归检查；混合物种存在混杂。
 
-**Runtime notes:** Small demos are not benchmarks; record elapsed time and thread policy on the target data.
+**运行时间:** 小型示例不能代表性能基准；正式数据需记录耗时和线程设置。
 
-**Memory notes:** Keep sparse counts where possible; do not densify whole atlases. Large-object memory usage remains unbenchmarked.
+**内存:** 在适用情况下保留稀疏表示，避免将整个大型图谱转为稠密矩阵；大对象内存占用尚未评测。
 
-**Best visualization:** Choose the matching [output catalog](OUTPUT_CATALOG.md), then inspect the registered gallery. No unrendered figure is a visual recommendation.
+**绘图选择:** 先读[输出目录](OUTPUT_CATALOG.md)，再核对已登记的[图例](../../GALLERY.md)。未生成预览的图不视为可视化推荐。
 
-**Recommended scripts:** 07_bulk_clinical_ml/correlation/scripts/workflow.R
+**推荐脚本:** [workflow.R](scripts/workflow.R)
 
-**References:** https://stat.ethz.ch/R-manual/R-devel/library/stats/html/cor.test.html
+**参考资料:** [stats 官方文档](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/cor.test.html)

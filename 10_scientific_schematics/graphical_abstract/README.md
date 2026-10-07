@@ -1,3 +1,3 @@
-# graphical_abstract
+# 图形摘要
 
-CANDIDATE: no rendered template or scientific mechanism is claimed. Compose from original components, a study-specific evidence map and documented layout/palette. Register editable source and actual PNG/vector outputs after visual inspection.
+`CANDIDATE`：目前没有已渲染模板，也不声称科学机制。根据原创组件、研究特定证据关系及已记录的布局／配色构图。实际检查后，再登记可编辑源码和 PNG／矢量输出。

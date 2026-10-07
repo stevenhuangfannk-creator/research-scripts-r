@@ -1,7 +1,17 @@
-# ppi
+# PPI 蛋白互作网络
 
-Analyze an actual protein-interaction graph and report network topology.
+方法 ID：`ppi`。分析具有实际互作证据的蛋白网络，并报告网络拓扑。
 
-**CANDIDATE · validation: UNVALIDATED**. Read [METHOD_CARD](METHOD_CARD.md), [OUTPUT_CATALOG](OUTPUT_CATALOG.md), [examples](examples/README.md), [gallery](gallery/README.md), and [configuration](config/default.yml).
+当前状态：**CANDIDATE**；执行验证：**UNVALIDATED**。先读[方法卡](METHOD_CARD.md)、[输出目录](OUTPUT_CATALOG.md)、[示例与验证](examples/README.md)、[图例](gallery/README.md)和[配置](config/default.yml)。
 
-No executable workflow is claimed. Reproduce and validate before implementation or promotion.
+## 当前可用内容
+
+本目录提供中文方法说明、输入要求、待审查参数和目标输出，**尚无可执行工作流**。注册表中的 `script` 为 `null`，不能用 `run_method.R` 运行此方法；`--allow-unvalidated` 也不会生成缺失的实现。
+
+## 使用前准备
+
+1. 准备输入：完成物种特异映射的蛋白 ID，以及具有来源信息的 STRING 互作边。
+2. 审查规划参数：review_required = 物种；STRING 评分；证据通道；是否为有向网络。
+3. 参考[官方文档](https://string-db.org/help/api/)完成小型可复现实例，再记录输入、参数、依赖版本与实际输出；实现及验证完成后才可在本仓库运行或升级状态。
+
+`config/default.yml` 中的 `input`、`output_dir` 和 `review_required` 是规划占位，不能视为已实现的输入接口。MCC 需要明确的 CytoHubba 实现，不能用 degree 代替；CellChat 的 PPI 投影属于另一类操作。

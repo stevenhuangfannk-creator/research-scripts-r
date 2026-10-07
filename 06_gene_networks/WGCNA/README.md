@@ -1,7 +1,17 @@
-# wgcna
+# WGCNA 共表达网络
 
-Find coexpression modules across independent biological samples.
+方法 ID：`wgcna`。在独立生物学样本之间寻找共表达模块。
 
-**CANDIDATE · validation: UNVALIDATED**. Read [METHOD_CARD](METHOD_CARD.md), [OUTPUT_CATALOG](OUTPUT_CATALOG.md), [examples](examples/README.md), [gallery](gallery/README.md), and [configuration](config/default.yml).
+当前状态：**CANDIDATE**；执行验证：**UNVALIDATED**。先读[方法卡](METHOD_CARD.md)、[输出目录](OUTPUT_CATALOG.md)、[示例与验证](examples/README.md)、[图例](gallery/README.md)和[配置](config/default.yml)。
 
-No executable workflow is claimed. Reproduce and validate before implementation or promotion.
+## 当前可用内容
+
+本目录提供中文方法说明、输入要求、待审查参数和目标输出，**尚无可执行工作流**。注册表中的 `script` 为 `null`，不能用 `run_method.R` 运行此方法；`--allow-unvalidated` 也不会生成缺失的实现。
+
+## 使用前准备
+
+1. 准备输入：标准化的“样本 × 基因”矩阵、质量控制信息及样本性状。
+2. 审查规划参数：review_required = 软阈值；有符号 / 无符号网络；最小模块大小；协变量。
+3. 参考[官方文档](https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/)完成小型可复现实例，再记录输入、参数、依赖版本与实际输出；实现及验证完成后才可在本仓库运行或升级状态。
+
+`config/default.yml` 中的 `input`、`output_dir` 和 `review_required` 是规划占位，不能视为已实现的输入接口。样本过少或混合不同细胞来源，可能产生不稳定或受混杂影响的模块。
