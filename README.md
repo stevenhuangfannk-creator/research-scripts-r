@@ -62,7 +62,7 @@ V1 登记 44 个方法入口：21 个有可执行脚本，23 个目前只有方�
 - `PASS`、`UNVALIDATED`（未验证）、`BLOCKED`（受阻）与 `FAIL` 描述执行证据。
 - 目前没有分析方法被设为通用 `DEFAULT`。能加载包、能运行示例、能生成图，分别对应不同范围的证据。
 - CellChat、Monocle3 的本机完整执行和原生结果画廊仍受依赖与数据条件阻塞；汉化文档不改变它们的状态。
-- 画廊包含 34 个实际渲染的示例。`SYNTHETIC` 表示合成风格演示，不能作为实验结果。
+- 画廊包含 36 个实际渲染的示例，其中新增 [并列 UMAP 图例](08_visualization/UMAP/README.md)：真实 GSE188217 的烟花风格 atlas 与共享二维坐标的 3D 密度山峦，不替代旧默认图。`SYNTHETIC` 表示合成风格演示，不能作为实验结果。
 
 ## 维护与历史项目 / Maintenance and provenance
 

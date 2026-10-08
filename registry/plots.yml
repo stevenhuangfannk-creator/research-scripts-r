@@ -2,6 +2,56 @@
   "schema_version": 1,
   "plots": [
     {
+      "id": "umap_fireworks_atlas",
+      "method": "visualization",
+      "purpose": "Dense atlas display of unchanged real UMAP coordinates / 烟花风格并列展示",
+      "script": "08_visualization/UMAP/umap_fireworks_atlas.R",
+      "example_script": "scripts/generate_umap_alternatives.R",
+      "dataset": "GSE188217; all 18574 retained mouse gingival cells; provisional broad labels",
+      "input_object": "results/umap/GSE188217_umap.csv; exported existing Scanpy X_umap, not a new Seurat run",
+      "major_parameters": {
+        "point_size": 0.18, "alpha": 0.85, "label_seed": 42,
+        "coordinate_changes": 0, "excluded_cells": 0,
+        "width_mm": 183, "height_mm": 135, "dpi": 400
+      },
+      "palette": "GSE188217_fixed_broad_12",
+      "theme": "theme_classic; labelled dense atlas",
+      "output_file": "08_visualization/UMAP/gallery/umap_fireworks_atlas.png",
+      "vector_file": "08_visualization/UMAP/gallery/umap_fireworks_atlas.pdf",
+      "status": "VALIDATED", "selection": "ALTERNATIVE", "synthetic": false,
+      "validation": {
+        "status": "PASS",
+        "scope": "Actual rendering, coordinate/row preservation and input rejection checks only; one library per condition; not biological certification"
+      },
+      "source_inspiration": "https://www.nature.com/articles/s41586-026-10363-4 (Fig. 1f display only; not kidney data reproduction)",
+      "last_generated": "2026-10-08"
+    },
+    {
+      "id": "umap_density_landscape",
+      "method": "visualization",
+      "purpose": "Per-condition probability density on shared 2D UMAP / 共享二维 UMAP 的密度山峦",
+      "script": "08_visualization/UMAP/umap_density_landscape.R",
+      "example_script": "scripts/generate_umap_alternatives.R",
+      "dataset": "GSE188217; Control 6929 and db/db 11645 retained cells; one public library each",
+      "input_object": "results/umap/GSE188217_umap.csv; shared existing Scanpy X_umap",
+      "major_parameters": {
+        "grid_n": 100, "bandwidth_rule": "pooled stats::bw.nrd0; MASS h=4*Gaussian SD",
+        "bandwidth_approx": [0.6678, 0.9257], "normalization": "each surface integrates to 1",
+        "shared_limits_and_z_scale": true, "theta": 35, "phi": 28,
+        "width_mm": 183, "height_mm": 120, "dpi": 400
+      },
+      "palette": "viridis", "theme": "base R persp; Arial; shared scales",
+      "output_file": "08_visualization/UMAP/gallery/umap_density_landscape.png",
+      "vector_file": "08_visualization/UMAP/gallery/umap_density_landscape.pdf",
+      "status": "VALIDATED", "selection": "ALTERNATIVE", "synthetic": false,
+      "validation": {
+        "status": "PASS",
+        "scope": "Actual rendering, shared grid and unit numerical integral checks only; Z is density, not UMAP3, expression or disease effect"
+      },
+      "source_inspiration": "https://mp.weixin.qq.com/s/tp-vlARTlMtbG1d4rBagLw; independently implemented with MASS::kde2d",
+      "last_generated": "2026-10-08"
+    },
+    {
       "id": "umap_clean_v1",
       "method": "seurat_clustering",
       "purpose": "Where are computed clusters in UMAP?",

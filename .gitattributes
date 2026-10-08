@@ -1,0 +1,2 @@
+# Preserve generated R environment receipts; don't strip alignment padding.
+08_visualization/UMAP/gallery/umap_alternatives.sessionInfo.txt whitespace=-blank-at-eol

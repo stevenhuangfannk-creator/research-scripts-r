@@ -248,7 +248,10 @@ if (is.null(only)) {
     jsonlite::write_json(p, sub("\\.png$", ".metadata.json", p$output_file), auto_unbox = TRUE, pretty = TRUE, null = "null")
   }
   planned <- read_registry("registry/planned_plots.yml")$plots
-  jsonlite::write_json(list(schema_version = 1, plots = c(plots, planned)), "registry/plots.yml", auto_unbox = TRUE, pretty = TRUE, null = "null")
+  # Keep reviewed assets maintained by independent generators.
+  replaced_ids <- vapply(c(plots, planned), `[[`, character(1), "id")
+  independent <- Filter(function(p) !p$id %in% replaced_ids, read_registry("registry/plots.yml")$plots)
+  jsonlite::write_json(list(schema_version = 1, plots = c(plots, independent, planned)), "registry/plots.yml", auto_unbox = TRUE, pretty = TRUE, null = "null")
   schematics <- Filter(function(x) x$method == "schematic", plots)
   for (i in seq_along(schematics)) {
     schematics[[i]]$inspiration <- "Original generic vector composition"

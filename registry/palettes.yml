@@ -2,6 +2,14 @@
   "schema_version": 1,
   "palettes": [
     {
+      "id": "GSE188217_fixed_broad_12", "type": "categorical", "recommended_n": 12,
+      "hex_colors": ["#2a788e", "#c4772c", "#755d9a", "#4c8b63", "#bc586d", "#719cb0", "#947b51", "#498580", "#b87ca8", "#607aad", "#ac8542", "#6e777b"],
+      "best_for": "GSE188217 sorted broad labels; use the named mapping CSV and direct labels",
+      "avoid_when": "Other label sets without an explicit new mapping; accessibility-critical colors alone",
+      "colorblind_safe": "not_certified; redundant text labels required",
+      "source": "oral-scrna-atlas/scripts/plot_atlas.py COLORS; 08_visualization/UMAP/gallery/umap_fireworks_atlas.colors.csv"
+    },
+    {
       "id": "npg_ggsci",
       "type": "categorical",
       "recommended_n": 6,

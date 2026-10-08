@@ -2,7 +2,7 @@
 
 先看预览 → 选择 Plot ID → 查找登记的代码与参数。
 
-**34 个实际由 R 渲染的 PNG／PDF 示例。** 下表区分内置数据示例与合成风格演示；模板验证只证明对应示例的渲染，不证明生物学结论。CellChat／Monocle3 原生预览仍受阻。
+**36 个实际由 R 渲染的 PNG／PDF 示例。** 下表区分公开真实数据示例与合成风格演示；模板验证只证明对应示例的记录范围，不证明生物学结论。CellChat／Monocle3 原生预览仍受阻。
 
 状态：`CURRENT_DEFAULT` 是当前优选模板；`SYNTHETIC` 是合成演示；`PASS` 仅表示记录范围内检查通过。图中英文标签和图形文件保留原样。复用步骤见[中文使用指南](docs/USAGE_ZH_CN.md)。
 
@@ -11,6 +11,8 @@
 | Plot ID／用途 | 预览 | 方法／代码／参数／矢量图 | 状态与数据 |
 |---|---|---|---|
 | `umap_clean_v1`<br>已计算的聚类在 UMAP 中如何分布？ | [![umap_clean_v1](08_visualization/UMAP/gallery/umap_clean_v1.png)](08_visualization/UMAP/gallery/umap_clean_v1.png) | [方法](01_scrna_core/clustering/METHOD_CARD.md) · [代码](08_visualization/UMAP/umap_clean_v1.R) · [参数](08_visualization/UMAP/gallery/umap_clean_v1.metadata.json) · [PDF](08_visualization/UMAP/gallery/umap_clean_v1.pdf) | 渲染 PASS; SeuratObject::pbmc_small; 全部 80 个细胞; CURRENT_DEFAULT |
+| `umap_fireworks_atlas`<br>烟花风格 atlas：密集彩色真实细胞 | [![umap_fireworks_atlas](08_visualization/UMAP/gallery/umap_fireworks_atlas.png)](08_visualization/UMAP/gallery/umap_fireworks_atlas.png) | [中文输入与图例](08_visualization/UMAP/README.md) · [代码](08_visualization/UMAP/umap_fireworks_atlas.R) · [参数](08_visualization/UMAP/gallery/umap_fireworks_atlas.metadata.json) · [PDF](08_visualization/UMAP/gallery/umap_fireworks_atlas.pdf) | 渲染/坐标保留 PASS；GSE188217 全部 18,574 细胞；标签暂定；ALTERNATIVE（并列，非 V2） |
+| `umap_density_landscape`<br>共享二维 UMAP 的 3D 密度山峦 | [![umap_density_landscape](08_visualization/UMAP/gallery/umap_density_landscape.png)](08_visualization/UMAP/gallery/umap_density_landscape.png) | [中文输入与图例](08_visualization/UMAP/README.md) · [代码](08_visualization/UMAP/umap_density_landscape.R) · [参数](08_visualization/UMAP/gallery/umap_density_landscape.metadata.json) · [PDF](08_visualization/UMAP/gallery/umap_density_landscape.pdf) | 渲染/概率积分 PASS；GSE188217 两文库；Z 为密度，非 UMAP3；ALTERNATIVE |
 | `feature_clean_v1`<br>LYZ 在哪些细胞中表达？ | [![feature_clean_v1](08_visualization/FeaturePlot/gallery/feature_clean_v1.png)](08_visualization/FeaturePlot/gallery/feature_clean_v1.png) | [方法](01_scrna_core/normalization/lognormalize/METHOD_CARD.md) · [代码](08_visualization/FeaturePlot/feature_clean_v1.R) · [参数](08_visualization/FeaturePlot/gallery/feature_clean_v1.metadata.json) · [PDF](08_visualization/FeaturePlot/gallery/feature_clean_v1.pdf) | 渲染 PASS; pbmc_small; 全部 80 个细胞; CURRENT_DEFAULT |
 | `dotplot_clean_v1`<br>所选 marker 在不同聚类中如何表达？ | [![dotplot_clean_v1](08_visualization/DotPlot/gallery/dotplot_clean_v1.png)](08_visualization/DotPlot/gallery/dotplot_clean_v1.png) | [方法](02_differential_analysis/differential_expression/METHOD_CARD.md) · [代码](08_visualization/DotPlot/dotplot_clean_v1.R) · [参数](08_visualization/DotPlot/gallery/dotplot_clean_v1.metadata.json) · [PDF](08_visualization/DotPlot/gallery/dotplot_clean_v1.pdf) | 渲染 PASS; pbmc_small; CURRENT_DEFAULT |
 | `marker_heatmap_v1`<br>所选 marker 的均值如何随聚类变化？ | [![marker_heatmap_v1](08_visualization/Heatmap/gallery/marker_heatmap_v1.png)](08_visualization/Heatmap/gallery/marker_heatmap_v1.png) | [方法](02_differential_analysis/differential_expression/METHOD_CARD.md) · [代码](08_visualization/Heatmap/heatmap_clean_v1.R) · [参数](08_visualization/Heatmap/gallery/marker_heatmap_v1.metadata.json) · [PDF](08_visualization/Heatmap/gallery/marker_heatmap_v1.pdf) | 渲染 PASS; pbmc_small; CURRENT_DEFAULT |
@@ -99,3 +101,5 @@ Rscript scripts/resolve_asset.R plot umap_clean_v1
 ```
 
 在兼容环境中从仓库根目录运行。指定单个 Plot ID 只重新生成对应演示，仍需已有 smoke 数据和生成器加载的依赖；自己的数据应按登记函数的输入约定调用。上述 smoke、配色及画廊生成命令会更新现有验证记录、登记表和输出，日常查看不必执行。元数据保存在每个 PNG 旁，`registry/plots.yml` 是正式索引。推荐新图前应检查实际导出；原始输入、RDS 和大型数据不进入 Git。
+
+两个并列 UMAP 不使用上述旧生成器，改用 `scripts/generate_umap_alternatives.R` 和真实本地坐标；完整准备、验证与运行顺序见 [UMAP 中文说明](08_visualization/UMAP/README.md)。旧生成器保留由独立生成器维护的登记项，不重画这两个图；旧图和默认选择保留。

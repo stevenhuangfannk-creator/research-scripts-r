@@ -1,0 +1,62 @@
+{
+  "id": "umap_fireworks_atlas",
+  "method": "visualization",
+  "purpose": "Dense atlas display of unchanged real UMAP coordinates / 烟花风格并列展示",
+  "script": "08_visualization/UMAP/umap_fireworks_atlas.R",
+  "example_script": "scripts/generate_umap_alternatives.R",
+  "dataset": "GSE188217; all 18574 retained mouse gingival cells; provisional broad labels",
+  "input_object": "results/umap/GSE188217_umap.csv; exported existing Scanpy X_umap, not a new Seurat run",
+  "major_parameters": {
+    "point_size": 0.18,
+    "alpha": 0.85,
+    "label_seed": 42,
+    "coordinate_changes": 0,
+    "excluded_cells": 0,
+    "width_mm": 183,
+    "height_mm": 135,
+    "dpi": 400
+  },
+  "palette": "GSE188217_fixed_broad_12",
+  "theme": "theme_classic; labelled dense atlas",
+  "output_file": "08_visualization/UMAP/gallery/umap_fireworks_atlas.png",
+  "vector_file": "08_visualization/UMAP/gallery/umap_fireworks_atlas.pdf",
+  "status": "VALIDATED",
+  "selection": "ALTERNATIVE",
+  "synthetic": false,
+  "validation": {
+    "status": "PASS",
+    "scope": "Actual rendering, coordinate/row preservation and input rejection checks only; one library per condition; not biological certification",
+    "checks": {
+      "date": "2026-10-08",
+      "input_sha256": "eb6b86e1805fc4dc84597310cdafac15adb8afab9141e6dbc1119601727745de",
+      "cells": 18574,
+      "excluded_cells": 0,
+      "coordinate_changes": 0,
+      "biological_validation": false,
+      "conditions": {
+        "Control": 6929,
+        "db/db": 11645
+      },
+      "bandwidth": [0.6678, 0.9257],
+      "grid_n": 100,
+      "limits": [-13.8131, 17.1018, -10.4129, 22.6723],
+      "density_max": 0.0244,
+      "surface_integrals": {
+        "Control": 1,
+        "db/db": 1
+      },
+      "palette_source": "oral-scrna-atlas scripts/plot_atlas.py COLORS, sorted celltype_broad",
+      "R": "R version 4.3.1 (2023-06-16 ucrt)",
+      "dependencies": [
+        "ggplot2 3.5.2",
+        "ggrepel 0.9.6",
+        "MASS 7.3.60",
+        "viridisLite 0.4.2",
+        "jsonlite 2.0.0",
+        "digest 0.6.37"
+      ]
+    }
+  },
+  "source_inspiration": "https://www.nature.com/articles/s41586-026-10363-4 (Fig. 1f display only; not kidney data reproduction)",
+  "last_generated": "2026-10-08"
+}

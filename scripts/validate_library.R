@@ -55,7 +55,7 @@ for (path in sources) {
   text <- readLines(path, warn = FALSE)
   if (any(grepl("(^|[\"'[:space:]])[A-Za-z]:[/\\\\]", text))) stop("Absolute local path in ", path)
 }
-summary <- list(date = "2026-10-07", structural_status = "PASS", method_entries = length(methods),
+summary <- list(date = as.character(Sys.Date()), structural_status = "PASS", method_entries = length(methods),
    smoke_validated_methods = sum(vapply(methods, function(x) isTRUE(x$validated), logical(1))),
    generated_gallery = sum(vapply(plots, function(x) !is.null(x$output_file), logical(1))),
    planned_gallery = sum(vapply(plots, function(x) is.null(x$output_file), logical(1))),

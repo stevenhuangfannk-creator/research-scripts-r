@@ -29,3 +29,5 @@ research_palette("viridis", n = 100)
 ```
 
 分类颜色用于组别，连续颜色用于表达量，发散颜色用于有明确零点的正负差异。固定细胞类型颜色通过 `celltype_palette(labels)` 查询；未登记的标签会停止，先确认并登记，不随意改变已有颜色。
+
+另登记项目专用 `GSE188217_fixed_broad_12`（12 类、未认证 CVD-safe），沿用既有口腔图鉴映射，完整类别/颜色见 [命名颜色表](08_visualization/UMAP/gallery/umap_fireworks_atlas.colors.csv) 与 [并列 UMAP 图例](08_visualization/UMAP/README.md)。上方历史色卡尚未重绘新增这一行；不要把此项目的第 N 个颜色随意配给别的数据标签，也不覆盖全局 `celltype_colors.yml`。

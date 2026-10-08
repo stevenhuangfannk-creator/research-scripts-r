@@ -15,6 +15,12 @@ add("okabe_ito", "categorical", okabe, "Up to 8 discrete groups, with labels/sha
 add("viridis", "continuous", viridisLite::viridis(6), "Nonnegative expression/activity", "Signed contrasts around zero", "designed_for_common_CVD", "https://cran.r-project.org/package=viridisLite")
 add("cividis", "continuous", viridisLite::cividis(6), "Accessible ordered magnitude", "Unrelated categories", "designed_for_common_CVD", "https://cran.r-project.org/package=viridisLite")
 add("blue_white_red", "diverging", c("#2166AC", "#F7F7F7", "#B2182B"), "Signed differences with meaningful zero", "Unsigned expression levels", "not_certified; add signed labels", "https://colorbrewer2.org/")
+add("GSE188217_fixed_broad_12", "categorical",
+    c("#2a788e", "#c4772c", "#755d9a", "#4c8b63", "#bc586d", "#719cb0", "#947b51", "#498580", "#b87ca8", "#607aad", "#ac8542", "#6e777b"),
+    "GSE188217 sorted broad labels; use the named mapping CSV and direct labels",
+    "Other label sets without an explicit new mapping; accessibility-critical colors alone",
+    "not_certified; redundant text labels required",
+    "oral-scrna-atlas/scripts/plot_atlas.py COLORS; 08_visualization/UMAP/gallery/umap_fireworks_atlas.colors.csv", 12)
 jsonlite::write_json(list(schema_version = 1, palettes = palettes), "registry/palettes.yml", pretty = TRUE, auto_unbox = TRUE, null = "null")
 colors <- list(Macrophage = "#D55E00", Monocyte = "#E69F00", Neutrophil = "#CC79A7", "T cell" = "#0072B2",
                "B cell" = "#56B4E9", NK = "#009E73", Fibroblast = "#8C6BB1", Endothelial = "#4D4D4D",

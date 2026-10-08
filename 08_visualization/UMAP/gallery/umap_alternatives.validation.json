@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-08",
+  "input_sha256": "eb6b86e1805fc4dc84597310cdafac15adb8afab9141e6dbc1119601727745de",
+  "cells": 18574,
+  "excluded_cells": 0,
+  "coordinate_changes": 0,
+  "biological_validation": false,
+  "conditions": {
+    "Control": 6929,
+    "db/db": 11645
+  },
+  "bandwidth": [0.6678, 0.9257],
+  "grid_n": 100,
+  "limits": [-13.8131, 17.1018, -10.4129, 22.6723],
+  "density_max": 0.0244,
+  "surface_integrals": {
+    "Control": 1,
+    "db/db": 1
+  },
+  "palette_source": "oral-scrna-atlas scripts/plot_atlas.py COLORS, sorted celltype_broad",
+  "R": "R version 4.3.1 (2023-06-16 ucrt)",
+  "dependencies": [
+    "ggplot2 3.5.2",
+    "ggrepel 0.9.6",
+    "MASS 7.3.60",
+    "viridisLite 0.4.2",
+    "jsonlite 2.0.0",
+    "digest 0.6.37"
+  ]
+}

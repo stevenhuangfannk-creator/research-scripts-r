@@ -1,0 +1,39 @@
+{
+  "source_file": "GSE188217_annotated_v0.1.h5ad",
+  "source_sha256": "735444bf3d1a72b56982ba52c86f11798d1300752159cf6376523784080bf95f",
+  "cells": 18574,
+  "genes_in_source": 27998,
+  "exported_expression": false,
+  "excluded_cells": 0,
+  "embedding_key": "X_umap",
+  "group_key": "celltype_broad",
+  "sample_counts": {
+    "GSM5672499": 11645,
+    "GSM5672500": 6929
+  },
+  "condition_counts": {
+    "db/db": 11645,
+    "Control": 6929
+  },
+  "label_counts": {
+    "Fibroblast": 5959,
+    "T cell": 3570,
+    "B cell": 2069,
+    "Mural cell": 1765,
+    "Unresolved": 1610,
+    "Neutrophil": 1379,
+    "Endothelial cell": 554,
+    "Plasma cell": 443,
+    "Schwann cell": 379,
+    "NK cell": 347,
+    "Myeloid cell": 294,
+    "Epithelial cell": 205
+  },
+  "umap_parameters": {
+    "a": 0.5830300204883174,
+    "b": 1.3341669924555197,
+    "random_state": 17
+  },
+  "output_sha256": "eb6b86e1805fc4dc84597310cdafac15adb8afab9141e6dbc1119601727745de",
+  "limitations": "Provisional labels; one public library per condition; no independent disease effect test"
+}
