@@ -1,0 +1,10 @@
+{
+  "shape": [
+    6417,
+    1175
+  ],
+  "edges": 40877,
+  "JUND_targets": 105,
+  "status": "PASS",
+  "scope": "Real CollecTRI prior named-edge adapter; no dynamics or disease causality validated"
+}

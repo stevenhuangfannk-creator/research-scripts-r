@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "targets": [
+    {
+      "TF": "elf1",
+      "blocked_edges": 100,
+      "mean_velocity_l2": 0.0444573238492012
+    },
+    {
+      "TF": "nr2f5",
+      "blocked_edges": 106,
+      "mean_velocity_l2": 0.11183194816112518
+    }
+  ],
+  "cutoff": 0.001,
+  "effects": 0.0,
+  "artifacts": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\baseline_posterior.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\perturb_null.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\perturbation_depletion.csv",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\perturb_elf1.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\perturb_nr2f5.h5ad"
+  ],
+  "no_op_velocity_max_abs_difference": 0.0,
+  "no_op_fate_max_abs_difference": 0.0,
+  "no_effective_edges_control": {
+    "status": "PASS",
+    "gene": "BX571715.1",
+    "control_definition": "Gene column with no effective downstream weights.",
+    "velocity_max_abs_difference": 0.0,
+    "fate_max_abs_difference": 0.0
+  },
+  "terminal_cells_frozen": true,
+  "posterior_draws_paired_by_seed": true,
+  "scientific_qc": {
+    "interpretation": "Regulon-level in silico knockout; not experimental CRISPR.",
+    "seed_stability": "NOT_RUN",
+    "cutoff_sensitivity": "PASS (executed diagnostic; not biological validation)",
+    "training_seed_stability": "NOT_RUN",
+    "posterior_stability": "PASS",
+    "target_subset_sensitivity": "PASS (executed diagnostic; not biological validation)",
+    "stability_evidence": "stability/STABILITY_QC.json"
+  }
+}

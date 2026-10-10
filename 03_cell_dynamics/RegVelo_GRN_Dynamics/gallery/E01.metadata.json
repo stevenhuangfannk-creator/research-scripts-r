@@ -1,0 +1,43 @@
+{
+  "id": "regvelo_e01",
+  "english_name": "Baseline vs KO Velocity",
+  "chinese_name": "基线与KO速度比较",
+  "scientific_question": "How does a paired regulon block change projected velocity?",
+  "evidence_label": "Model-predicted",
+  "limitations": "Paired posterior draws and separate KO embeddings are required; this is not CRISPR.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E01.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E01_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Paired posterior baseline and independently recomputed KO velocity embedding",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\baseline_posterior.h5ad; C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\perturb_elf1.h5ad",
+  "biological_interpretation": "比较配对后验基线与单独重算的regulon阻断速度投影；这是模型内虚拟KO，不是CRISPR实验。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\baseline_posterior.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\perturb_elf1.h5ad"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "streamline_parameters": {
+    "grid_density": 1,
+    "plot_density": 2,
+    "line_width_pt": 0.7,
+    "mask": "Standard scVelo support/velocity grid mask; no cells removed"
+  },
+  "figure_id": "E01",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E01.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/E01.json",
+  "preview_only": true
+}

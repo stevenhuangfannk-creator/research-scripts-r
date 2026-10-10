@@ -1,0 +1,22 @@
+{
+  "stages": {
+    "audit": {
+      "status": "FAIL",
+      "config_hash": "ba1d81284b4c671ca269f19f4302294ca1e9eb2e188dae52324e720dfedfe3b2",
+      "started_utc": "2026-10-10T12:45:44Z",
+      "error": "ValueError: Missing required RNA layers: spliced, unspliced. Expression cannot reconstruct splicing counts.. Evidence: C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\official_sources\\forwardtest_postfix\\run\\INPUT_AUDIT.json",
+      "error_log": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\official_sources\\forwardtest_postfix\\run\\logs\\audit_error.log",
+      "elapsed_seconds": 2.969
+    },
+    "report": {
+      "status": "PASS",
+      "config_hash": "ba1d81284b4c671ca269f19f4302294ca1e9eb2e188dae52324e720dfedfe3b2",
+      "started_utc": "2026-10-10T12:45:47Z",
+      "artifacts": [
+        "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\official_sources\\forwardtest_postfix\\run\\ANALYSIS_REPORT.md"
+      ],
+      "elapsed_seconds": 0.625,
+      "finished_utc": "2026-10-10T12:45:48Z"
+    }
+  }
+}

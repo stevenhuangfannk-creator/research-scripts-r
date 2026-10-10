@@ -1,0 +1,59 @@
+{
+  "status": "PASS",
+  "review_scope": "SOURCE_REFERENCE_AND_RECOVERY_LOGIC_ONLY",
+  "checked_utc": "2026-10-10T13:12:36.911537+00:00",
+  "scvi_tools_version_from_verified_lock": "1.2.0",
+  "source_files": {
+    "scvi_base_model": {
+      "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Lib\\site-packages\\scvi\\model\\base\\_base_model.py",
+      "sha256": "3a894aafad69c9bf416397f7542b6b33c91d16d3da1900b5c7107452f1481581",
+      "lines": 946
+    },
+    "scvi_manager": {
+      "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Lib\\site-packages\\scvi\\data\\_manager.py",
+      "sha256": "84dc7a2c029943218074fb44b8376459fa8a129af535c2e24ed6516bfb3bc58b",
+      "lines": 545
+    },
+    "scvi_data_utils": {
+      "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Lib\\site-packages\\scvi\\data\\_utils.py",
+      "sha256": "a5be509c5b74bdec885330e84cfaa6c46c17dcf06f75078bb009e10da696c291",
+      "lines": 359
+    },
+    "official_regvelo_model": {
+      "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\official_sources\\regvelo\\src\\regvelo\\_model.py",
+      "sha256": "c11d79715e433688daab8675f6f3ba8fc6ef139507f5b037086a1dd9bf54db48",
+      "lines": 1094
+    },
+    "official_perturbation": {
+      "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\official_sources\\regvelo\\src\\regvelo\\tools\\_in_silico_block_simulation.py",
+      "sha256": "2a1fbbc2e733b7eaa7f248c9bda4a684cde2c6fce40d4c1aec80272dab58cf3c",
+      "lines": 68
+    },
+    "stability_recovery_saved_source": {
+      "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\research-scripts-r\\03_cell_dynamics\\RegVelo_GRN_Dynamics\\scripts\\validate_perturbation.py",
+      "sha256": "bfd4a221118a56611308b486f057d8eb175ecbc696dab9cdcce12b35b77c7ff7",
+      "lines": 242
+    }
+  },
+  "strong_retention_chain": "REGVELOVI._per_instance_manager_store[model.id][adata_uuid] -> AnnDataManager.adata -> per-simulation input copy",
+  "strong_reference_mechanism_confirmed": true,
+  "runtime_memory_cause_or_scale_measured": false,
+  "default_deregister_preserves_own_manager": true,
+  "recommended_release": "After saved outputs: model.deregister_manager(model.adata), pop only that completed model.id bucket, delete caller aliases, gc.collect; no global store clear",
+  "same_seed_exact_fc1_reuse_math": "VALID within same protected model/data, posterior and CellRank settings; not an independent replicate",
+  "recovery_source_fixes_confirmed": [
+    "fate bounds",
+    "target metadata/list condition comparison",
+    "h5py reads required fields only",
+    "remove inherited uncertainty/self-transition fields"
+  ],
+  "remaining_contract_limits": [
+    "fingerprint lacks source/software versions",
+    "probability validation sidecar not checksummed",
+    "raw HDF5 cache shape checks could be explicit",
+    "post-clean artifact hashes must refresh checkpoint"
+  ],
+  "active_process_loaded_source_version": "NOT_INSPECTED",
+  "heavy_imports_or_model_execution": false,
+  "runtime_source_or_process_modified_by_reviewer": false
+}

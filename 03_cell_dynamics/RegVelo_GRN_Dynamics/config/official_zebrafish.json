@@ -1,0 +1,18 @@
+{
+  "input": "../../../../regvelo_data/raw/adata_zebrafish_preprocessed.h5ad",
+  "grn": "../../../../regvelo_data/raw/prior_GRN.csv",
+  "output": "../../../../regvelo_results/official_zebrafish/hard_seed0",
+  "grn_orientation": "regulator_by_target",
+  "group_key": "cell_type",
+  "time_key": "stage",
+  "time_order": ["3ss", "6-7ss", "10ss", "12-13ss", "17-18ss", "21-22ss"],
+  "seed": 0,
+  "mode": "hard",
+  "prepare": {"n_neighbors": 30, "n_pcs": 30, "max_cells": null, "cor_filter": true},
+  "train": {"max_epochs": 1500, "batch_size": 256, "accelerator": "gpu", "devices": 1, "early_stopping": true, "enable_progress_bar": false},
+  "posterior": {"batch_size": 128, "n_samples": 30},
+  "fate": {"n_states": 7, "n_cells": 30, "solver": "direct", "kernel_mix": 1.0},
+  "terminal_states": ["mNC_head_mesenchymal", "mNC_arch2", "mNC_hox34", "Pigment"],
+  "perturb": {"tfs": ["elf1", "nr2f5"], "cutoff": 0.001, "effects": 0, "cutoffs": [0, 0.001, 0.01]},
+  "grn_cutoff": 0.001
+}

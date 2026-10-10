@@ -1,0 +1,106 @@
+{
+  "scvelo_stochastic_projected_cosine_median": 0.8855272469637264,
+  "scvelo_stochastic_projected_opposite_fraction": 0.20229555236728838,
+  "scvelo_comparison_scope": "UMAP projected velocity; not a ground-truth accuracy metric",
+  "validation_loss": {
+    "first": 2970.657958984375,
+    "last": -2076.716552734375,
+    "minimum": -2129.41845703125,
+    "minimum_epoch": 578,
+    "last50_mean": -2071.8367504882813
+  },
+  "terminal_metadata": {
+    "mNC_head_mesenchymal": {
+      "n_cells": 30,
+      "cell_annotations": {
+        "mNC_head_mesenchymal": 30
+      },
+      "stages": {
+        "21-22ss": 20,
+        "17-18ss": 10
+      }
+    },
+    "mNC_arch2": {
+      "n_cells": 30,
+      "cell_annotations": {
+        "mNC_arch2": 22,
+        "mNC_arch1": 8
+      },
+      "stages": {
+        "17-18ss": 15,
+        "21-22ss": 15
+      }
+    },
+    "mNC_hox34": {
+      "n_cells": 30,
+      "cell_annotations": {
+        "mNC_hox34": 30
+      },
+      "stages": {
+        "21-22ss": 21,
+        "17-18ss": 9
+      }
+    },
+    "Pigment": {
+      "n_cells": 30,
+      "cell_annotations": {
+        "Pigment": 30
+      },
+      "stages": {
+        "21-22ss": 22,
+        "17-18ss": 8
+      }
+    }
+  },
+  "transition_qc": {
+    "baseline_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.32673252911107e-06,
+      "max_row_sum_error": 4.440892098500626e-16
+    },
+    "elf1_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.471541302952783e-06,
+      "max_row_sum_error": 4.440892098500626e-16
+    },
+    "no_edges_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.32673252911107e-06,
+      "max_row_sum_error": 4.440892098500626e-16
+    },
+    "nr2f5_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.227445655919765e-06,
+      "max_row_sum_error": 5.551115123125783e-16
+    },
+    "null_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.32673252911107e-06,
+      "max_row_sum_error": 4.440892098500626e-16
+    },
+    "paired_baseline_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.32673252911107e-06,
+      "max_row_sum_error": 4.440892098500626e-16
+    },
+    "velocity_transition_matrix.npz": {
+      "finite": true,
+      "min_nonzero": 2.32673252911107e-06,
+      "max_row_sum_error": 4.440892098500626e-16
+    }
+  },
+  "tf_mean_fate_delta": {
+    "elf1": {
+      "mNC_head_mesenchymal": 0.004418469181225085,
+      "mNC_arch2": 0.007617664103524732,
+      "mNC_hox34": 0.0063837026094866085,
+      "Pigment": -0.01841983589423412
+    },
+    "nr2f5": {
+      "mNC_head_mesenchymal": -0.011643946500503623,
+      "mNC_arch2": -0.0019411324280862988,
+      "mNC_hox34": -0.005777952520188507,
+      "Pigment": 0.019363031448784054
+    }
+  }
+}

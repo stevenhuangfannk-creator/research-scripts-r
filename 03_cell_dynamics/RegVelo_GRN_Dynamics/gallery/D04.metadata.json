@@ -1,0 +1,36 @@
+{
+  "id": "regvelo_d04",
+  "english_name": "Regulatory Weight Distribution",
+  "chinese_name": "调控权重分布",
+  "scientific_question": "How are signed trained weights distributed?",
+  "evidence_label": "Model-predicted",
+  "limitations": "fc1 weights differ from normalized-expression Jacobians.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D04.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D04_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Histogram of saved edges above configured grn_cutoff",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\tf_target_edges.csv",
+  "biological_interpretation": "查看阈值以上的有符号训练权重分布；fc1参数与归一化表达Jacobian不同，均不等于实验结合。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\tf_target_edges.csv"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "D04",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D04.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/D04.json",
+  "preview_only": true
+}

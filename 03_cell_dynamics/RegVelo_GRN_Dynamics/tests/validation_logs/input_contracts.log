@@ -1,0 +1,17 @@
+test_audit_creates_outputs_without_modifying_input (test_input_contracts.CliAuditContracts) ... ok
+test_missing_input_records_real_failure (test_input_contracts.CliAuditContracts) ... ok
+test_missing_keys_variables_and_source_overwrite_are_rejected (test_input_contracts.ConfigurationContracts) ... ok
+test_paths_are_relative_to_config_not_process_directory (test_input_contracts.ConfigurationContracts) ... ok
+test_duplicate_identifiers_are_not_silently_renamed (test_input_contracts.InputAuditContracts) ... ok
+test_invalid_spliced_values_are_rejected (test_input_contracts.InputAuditContracts) ... ok
+test_missing_splice_layer_is_rejected (test_input_contracts.InputAuditContracts) ... ok
+test_splice_presence_does_not_certify_raw_count_origin (test_input_contracts.InputAuditContracts) ... ok
+test_auto_only_uses_unambiguous_regulator_names (test_input_contracts.NamedGrnContracts) ... ok
+test_duplicates_nonfinite_empty_edges_and_wrong_ids_are_rejected (test_input_contracts.NamedGrnContracts) ... ok
+test_orientation_preserves_the_named_edge (test_input_contracts.NamedGrnContracts) ... ok
+test_square_matrix_direction_cannot_be_guessed (test_input_contracts.NamedGrnContracts) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 5.013s
+
+OK

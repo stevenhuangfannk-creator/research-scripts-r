@@ -1,0 +1,37 @@
+{
+  "id": "regvelo_c05",
+  "english_name": "Fate Probability Heatmap",
+  "chinese_name": "命运概率热图",
+  "scientific_question": "How do annotated classes differ in mean predicted fate?",
+  "evidence_label": "Model-predicted",
+  "limitations": "Group means hide within-class variation and are not independent biological replicates.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C05.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C05_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Mean saved fate probabilities within annotations",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\baseline_fate_probabilities.csv; C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad",
+  "biological_interpretation": "比较已有细胞标签内的平均命运概率；均值会隐藏群内差异，细胞不能当独立生物学重复。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\baseline_fate_probabilities.csv",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "C05",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C05.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/C05.json",
+  "preview_only": true
+}

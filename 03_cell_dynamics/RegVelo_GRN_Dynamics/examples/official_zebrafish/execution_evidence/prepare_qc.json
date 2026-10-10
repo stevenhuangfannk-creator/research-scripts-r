@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "input_shape": [
+    697,
+    8012
+  ],
+  "processed_shape": [
+    697,
+    1007
+  ],
+  "velocity_genes": 2164,
+  "n_regulators": 82,
+  "n_active_prior_regulators": 82,
+  "n_prior_edges": 4380,
+  "moments_preserved": false,
+  "normalization_repeated": false,
+  "smoke_test": false,
+  "grn_input_orientation": "regulator_by_target",
+  "grn_stored_orientation": "regulator_by_target",
+  "model_W_orientation": "target_by_regulator",
+  "labelled_edge_orientation_assertions": 25,
+  "artifacts": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\prepared.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\baseline_input.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\aligned_gene_order.csv",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\grn_orientation_assertions.csv"
+  ],
+  "scientific_qc": "Requires velocity direction and biological checks."
+}

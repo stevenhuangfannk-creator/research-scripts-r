@@ -1,0 +1,4 @@
+﻿mode,status,evaluation_scope,n_cells,n_genes,epochs_recorded,seed,lam,lam2,n_samples,velocity_shape,velocity_finite,history_finite,weights_finite,save_load_equal,same_cell_names,same_gene_names,elapsed_seconds,source_prepared_sha256
+hard,FAIL,SMOKE_TEST_ONLY_NOT_FORMAL_MODEL_COMPARISON,200,894,,0,,,2,,,,,,True,True,0.344,c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9
+soft,FAIL,SMOKE_TEST_ONLY_NOT_FORMAL_MODEL_COMPARISON,200,894,,0,,,2,,,,,,True,True,5.609,c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9
+soft_regularized,FAIL,SMOKE_TEST_ONLY_NOT_FORMAL_MODEL_COMPARISON,200,894,,0,,,2,,,,,,True,True,3.032,c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9

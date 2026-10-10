@@ -1,0 +1,36 @@
+{
+  "id": "regvelo_a03",
+  "english_name": "Spliced Unspliced QC",
+  "chinese_name": "剪接计数质量检查",
+  "scientific_question": "Is splice signal detected across cells?",
+  "evidence_label": "Observed",
+  "limitations": "Counts and detection do not establish a valid velocity direction.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A03.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A03_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Saved splice-layer sums and detected-gene counts; preprocessed layer values are not assumed raw UMIs",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_data\\raw\\adata_zebrafish_preprocessed.h5ad",
+  "biological_interpretation": "检查保存的剪接层总量及每细胞检出基因数；已处理层单位不假设为原始UMI，检出不等于速度信号可靠。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_data\\raw\\adata_zebrafish_preprocessed.h5ad"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "A03",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A03.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/A03.json",
+  "preview_only": true
+}

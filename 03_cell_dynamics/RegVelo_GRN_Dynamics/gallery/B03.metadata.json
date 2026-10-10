@@ -1,0 +1,36 @@
+{
+  "id": "regvelo_b03",
+  "english_name": "Latent Time",
+  "chinese_name": "潜在时间",
+  "scientific_question": "How does mean inferred time vary across cells?",
+  "evidence_label": "Model-predicted",
+  "limitations": "Mean fit_t is min-max scaled, not calibrated elapsed time.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B03.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B03_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Min-max normalized per-cell mean inferred fit_t",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\velocity.h5ad",
+  "biological_interpretation": "显示各细胞mean fit_t经min-max归一化后的相对顺序；不把它解释为真实时钟。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\velocity.h5ad"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "B03",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B03.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/B03.json",
+  "preview_only": true
+}

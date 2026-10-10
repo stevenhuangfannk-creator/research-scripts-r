@@ -1,0 +1,36 @@
+{
+  "id": "regvelo_d03",
+  "english_name": "Regulon Ranking",
+  "chinese_name": "Regulon排序",
+  "scientific_question": "Which regulators have the largest summed absolute effective weights?",
+  "evidence_label": "Model-predicted",
+  "limitations": "Large summed weight is not validated TF importance or clinical effect.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D03.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D03_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Sum absolute learned effective weights per regulator; top20 display",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\regulon_ranking.csv",
+  "biological_interpretation": "按有效边绝对权重之和排列regulator；排序不是已验证TF功能重要性或治疗效应。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\regulon_ranking.csv"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "D03",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D03.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/D03.json",
+  "preview_only": true
+}

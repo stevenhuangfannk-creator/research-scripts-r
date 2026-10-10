@@ -1,0 +1,37 @@
+{
+  "id": "regvelo_a01",
+  "english_name": "Cell Type UMAP",
+  "chinese_name": "细胞类型UMAP",
+  "scientific_question": "Which annotated cell classes are present?",
+  "evidence_label": "Observed",
+  "limitations": "Annotations and embedding do not validate fine-state identity.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A01.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A01_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Saved UMAP with original cell-type annotation",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\prepared.h5ad; C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_data\\raw\\adata_zebrafish_preprocessed.h5ad",
+  "biological_interpretation": "展示已有细胞类型标签在UMAP上的位置；聚集位置不证明精细亚群身份或动力学方向。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\prepared.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_data\\raw\\adata_zebrafish_preprocessed.h5ad"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "A01",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A01.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/A01.json",
+  "preview_only": true
+}

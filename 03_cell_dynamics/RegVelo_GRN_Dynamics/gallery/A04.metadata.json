@@ -1,0 +1,37 @@
+{
+  "id": "regvelo_a04",
+  "english_name": "GRN Coverage",
+  "chinese_name": "GRN覆盖率",
+  "scientific_question": "Which features and prior regulators survived preprocessing?",
+  "evidence_label": "Observed / Prior",
+  "limitations": "Static prior coverage is not evidence of active direct regulation.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A04.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A04_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Recorded feature-retention and unique regulator/target/effective prior-edge counts",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\feature_retention.csv; C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\prior_edges.csv",
+  "biological_interpretation": "展示特征过滤及实际对齐先验的regulator、target和边覆盖；有边不等于调控在该细胞中活跃。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\feature_retention.csv",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\prior_edges.csv"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "A04",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A04.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/A04.json",
+  "preview_only": true
+}

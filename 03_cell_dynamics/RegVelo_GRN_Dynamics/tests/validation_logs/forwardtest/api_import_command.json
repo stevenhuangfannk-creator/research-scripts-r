@@ -1,0 +1,8 @@
+{
+  "command": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Scripts\\python.exe",
+    "-c",
+    "import regvelo as rgv; print(\"version\", rgv.__version__); print(\"REGVELOVI\", rgv.REGVELOVI.__name__); print(\"official_perturbation\", callable(rgv.tl.in_silico_block_simulation))"
+  ],
+  "exit_code": 0
+}

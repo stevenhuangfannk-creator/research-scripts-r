@@ -6,6 +6,8 @@
 
 状态：`CURRENT_DEFAULT` 是当前优选模板；`SYNTHETIC` 是合成演示；`PASS` 仅表示记录范围内检查通过。图中英文标签和图形文件保留原样。复用步骤见[中文使用指南](docs/USAGE_ZH_CN.md)。
 
+新增Python模块图谱：[RegVelo Gallery](03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/README.md)与[完整输出目录](03_cell_dynamics/RegVelo_GRN_Dynamics/OUTPUT_CATALOG.md)。真实数据QC、RNA dynamics、CellRank、GRN和regulon虚拟KO逐图保留状态与来源；支持的图型不自动计入上述既有R渲染数量。
+
 ## UMAP／注释／单细胞
 
 | Plot ID／用途 | 预览 | 方法／代码／参数／矢量图 | 状态与数据 |
@@ -103,3 +105,9 @@ Rscript scripts/resolve_asset.R plot umap_clean_v1
 在兼容环境中从仓库根目录运行。指定单个 Plot ID 只重新生成对应演示，仍需已有 smoke 数据和生成器加载的依赖；自己的数据应按登记函数的输入约定调用。上述 smoke、配色及画廊生成命令会更新现有验证记录、登记表和输出，日常查看不必执行。元数据保存在每个 PNG 旁，`registry/plots.yml` 是正式索引。推荐新图前应检查实际导出；原始输入、RDS 和大型数据不进入 Git。
 
 两个并列 UMAP 不使用上述旧生成器，改用 `scripts/generate_umap_alternatives.R` 和真实本地坐标；完整准备、验证与运行顺序见 [UMAP 中文说明](08_visualization/UMAP/README.md)。旧生成器保留由独立生成器维护的登记项，不重画这两个图；旧图和默认选择保留。
+
+## RegVelo / 官方斑马鱼真实动力学图谱
+
+[27张实际图、CSV、PDF、参数与命令](03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/README.md)：A01–A04数据QC，B01–B07动力学，C01–C05命运，D01–D05调控网络，E01–E06虚拟KO。697细胞正式hard模型；不是合成数据。PASS限于实际计算/渲染，不等同实验验证。
+
+[![RegVelo](./03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E03.png)](03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/README.md)

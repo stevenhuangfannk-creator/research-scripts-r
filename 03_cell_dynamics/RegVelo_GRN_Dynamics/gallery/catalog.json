@@ -1,0 +1,272 @@
+[
+  {
+    "figure_id": "A01",
+    "english_name": "Cell Type UMAP",
+    "chinese_name": "细胞类型UMAP",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A01_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A01.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A01.pdf",
+    "method": "Saved UMAP with original cell-type annotation"
+  },
+  {
+    "figure_id": "A02",
+    "english_name": "Development Stage UMAP",
+    "chinese_name": "发育阶段UMAP",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A02_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A02.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A02.pdf",
+    "method": "Ordinal stage mapping from explicit time_order"
+  },
+  {
+    "figure_id": "A03",
+    "english_name": "Spliced Unspliced QC",
+    "chinese_name": "剪接计数质量检查",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A03_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A03.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A03.pdf",
+    "method": "Saved splice-layer sums and detected-gene counts; preprocessed layer values are not assumed raw UMIs"
+  },
+  {
+    "figure_id": "A04",
+    "english_name": "GRN Coverage",
+    "chinese_name": "GRN覆盖率",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A04_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A04.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/A04.pdf",
+    "method": "Recorded feature-retention and unique regulator/target/effective prior-edge counts"
+  },
+  {
+    "figure_id": "B01",
+    "english_name": "Velocity Stream",
+    "chinese_name": "RNA速度流场",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B01_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B01.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B01.pdf",
+    "method": "scVelo stream interpolation of RegVelo velocity projection"
+  },
+  {
+    "figure_id": "B02",
+    "english_name": "Velocity Arrows",
+    "chinese_name": "RNA速度箭头",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B02_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B02.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B02.pdf",
+    "method": "scVelo arrows from RegVelo saved velocity_umap"
+  },
+  {
+    "figure_id": "B03",
+    "english_name": "Latent Time",
+    "chinese_name": "潜在时间",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B03_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B03.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B03.pdf",
+    "method": "Min-max normalized per-cell mean inferred fit_t"
+  },
+  {
+    "figure_id": "B04",
+    "english_name": "Velocity Phase Portrait",
+    "chinese_name": "速度相图",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B04_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B04.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B04.pdf",
+    "method": "Ms/Mu relationship colored by saved predicted velocity; no fitted phase line asserted"
+  },
+  {
+    "figure_id": "B05",
+    "english_name": "Training Curve",
+    "chinese_name": "模型训练曲线",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B05_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B05.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B05.pdf",
+    "method": "Actual saved training metrics; no convergence threshold inferred"
+  },
+  {
+    "figure_id": "B06",
+    "english_name": "Velocity Uncertainty",
+    "chinese_name": "速度不确定性",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B06_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B06.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B06.pdf",
+    "method": "Mean saved posterior uncertainty across genes"
+  },
+  {
+    "figure_id": "B07",
+    "english_name": "RegVelo vs scVelo",
+    "chinese_name": "RegVelo与scVelo对照",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B07_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B07.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/B07.pdf",
+    "method": "Same-cell RegVelo and stochastic scVelo stream projections"
+  },
+  {
+    "figure_id": "C01",
+    "english_name": "Macrostates",
+    "chinese_name": "宏观状态",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C01_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C01.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C01.pdf",
+    "method": "Saved GPCCA state assignment; unassigned cells retained"
+  },
+  {
+    "figure_id": "C02",
+    "english_name": "Terminal States",
+    "chinese_name": "终末状态",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C02_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C02.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C02.pdf",
+    "method": "Saved GPCCA state assignment; unassigned cells retained"
+  },
+  {
+    "figure_id": "C03",
+    "english_name": "Fate Probabilities",
+    "chinese_name": "命运概率",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C03_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C03.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C03.pdf",
+    "method": "CellRank absorption probabilities for saved terminal sets"
+  },
+  {
+    "figure_id": "C04",
+    "english_name": "Commitment Score",
+    "chinese_name": "命运承诺评分",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C04_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C04.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C04.pdf",
+    "method": "Saved 1 minus base-2 Shannon entropy normalized by the base-2 logarithm of the terminal count"
+  },
+  {
+    "figure_id": "C05",
+    "english_name": "Fate Probability Heatmap",
+    "chinese_name": "命运概率热图",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C05_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C05.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C05.pdf",
+    "method": "Mean saved fate probabilities within annotations"
+  },
+  {
+    "figure_id": "D01",
+    "english_name": "TF Target Network",
+    "chinese_name": "TF靶基因网络",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D01_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D01.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D01.pdf",
+    "method": "Directed two-column layout of top40 absolute fc1 weights; separate regulator/target roles, signed edge colors"
+  },
+  {
+    "figure_id": "D02",
+    "english_name": "GRN Adjacency Heatmap",
+    "chinese_name": "GRN邻接热图",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D02_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D02.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D02.pdf",
+    "method": "Signed target-by-regulator weight heatmap; top12 regulators/top25 targets by sum absolute weights"
+  },
+  {
+    "figure_id": "D03",
+    "english_name": "Regulon Ranking",
+    "chinese_name": "Regulon排序",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D03_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D03.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D03.pdf",
+    "method": "Sum absolute learned effective weights per regulator; top20 display"
+  },
+  {
+    "figure_id": "D04",
+    "english_name": "Regulatory Weight Distribution",
+    "chinese_name": "调控权重分布",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D04_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D04.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D04.pdf",
+    "method": "Histogram of saved edges above configured grn_cutoff"
+  },
+  {
+    "figure_id": "D05",
+    "english_name": "Prior vs Inferred GRN",
+    "chinese_name": "先验与推断GRN比较",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D05_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D05.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D05.pdf",
+    "method": "Thresholded effective fc1 edges intersected with aligned prior"
+  },
+  {
+    "figure_id": "E01",
+    "english_name": "Baseline vs KO Velocity",
+    "chinese_name": "基线与KO速度比较",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E01_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E01.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E01.pdf",
+    "method": "Paired posterior baseline and independently recomputed KO velocity embedding"
+  },
+  {
+    "figure_id": "E02",
+    "english_name": "Cell-wise Perturbation Effect",
+    "chinese_name": "逐细胞扰动效应",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E02_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E02.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E02.pdf",
+    "method": "Cell-wise high-dimensional velocity L2 change and 1-cosine; saved paired predictions"
+  },
+  {
+    "figure_id": "E03",
+    "english_name": "Fate Probability Difference",
+    "chinese_name": "命运概率差",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E03_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E03.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E03.pdf",
+    "method": "KO minus paired baseline fate probabilities; terminal cells frozen"
+  },
+  {
+    "figure_id": "E04",
+    "english_name": "Depletion Enrichment",
+    "chinese_name": "命运消耗富集",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E04_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E04.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E04.pdf",
+    "method": "Official regvelo.mt.cellfate_perturbation(method=likelihood) ROC AUC on [0,1], neutral 0.5; NULL included as control"
+  },
+  {
+    "figure_id": "E05",
+    "english_name": "TF Perturbation Ranking",
+    "chinese_name": "TF扰动排序",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E05_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E05.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E05.pdf",
+    "method": "Mean saved cell-wise high-dimensional velocity change; tested targets only"
+  },
+  {
+    "figure_id": "E06",
+    "english_name": "GRN Before After KO",
+    "chinese_name": "KO前后GRN",
+    "status": "PASS",
+    "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E06_source.csv",
+    "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E06.png",
+    "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/E06.pdf",
+    "method": "Paired model weight before/after selected TF downstream block; top20 absolute baseline targets"
+  }
+]

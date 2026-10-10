@@ -1,0 +1,10 @@
+{
+  "cutoff": 0.001,
+  "prior_edges": 4380,
+  "retained_prior_edges": 4379,
+  "new_model_edges": 0,
+  "inferred_edges": 4379,
+  "weight_definition": "fc1 target-by-regulator weights; distinct from normalized expression Jacobian",
+  "group_jacobian_normalization": "Official API independently divides each group by its mean absolute nonzero Jacobian. Values describe within-group relative weights; cross-group absolute strength is not comparable.",
+  "interpretation": "Computational associations; prior support does not establish direct regulation"
+}

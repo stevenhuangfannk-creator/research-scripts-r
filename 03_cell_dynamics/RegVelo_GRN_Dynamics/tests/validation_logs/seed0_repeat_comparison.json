@@ -1,0 +1,193 @@
+{
+  "status": "PASS",
+  "scope": "READ_ONLY_SEED0_REPEAT_NUMERICAL_COMPARISON_NOT_RUNTIME_PERFORMANCE_PROFILING",
+  "checked_utc": "2026-10-10T13:24:20.279484+00:00",
+  "model_or_process_modified": false,
+  "h5py_file_mode": "r",
+  "imports": [
+    "standard_library",
+    "h5py",
+    "numpy"
+  ],
+  "comparisons": [
+    {
+      "condition": "baseline",
+      "formal_path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\baseline_posterior.h5ad",
+      "repeat_path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\stability\\baseline_seed0.h5ad",
+      "cell_order_exact_equal": true,
+      "gene_order_exact_equal": true,
+      "n_cells": 697,
+      "n_genes": 1007,
+      "fields": {
+        "velocity": {
+          "formal_shape": [
+            697,
+            1007
+          ],
+          "repeat_shape": [
+            697,
+            1007
+          ],
+          "formal_dtype": "float32",
+          "repeat_dtype": "float32",
+          "shape_exact_equal": true,
+          "formal_all_finite": true,
+          "repeat_all_finite": true,
+          "exact_equal": true,
+          "max_abs_difference": 0.0,
+          "n_unequal_elements": 0
+        },
+        "fit_t": {
+          "formal_shape": [
+            697,
+            1007
+          ],
+          "repeat_shape": [
+            697,
+            1007
+          ],
+          "formal_dtype": "float32",
+          "repeat_dtype": "float32",
+          "shape_exact_equal": true,
+          "formal_all_finite": true,
+          "repeat_all_finite": true,
+          "exact_equal": true,
+          "max_abs_difference": 0.0,
+          "n_unequal_elements": 0
+        },
+        "lineages_fwd": {
+          "formal_shape": [
+            697,
+            4
+          ],
+          "repeat_shape": [
+            697,
+            4
+          ],
+          "formal_dtype": "float64",
+          "repeat_dtype": "float64",
+          "shape_exact_equal": true,
+          "formal_all_finite": true,
+          "repeat_all_finite": true,
+          "exact_equal": true,
+          "max_abs_difference": 0.0,
+          "n_unequal_elements": 0
+        }
+      },
+      "csv_lineage_order": {
+        "expected": [
+          "mNC_head_mesenchymal",
+          "mNC_arch2",
+          "mNC_hox34",
+          "Pigment"
+        ],
+        "formal_columns": [
+          "mNC_head_mesenchymal",
+          "mNC_arch2",
+          "mNC_hox34",
+          "Pigment"
+        ],
+        "repeat_columns": [
+          "mNC_head_mesenchymal",
+          "mNC_arch2",
+          "mNC_hox34",
+          "Pigment"
+        ],
+        "both_match_expected": true,
+        "formal_csv_cell_order_matches_h5ad": true,
+        "repeat_csv_cell_order_matches_h5ad": true
+      },
+      "status": "PASS"
+    },
+    {
+      "condition": "elf1",
+      "formal_path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\perturb_elf1.h5ad",
+      "repeat_path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\stability\\elf1_seed0_cutoff0.001_fraction1.h5ad",
+      "cell_order_exact_equal": true,
+      "gene_order_exact_equal": true,
+      "n_cells": 697,
+      "n_genes": 1007,
+      "fields": {
+        "velocity": {
+          "formal_shape": [
+            697,
+            1007
+          ],
+          "repeat_shape": [
+            697,
+            1007
+          ],
+          "formal_dtype": "float32",
+          "repeat_dtype": "float32",
+          "shape_exact_equal": true,
+          "formal_all_finite": true,
+          "repeat_all_finite": true,
+          "exact_equal": true,
+          "max_abs_difference": 0.0,
+          "n_unequal_elements": 0
+        },
+        "fit_t": {
+          "formal_shape": [
+            697,
+            1007
+          ],
+          "repeat_shape": [
+            697,
+            1007
+          ],
+          "formal_dtype": "float32",
+          "repeat_dtype": "float32",
+          "shape_exact_equal": true,
+          "formal_all_finite": true,
+          "repeat_all_finite": true,
+          "exact_equal": true,
+          "max_abs_difference": 0.0,
+          "n_unequal_elements": 0
+        },
+        "lineages_fwd": {
+          "formal_shape": [
+            697,
+            4
+          ],
+          "repeat_shape": [
+            697,
+            4
+          ],
+          "formal_dtype": "float64",
+          "repeat_dtype": "float64",
+          "shape_exact_equal": true,
+          "formal_all_finite": true,
+          "repeat_all_finite": true,
+          "exact_equal": true,
+          "max_abs_difference": 0.0,
+          "n_unequal_elements": 0
+        }
+      },
+      "csv_lineage_order": {
+        "expected": [
+          "mNC_head_mesenchymal",
+          "mNC_arch2",
+          "mNC_hox34",
+          "Pigment"
+        ],
+        "formal_columns": [
+          "mNC_head_mesenchymal",
+          "mNC_arch2",
+          "mNC_hox34",
+          "Pigment"
+        ],
+        "repeat_columns": [
+          "mNC_head_mesenchymal",
+          "mNC_arch2",
+          "mNC_hox34",
+          "Pigment"
+        ],
+        "both_match_expected": true,
+        "formal_csv_cell_order_matches_h5ad": true,
+        "repeat_csv_cell_order_matches_h5ad": true
+      },
+      "status": "PASS"
+    }
+  ],
+  "interpretation": "Exact saved numerical agreement establishes this seed0 repetition; it does not explain runtime speed or establish training-seed/biological validity."
+}

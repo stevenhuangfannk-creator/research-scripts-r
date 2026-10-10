@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "tests": 12,
+  "failures": 0,
+  "errors": 0,
+  "scope": "Software fixtures: rejection, named GRN orientation, config paths and real CLI audit; not model validation",
+  "log": "tests/validation_logs/input_contracts.log",
+  "junit": "tests/validation_logs/junit.xml"
+}

@@ -1,0 +1,1055 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-10-10T12:55:36.530290+00:00",
+  "output": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0",
+  "render_counts": {
+    "PASS": 27,
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "catalog_entries": 27
+  },
+  "source_validation": {
+    "ready": true,
+    "strict": false,
+    "counts": {
+      "PASS": 17,
+      "WARN": 3,
+      "FAIL": 0
+    }
+  },
+  "figures": [
+    {
+      "id": "A01",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.png",
+          "bytes": 155296
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.svg",
+          "bytes": 91471
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.pdf",
+          "bytes": 49707
+        }
+      },
+      "png_dimensions": [
+        1509,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A01.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 33,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "A02",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A02.png",
+          "bytes": 235217
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A02.svg",
+          "bytes": 127224
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A02.pdf",
+          "bytes": 44739
+        }
+      },
+      "png_dimensions": [
+        1655,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A02.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 24,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "A03",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.png",
+          "bytes": 231809
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.svg",
+          "bytes": 133331
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.pdf",
+          "bytes": 45420
+        }
+      },
+      "png_dimensions": [
+        2394,
+        1075
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A03.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 37,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "A04",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.png",
+          "bytes": 98410
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.svg",
+          "bytes": 17262
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.pdf",
+          "bytes": 32818
+        }
+      },
+      "png_dimensions": [
+        2697,
+        1015
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\A04.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 28,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B01",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B01.png",
+          "bytes": 327613
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B01.svg",
+          "bytes": 198147
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B01.pdf",
+          "bytes": 59539
+        }
+      },
+      "png_dimensions": [
+        1598,
+        1226
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B01.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 4,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B02",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B02.png",
+          "bytes": 245111
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B02.svg",
+          "bytes": 332802
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B02.pdf",
+          "bytes": 96057
+        }
+      },
+      "png_dimensions": [
+        1598,
+        1226
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B02.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 4,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B03",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.png",
+          "bytes": 230051
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.svg",
+          "bytes": 115244
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.pdf",
+          "bytes": 51007
+        }
+      },
+      "png_dimensions": [
+        1510,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B03.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 24,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B04",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B04.png",
+          "bytes": 366803
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B04.svg",
+          "bytes": 376803
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B04.pdf",
+          "bytes": 92002
+        }
+      },
+      "png_dimensions": [
+        3594,
+        1104
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B04.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 72,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B05",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B05.png",
+          "bytes": 192653
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B05.svg",
+          "bytes": 62058
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B05.pdf",
+          "bytes": 42174
+        }
+      },
+      "png_dimensions": [
+        3591,
+        1074
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B05.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 53,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B06",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B06.png",
+          "bytes": 249375
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B06.svg",
+          "bytes": 116058
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B06.pdf",
+          "bytes": 50105
+        }
+      },
+      "png_dimensions": [
+        1512,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B06.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 26,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "B07",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B07.png",
+          "bytes": 608941
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B07.svg",
+          "bytes": 393240
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B07.pdf",
+          "bytes": 93220
+        }
+      },
+      "png_dimensions": [
+        3172,
+        1226
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\B07.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 7,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "C01",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.png",
+          "bytes": 133639
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.svg",
+          "bytes": 84432
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.pdf",
+          "bytes": 46381
+        }
+      },
+      "png_dimensions": [
+        1509,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 28,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "C02",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C02.png",
+          "bytes": 114030
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C02.svg",
+          "bytes": 80195
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C02.pdf",
+          "bytes": 45059
+        }
+      },
+      "png_dimensions": [
+        1509,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C02.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 25,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "C03",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C03.png",
+          "bytes": 626218
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C03.svg",
+          "bytes": 452261
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C03.pdf",
+          "bytes": 105668
+        }
+      },
+      "png_dimensions": [
+        2165,
+        1940
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C03.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 93,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "C04",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C04.png",
+          "bytes": 220314
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C04.svg",
+          "bytes": 115244
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C04.pdf",
+          "bytes": 47911
+        }
+      },
+      "png_dimensions": [
+        1510,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C04.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 24,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "C05",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.png",
+          "bytes": 121606
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.svg",
+          "bytes": 21322
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.pdf",
+          "bytes": 37677
+        }
+      },
+      "png_dimensions": [
+        1505,
+        1194
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C05.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 26,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "D01",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.png",
+          "bytes": 725875
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.svg",
+          "bytes": 48999
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.pdf",
+          "bytes": 37827
+        }
+      },
+      "png_dimensions": [
+        2162,
+        2125
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 72,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "D02",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.png",
+          "bytes": 146886
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.svg",
+          "bytes": 44585
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.pdf",
+          "bytes": 48228
+        }
+      },
+      "png_dimensions": [
+        1900,
+        1821
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 51,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "D03",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.png",
+          "bytes": 85144
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.svg",
+          "bytes": 18114
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.pdf",
+          "bytes": 30558
+        }
+      },
+      "png_dimensions": [
+        1508,
+        1462
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D03.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 29,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "D04",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.png",
+          "bytes": 55069
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.svg",
+          "bytes": 22758
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.pdf",
+          "bytes": 29569
+        }
+      },
+      "png_dimensions": [
+        1508,
+        1074
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D04.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 21,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "D05",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D05.png",
+          "bytes": 62208
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D05.svg",
+          "bytes": 7659
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D05.pdf",
+          "bytes": 28398
+        }
+      },
+      "png_dimensions": [
+        1508,
+        1075
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D05.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 14,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "E01",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.png",
+          "bytes": 584868
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.svg",
+          "bytes": 394857
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.pdf",
+          "bytes": 93290
+        }
+      },
+      "png_dimensions": [
+        3172,
+        1226
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E01.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 7,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "E02",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E02.png",
+          "bytes": 428382
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E02.svg",
+          "bytes": 228415
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E02.pdf",
+          "bytes": 67051
+        }
+      },
+      "png_dimensions": [
+        2995,
+        1224
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E02.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 46,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "E03",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E03.png",
+          "bytes": 481668
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E03.svg",
+          "bytes": 454197
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E03.pdf",
+          "bytes": 102963
+        }
+      },
+      "png_dimensions": [
+        2165,
+        1940
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E03.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 98,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "E04",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E04.png",
+          "bytes": 107441
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E04.svg",
+          "bytes": 18326
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E04.pdf",
+          "bytes": 36957
+        }
+      },
+      "png_dimensions": [
+        1490,
+        926
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E04.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 33,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "E05",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E05.png",
+          "bytes": 43279
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E05.svg",
+          "bytes": 6780
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E05.pdf",
+          "bytes": 28619
+        }
+      },
+      "png_dimensions": [
+        1508,
+        925
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E05.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 11,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "E06",
+      "status": "PASS",
+      "exports": {
+        "png": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E06.png",
+          "bytes": 114286
+        },
+        "svg": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E06.svg",
+          "bytes": 26300
+        },
+        "pdf": {
+          "path": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E06.pdf",
+          "bytes": 32894
+        }
+      },
+      "png_dimensions": [
+        2103,
+        1164
+      ],
+      "png_dpi": [
+        299.9994,
+        299.9994
+      ],
+      "svg_minimum_font_size": 7.0,
+      "pdf_text_audit": {
+        "pdf": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\E06.pdf",
+        "auditable": true,
+        "minimum_required_pt": 5.0,
+        "minimum_found_pt": 7.0,
+        "text_run_count": 32,
+        "below_minimum_count": 0,
+        "below_minimum": [],
+        "warnings": [],
+        "exit_code": 0
+      }
+    }
+  ],
+  "minimum_glyph_policy_pt": 7,
+  "scientific_boundaries": {
+    "E04_metric": "官方likelihood为ROC AUC；baseline=1、KO=0，参照0.5；>0.5为模型内消耗，<0.5为模型内富集。",
+    "E04_inference": "官方p值为pooled-cell单侧ranksums(KO<baseline)，FDR为BH；细胞不是独立donor/embryo重复，不能据此宣称实验显著性。",
+    "source_evidence": "Audited official src/regvelo/metrics/_abundance_test.py and plotting/_cellfate_perturbation.py; gallery only renders saved actual statistics."
+  },
+  "scientific_validity": "REVIEW_REQUIRED: rendering/font/export QA does not validate model convergence or biology."
+}

@@ -1,0 +1,37 @@
+{
+  "id": "regvelo_c01",
+  "english_name": "Macrostates",
+  "chinese_name": "宏观状态",
+  "scientific_question": "Which macrostates were inferred?",
+  "evidence_label": "Model-predicted",
+  "limitations": "Macrostates depend on the transition kernel and state-number choice.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C01.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C01_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Saved GPCCA state assignment; unassigned cells retained",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad; C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\cellrank_states.csv",
+  "biological_interpretation": "展示GPCCA推断的宏观状态；状态边界依赖转移核和状态数，不能自动当作真实亚型。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\C01.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\cellrank_states.csv"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "C01",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/C01.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/C01.json",
+  "preview_only": true
+}

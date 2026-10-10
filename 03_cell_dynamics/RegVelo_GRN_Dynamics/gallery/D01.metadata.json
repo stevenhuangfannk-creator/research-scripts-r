@@ -1,0 +1,36 @@
+{
+  "id": "regvelo_d01",
+  "english_name": "TF Target Network",
+  "chinese_name": "TF靶基因网络",
+  "scientific_question": "What are the strongest saved effective connections?",
+  "evidence_label": "Prior / Model-predicted",
+  "limitations": "Model weight arrows denote API orientation, not proven causal binding.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D01.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D01_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Directed two-column layout of top40 absolute fc1 weights; separate regulator/target roles, signed edge colors",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\tf_target_edges.csv",
+  "biological_interpretation": "显示绝对有效fc1权重最强的40条边；箭头服从模型API方向，不表示已证实直接结合或因果。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D01.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\tf_target_edges.csv"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "D01",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D01.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/D01.json",
+  "preview_only": true
+}

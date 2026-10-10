@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "terminal_states": [
+    "mNC_head_mesenchymal",
+    "mNC_arch2",
+    "mNC_hox34",
+    "Pigment"
+  ],
+  "artifacts": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\cellrank_gpcca.pkl",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\terminal_cell_sets.json",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\baseline_fate_probabilities.csv",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\baseline_transition_matrix.npz"
+  ],
+  "terminal_cell_counts": {
+    "mNC_head_mesenchymal": 30,
+    "mNC_arch2": 30,
+    "mNC_hox34": 30,
+    "Pigment": 30
+  },
+  "kernel_mix": 1.0,
+  "fate_probabilities_finite": true,
+  "fate_row_sums_one": true,
+  "scientific_qc": "Terminal annotations require biological interpretation."
+}

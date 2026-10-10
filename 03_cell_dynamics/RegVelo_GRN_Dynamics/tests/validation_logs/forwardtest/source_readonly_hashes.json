@@ -1,0 +1,30 @@
+{
+  "before": {
+    "C:\\Users\\13683\\Desktop\\scriptsR\\reproductions\\lin_2026_peri_implantitis\\results\\phase4a\\phase4a_preliminary_integrated.h5ad": {
+      "sha256": "c96701c4e0d079b8e9c08b8fbcd754910040367399f6884300852b8ea72e9f0a",
+      "size_bytes": 788323575,
+      "mtime_ns": 1790594587535777800
+    },
+    "C:\\Users\\13683\\Desktop\\scriptsR\\reproductions\\lin_2026_peri_implantitis\\results\\phase4b\\cell2location_input\\curated_v2\\scrna_reference_counts.h5ad": {
+      "sha256": "819926cc643ebc44c83f2fea7ea31133b809f5c63cd0308b6ae50deec99b7b1b",
+      "size_bytes": 708801702,
+      "mtime_ns": 1790770487705186300
+    }
+  },
+  "after": {
+    "C:\\Users\\13683\\Desktop\\scriptsR\\reproductions\\lin_2026_peri_implantitis\\results\\phase4a\\phase4a_preliminary_integrated.h5ad": {
+      "sha256": "c96701c4e0d079b8e9c08b8fbcd754910040367399f6884300852b8ea72e9f0a",
+      "size_bytes": 788323575,
+      "mtime_ns": 1790594587535777800
+    },
+    "C:\\Users\\13683\\Desktop\\scriptsR\\reproductions\\lin_2026_peri_implantitis\\results\\phase4b\\cell2location_input\\curated_v2\\scrna_reference_counts.h5ad": {
+      "sha256": "819926cc643ebc44c83f2fea7ea31133b809f5c63cd0308b6ae50deec99b7b1b",
+      "size_bytes": 708801702,
+      "mtime_ns": 1790770487705186300
+    }
+  },
+  "unchanged": true,
+  "comparison_scope": "SHA256 and mtime before/after independent repeated h5py read-only inspection",
+  "canonical_prior_record_sha256": "c96701c4e0d079b8e9c08b8fbcd754910040367399f6884300852b8ea72e9f0a",
+  "canonical_matches_prior_record": true
+}

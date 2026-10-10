@@ -1,0 +1,42 @@
+[
+  {
+    "tag": "nr2f5_seed0_cutoff0.001_fraction1",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "elf1_seed1_cutoff0.001_fraction1",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "nr2f5_seed1_cutoff0.001_fraction1",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "elf1_seed2_cutoff0.001_fraction1",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "nr2f5_seed2_cutoff0.001_fraction1",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "nr2f5_seed0_cutoff0.01_fraction1",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "elf1_seed0_cutoff0.001_fraction0.5",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  },
+  {
+    "tag": "nr2f5_seed0_cutoff0.001_fraction0.5",
+    "model_instance_buckets": 0,
+    "setup_manager_buckets": 0
+  }
+]

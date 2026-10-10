@@ -1,0 +1,24 @@
+test_constant_fit_t_produces_finite_zero_latent_time (__main__.SensitivityCleanupRegression) ... ok
+test_current_cleanup_with_inherited_fields_present_or_absent (__main__.SensitivityCleanupRegression) ... ok
+test_legacy_dataframe_pop_failure_is_reproduced (__main__.SensitivityCleanupRegression) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.160s
+
+OK
+
+{
+  "status": "FAIL",
+  "tests": 3,
+  "failures": 0,
+  "errors": 0,
+  "legacy_failure_reproduced": true,
+  "legacy_errors": [
+    "DataFrame.pop() takes 2 positional arguments but 3 were given",
+    "DataFrame.pop() takes 2 positional arguments but 3 were given"
+  ],
+  "model_stack_imports": [
+    "torch"
+  ],
+  "scope": "AST-extracted actual cleanup block on engineering AnnData fixtures; no model or scientific validation"
+}

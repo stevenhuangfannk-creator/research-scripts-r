@@ -1,0 +1,166 @@
+{
+  "status": "PASS",
+  "reason": "Independent review found inherited source projections and SD; these were not computed for new posterior draws",
+  "scope": "Only independent sensitivity outputs; formal model/velocity/fate untouched",
+  "files": [
+    {
+      "file": "baseline_seed0.h5ad",
+      "removed_inherited_fields": [
+        "velocity_std",
+        "velocity_umap",
+        "velocity_graph",
+        "velocity_graph_neg",
+        "velocity_uncertainty",
+        "velocity_self_transition",
+        "latent_time_posterior_mean"
+      ],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "552808a3952a0704a09add6c4f9c4016e080c64a9112cd3f901f322be22d31d8",
+      "sha256_after": "fe6906f040230ffb6414025192059b082107e6e14a52078518c7f62e364f348b"
+    },
+    {
+      "file": "baseline_seed1.h5ad",
+      "removed_inherited_fields": [
+        "velocity_std",
+        "velocity_umap",
+        "velocity_graph",
+        "velocity_graph_neg",
+        "velocity_uncertainty",
+        "velocity_self_transition",
+        "latent_time_posterior_mean"
+      ],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "1df111e507e91dd775c1561f991923014f3c186a835004744dbaf3d683bd2594",
+      "sha256_after": "b0588400e92d02100f2e95847a379f887e39790402080933bacfb1c0f4bc8dfd"
+    },
+    {
+      "file": "baseline_seed2.h5ad",
+      "removed_inherited_fields": [
+        "velocity_std",
+        "velocity_umap",
+        "velocity_graph",
+        "velocity_graph_neg",
+        "velocity_uncertainty",
+        "velocity_self_transition",
+        "latent_time_posterior_mean"
+      ],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "f216c4db481d34abf6e401b1623c4648e073d8a2d1cf9ad07936e5d6f376eeb6",
+      "sha256_after": "d872db03c12fa1d4c2aa627a694e97e6d84578318e5ae3e19ab93f33db4aeac2"
+    },
+    {
+      "file": "elf1_seed0_cutoff0.001_fraction0.5.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "0f674874f9a930efd9546a1695e47508c59466ed8964fb66e796b67d6512b47d",
+      "sha256_after": "f9cd4bb235c7eb8bd3b685b6920595ffc44d5739bdb0897f2b4f91031353835c"
+    },
+    {
+      "file": "elf1_seed0_cutoff0.001_fraction1.h5ad",
+      "removed_inherited_fields": [
+        "velocity_std",
+        "velocity_umap",
+        "velocity_graph",
+        "velocity_graph_neg",
+        "velocity_uncertainty",
+        "velocity_self_transition",
+        "latent_time_posterior_mean"
+      ],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "1ddbf099820ceb1645d06fe87b892792b9ad60f12eca4469dd2768b853bd01d9",
+      "sha256_after": "6209649a5a5298d79e73327c961f82b86946f48e4653d1b477eee440fe68fe3a"
+    },
+    {
+      "file": "elf1_seed0_cutoff0.01_fraction1.h5ad",
+      "removed_inherited_fields": [
+        "velocity_std",
+        "velocity_umap",
+        "velocity_graph",
+        "velocity_graph_neg",
+        "velocity_uncertainty",
+        "velocity_self_transition",
+        "latent_time_posterior_mean"
+      ],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "1ddbf099820ceb1645d06fe87b892792b9ad60f12eca4469dd2768b853bd01d9",
+      "sha256_after": "6209649a5a5298d79e73327c961f82b86946f48e4653d1b477eee440fe68fe3a"
+    },
+    {
+      "file": "elf1_seed0_cutoff0_fraction1.h5ad",
+      "removed_inherited_fields": [
+        "velocity_std",
+        "velocity_umap",
+        "velocity_graph",
+        "velocity_graph_neg",
+        "velocity_uncertainty",
+        "velocity_self_transition",
+        "latent_time_posterior_mean"
+      ],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "1ddbf099820ceb1645d06fe87b892792b9ad60f12eca4469dd2768b853bd01d9",
+      "sha256_after": "6209649a5a5298d79e73327c961f82b86946f48e4653d1b477eee440fe68fe3a"
+    },
+    {
+      "file": "elf1_seed1_cutoff0.001_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "c1927a5fc0e99f0782ad2f4d8b49317ea7fb4cb4855a6da65bef8633b183eee1",
+      "sha256_after": "f982085ce2a27e957a49a6652a03911c8b60e7af74bb8d81a74b72ff7be5a905"
+    },
+    {
+      "file": "elf1_seed2_cutoff0.001_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "cf6790198d7669641e2d7cd48c83aa254e078e7c651ccc922bce99439606028d",
+      "sha256_after": "bc6be92a1586601cc837de84aeaa23ad6264fe5be4cdb28ddf704349a7786a31"
+    },
+    {
+      "file": "nr2f5_seed0_cutoff0.001_fraction0.5.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "0203f573bbdc910f98f7fb0f131544296f993ebe23458defbc03f2e7e274c92a",
+      "sha256_after": "21078e4cfa4b006ca2aa9cebf6875bcd0dbeeb20e374c87ed43f465a9cfa92b1"
+    },
+    {
+      "file": "nr2f5_seed0_cutoff0.001_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "7d90e0d452565b09703b580d9396f2951807180594c06bbd1458f8e036f2ff7e",
+      "sha256_after": "95c6761436e8284cfd4a33460f05de3a041cdd2aae6fa31ce6552874634281dd"
+    },
+    {
+      "file": "nr2f5_seed0_cutoff0.01_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "2ed9654305195adc1b7b2912546450eebbd95d0c83c7fe2809fed8d3c06ac9a3",
+      "sha256_after": "134b31f7fd6ab8980d0827479a095b6ab3a2ddbeed1182fb3d655d91ed3cb01a"
+    },
+    {
+      "file": "nr2f5_seed0_cutoff0_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "7d90e0d452565b09703b580d9396f2951807180594c06bbd1458f8e036f2ff7e",
+      "sha256_after": "95c6761436e8284cfd4a33460f05de3a041cdd2aae6fa31ce6552874634281dd"
+    },
+    {
+      "file": "nr2f5_seed1_cutoff0.001_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "65b6afb8f7a18a689e34b6084c746b5f55321f3864d6a7dcd578218370fcc035",
+      "sha256_after": "def06d8307351729e29751b1e227ac12554ede518b6dcce240496862d198a32c"
+    },
+    {
+      "file": "nr2f5_seed2_cutoff0.001_fraction1.h5ad",
+      "removed_inherited_fields": [],
+      "velocity_fate_unchanged": true,
+      "sha256_before": "d7accc9abc5885621e95c6ca63b74c59da900d5939e30c9bf6e8cd00092e4a07",
+      "sha256_after": "d470815afc7bc10ba8909586680c8fed262abe1f2d6d84f9505c92960f991d87"
+    }
+  ],
+  "protected_sources_unchanged": true,
+  "protected_source_sha256": {
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad": "56eee3b81ac62e9400668e1283f91ab59cf5287d711c77e861463142ef2a3bf6",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\model\\model.pt": "73fd3e8ec1539a4ddd4068c73a801b3eaf72e98db530c14aa75f7d52063e0f80",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\terminal_cell_sets.json": "c96e772c7c8fb5e3c34015aef977d74c003a04b967f741ca7b28905a50f9e851"
+  }
+}

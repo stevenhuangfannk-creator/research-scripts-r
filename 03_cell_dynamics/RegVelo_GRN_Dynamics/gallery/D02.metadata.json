@@ -1,0 +1,36 @@
+{
+  "id": "regvelo_d02",
+  "english_name": "GRN Adjacency Heatmap",
+  "chinese_name": "GRN邻接热图",
+  "scientific_question": "What signed weights connect selected regulators and targets?",
+  "evidence_label": "Model-predicted",
+  "limitations": "Display selection is based on absolute weights; full edges remain in the source table.",
+  "status": "PASS",
+  "reason": "Figure rendered from saved actual numerical results; scientific validity not asserted.",
+  "output_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D02.png",
+  "source_csv": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D02_source.csv",
+  "metadata_file": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.json",
+  "code_entry": "regvelo_workflow.plots.run_visualize",
+  "method": "Signed target-by-regulator weight heatmap; top12 regulators/top25 targets by sum absolute weights",
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\tf_target_edges.csv",
+  "biological_interpretation": "以target为行、regulator为列展示选定有符号权重；按绝对权重选图，完整边表保留供审查。",
+  "output_files": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.png",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.svg",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\figures\\D02.pdf"
+  ],
+  "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/src/regvelo_workflow/plots.py",
+  "command": "python scripts/regvelo.py visualize --config config/official_zebrafish.json",
+  "input_file_paths": [
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\tables\\tf_target_edges.csv"
+  ],
+  "render_dpi": 300,
+  "minimum_font_pt": 7,
+  "scientific_qc": "REVIEW_REQUIRED",
+  "seed": 0,
+  "smoke_test": false,
+  "figure_id": "D02",
+  "vector_file": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery/D02.pdf",
+  "original_metadata": "regvelo_results/official_zebrafish/hard_seed0/figures/D02.json",
+  "preview_only": true
+}

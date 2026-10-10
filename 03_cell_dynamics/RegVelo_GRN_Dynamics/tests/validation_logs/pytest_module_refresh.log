@@ -1,0 +1,31 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.22, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\13683\Documents\Codex\2026-10-10\files-pasted-by-the-user-codex\outputs\regvelo_runtime\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\13683\Documents\Codex\2026-10-10\files-pasted-by-the-user-codex
+plugins: torchtyping-0.1.5, typeguard-2.13.3
+collecting ... collected 17 items
+
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_audit_reporting_regressions.py::test_missing_splice_layers_still_records_prior_evidence[False] PASSED [  5%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_audit_reporting_regressions.py::test_missing_splice_layers_still_records_prior_evidence[True] PASSED [ 11%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_audit_reporting_regressions.py::test_completed_report_has_final_pass_and_explicit_not_run_stages PASSED [ 17%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_duplicate_identifiers_are_not_silently_renamed
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_duplicate_identifiers_are_not_silently_renamed PASSED [ 23%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_invalid_spliced_values_are_rejected
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_invalid_spliced_values_are_rejected PASSED [ 29%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_missing_splice_layer_is_rejected
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_missing_splice_layer_is_rejected PASSED [ 35%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::InputAuditContracts::test_splice_presence_does_not_certify_raw_count_origin PASSED [ 41%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::NamedGrnContracts::test_auto_only_uses_unambiguous_regulator_names PASSED [ 47%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::NamedGrnContracts::test_duplicates_nonfinite_empty_edges_and_wrong_ids_are_rejected
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::NamedGrnContracts::test_duplicates_nonfinite_empty_edges_and_wrong_ids_are_rejected PASSED [ 52%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::NamedGrnContracts::test_orientation_preserves_the_named_edge PASSED [ 58%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::NamedGrnContracts::test_square_matrix_direction_cannot_be_guessed PASSED [ 64%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::ConfigurationContracts::test_missing_keys_variables_and_source_overwrite_are_rejected
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::ConfigurationContracts::test_missing_keys_variables_and_source_overwrite_are_rejected PASSED [ 70%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::ConfigurationContracts::test_paths_are_relative_to_config_not_process_directory PASSED [ 76%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::CliAuditContracts::test_audit_creates_outputs_without_modifying_input PASSED [ 82%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_input_contracts.py::CliAuditContracts::test_missing_input_records_real_failure PASSED [ 88%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_prior_edges.py::test_named_edge_direction_and_unmatched_species PASSED [ 94%]
+outputs/research-scripts-r/03_cell_dynamics/RegVelo_GRN_Dynamics/tests/test_prior_edges.py::test_conflicting_evidence_is_not_silently_aggregated PASSED [100%]
+
+=================== 17 passed, 14 subtests passed in 14.72s ===================

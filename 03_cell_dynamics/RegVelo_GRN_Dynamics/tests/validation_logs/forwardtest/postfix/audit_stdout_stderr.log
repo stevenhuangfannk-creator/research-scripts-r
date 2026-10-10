@@ -1,0 +1,7 @@
+2026-10-10 20:45:47,481 ERROR Stage audit failed
+Traceback (most recent call last):
+  File "C:\Users\13683\Documents\Codex\2026-10-10\files-pasted-by-the-user-codex\outputs\research-scripts-r\03_cell_dynamics\RegVelo_GRN_Dynamics\src\regvelo_workflow\cli.py", line 78, in main
+    result = getattr(core, f"run_{stage}")(config, output)
+  File "C:\Users\13683\Documents\Codex\2026-10-10\files-pasted-by-the-user-codex\outputs\research-scripts-r\03_cell_dynamics\RegVelo_GRN_Dynamics\src\regvelo_workflow\core.py", line 142, in run_audit
+    raise ValueError("; ".join(issues) + f". Evidence: {output / 'INPUT_AUDIT.json'}")
+ValueError: Missing required RNA layers: spliced, unspliced. Expression cannot reconstruct splicing counts.. Evidence: C:\Users\13683\Documents\Codex\2026-10-10\files-pasted-by-the-user-codex\work\official_sources\forwardtest_postfix\run\INPUT_AUDIT.json

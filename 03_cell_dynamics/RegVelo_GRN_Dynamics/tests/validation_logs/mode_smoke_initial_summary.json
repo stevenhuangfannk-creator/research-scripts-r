@@ -1,0 +1,160 @@
+{
+  "status": "FAIL",
+  "evaluation_scope": "200_CELL_2_EPOCH_SMOKE_TEST_NOT_FORMAL_STRATEGY_COMPARISON",
+  "source_prepared_sha256_before": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+  "source_prepared_sha256_after": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+  "source_unchanged": true,
+  "modes": [
+    {
+      "mode": "hard",
+      "evaluation_scope": "SMOKE_TEST_ONLY_NOT_FORMAL_MODEL_COMPARISON",
+      "n_cells": 200,
+      "n_genes": 894,
+      "seed": 0,
+      "n_samples": 2,
+      "expected_epochs": 2,
+      "source_prepared_sha256": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+      "fit_qc": {
+        "status": "PASS",
+        "mode": "hard",
+        "lam": 1.0,
+        "lam2": 0.0,
+        "training_options": {
+          "max_epochs": 2,
+          "batch_size": 256,
+          "accelerator": "gpu",
+          "devices": 1,
+          "early_stopping": false,
+          "enable_progress_bar": false,
+          "enable_checkpointing": true
+        },
+        "periodic_checkpoint": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\hard_seed0\\checkpoints\\last-v1.ckpt",
+        "official_periodic_checkpoint": "",
+        "optimizer_resume": "NOT_IMPLEMENTED",
+        "epochs_recorded": 2,
+        "history_finite": true,
+        "weights_finite": true,
+        "save_load_equal": true,
+        "artifacts": [
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\hard_seed0\\model\\model.pt",
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\hard_seed0\\tables\\training_history.csv",
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\hard_seed0\\fit_qc.json"
+        ],
+        "batch_size_deviation_from_official_fullbatch": true,
+        "scientific_qc": {
+          "convergence": "REVIEW_REQUIRED",
+          "seed_stability": "NOT_RUN"
+        }
+      },
+      "copied_prepared_sha256_before_training": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+      "same_cell_names": true,
+      "same_gene_names": true,
+      "status": "FAIL",
+      "error": "TypeError: BaseModelClass.load() got an unexpected keyword argument 'devices'",
+      "elapsed_seconds": 0.344
+    },
+    {
+      "mode": "soft",
+      "evaluation_scope": "SMOKE_TEST_ONLY_NOT_FORMAL_MODEL_COMPARISON",
+      "n_cells": 200,
+      "n_genes": 894,
+      "seed": 0,
+      "n_samples": 2,
+      "expected_epochs": 2,
+      "source_prepared_sha256": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+      "copied_prepared_sha256_before_training": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+      "fit_qc": {
+        "status": "PASS",
+        "mode": "soft",
+        "lam": 1.0,
+        "lam2": 0.0,
+        "training_options": {
+          "max_epochs": 2,
+          "batch_size": 256,
+          "accelerator": "gpu",
+          "devices": 1,
+          "early_stopping": false,
+          "enable_progress_bar": false,
+          "enable_checkpointing": true
+        },
+        "periodic_checkpoint": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_seed0\\checkpoints\\last.ckpt",
+        "official_periodic_checkpoint": "",
+        "optimizer_resume": "NOT_IMPLEMENTED",
+        "epochs_recorded": 2,
+        "history_finite": true,
+        "weights_finite": true,
+        "save_load_equal": true,
+        "artifacts": [
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_seed0\\model\\model.pt",
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_seed0\\tables\\training_history.csv",
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_seed0\\fit_qc.json"
+        ],
+        "batch_size_deviation_from_official_fullbatch": true,
+        "scientific_qc": {
+          "convergence": "REVIEW_REQUIRED",
+          "seed_stability": "NOT_RUN"
+        }
+      },
+      "same_cell_names": true,
+      "same_gene_names": true,
+      "status": "FAIL",
+      "error": "TypeError: BaseModelClass.load() got an unexpected keyword argument 'devices'",
+      "elapsed_seconds": 5.609
+    },
+    {
+      "mode": "soft_regularized",
+      "evaluation_scope": "SMOKE_TEST_ONLY_NOT_FORMAL_MODEL_COMPARISON",
+      "n_cells": 200,
+      "n_genes": 894,
+      "seed": 0,
+      "n_samples": 2,
+      "expected_epochs": 2,
+      "source_prepared_sha256": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+      "copied_prepared_sha256_before_training": "c06d54ac61b08e48a807c1ae729e1b7895991b92c0498aa086d9e8221471e9b9",
+      "fit_qc": {
+        "status": "PASS",
+        "mode": "soft_regularized",
+        "lam": 1.0,
+        "lam2": 0.1,
+        "training_options": {
+          "max_epochs": 2,
+          "batch_size": 256,
+          "accelerator": "gpu",
+          "devices": 1,
+          "early_stopping": false,
+          "enable_progress_bar": false,
+          "enable_checkpointing": true
+        },
+        "periodic_checkpoint": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_regularized_seed0\\checkpoints\\last.ckpt",
+        "official_periodic_checkpoint": "",
+        "optimizer_resume": "NOT_IMPLEMENTED",
+        "epochs_recorded": 2,
+        "history_finite": true,
+        "weights_finite": true,
+        "save_load_equal": true,
+        "artifacts": [
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_regularized_seed0\\model\\model.pt",
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_regularized_seed0\\tables\\training_history.csv",
+          "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\smoke\\soft_regularized_seed0\\fit_qc.json"
+        ],
+        "batch_size_deviation_from_official_fullbatch": true,
+        "scientific_qc": {
+          "convergence": "REVIEW_REQUIRED",
+          "seed_stability": "NOT_RUN"
+        }
+      },
+      "same_cell_names": true,
+      "same_gene_names": true,
+      "status": "FAIL",
+      "error": "TypeError: BaseModelClass.load() got an unexpected keyword argument 'devices'",
+      "elapsed_seconds": 3.032
+    }
+  ],
+  "unvalidated_scientific_questions": [
+    "Convergence",
+    "Biological velocity direction",
+    "Full-data soft-mode performance",
+    "CellRank fate effects",
+    "Cross-seed robustness"
+  ]
+}

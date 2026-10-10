@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "execution_status": "PASS",
+  "scope": "Posterior-sampling stability of ONE trained seed0 model; NOT training-seed stability",
+  "grid": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "cutoffs": [
+      0,
+      0.001,
+      0.01
+    ],
+    "target_fractions": [
+      1,
+      0.5
+    ]
+  },
+  "n_posterior_samples": 30,
+  "source_hashes": {
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\fate.h5ad": "56eee3b81ac62e9400668e1283f91ab59cf5287d711c77e861463142ef2a3bf6",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\model\\model.pt": "73fd3e8ec1539a4ddd4068c73a801b3eaf72e98db530c14aa75f7d52063e0f80",
+    "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_results\\official_zebrafish\\hard_seed0\\terminal_cell_sets.json": "c96e772c7c8fb5e3c34015aef977d74c003a04b967f741ca7b28905a50f9e851"
+  },
+  "source_files_unchanged": true,
+  "posterior_effect_rank_min_spearman": 0.9999507395237854,
+  "posterior_fate_delta_min_spearman": 0.9969062838866656,
+  "nontrivial_mean_direction_agreement": 1.0,
+  "posterior_stability_pass": true,
+  "criterion": "cell-effect Spearman >=0.8, same mean-fate sign when both magnitudes >1e-4",
+  "training_seed_stability": "NOT_RUN",
+  "biological_validation": "NOT_RUN",
+  "resume_fingerprint": "c98972039bbe7636cb9ae4a6530764d49c2e310056dbe6bacf682c2955f39d2c",
+  "completed_conditions": 15,
+  "identical_matrix_reuse": "Matching posterior seed and exact modified weight bytes reuse actual saved simulation; recorded per condition",
+  "scvi_manager_release_qc": [
+    {
+      "tag": "nr2f5_seed0_cutoff0.001_fraction1",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "elf1_seed1_cutoff0.001_fraction1",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "nr2f5_seed1_cutoff0.001_fraction1",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "elf1_seed2_cutoff0.001_fraction1",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "nr2f5_seed2_cutoff0.001_fraction1",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "nr2f5_seed0_cutoff0.01_fraction1",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "elf1_seed0_cutoff0.001_fraction0.5",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    },
+    {
+      "tag": "nr2f5_seed0_cutoff0.001_fraction0.5",
+      "model_instance_buckets": 0,
+      "setup_manager_buckets": 0
+    }
+  ],
+  "interpretation": "Cutoff and strongest-half sensitivity describe model dependence, not experimental robustness."
+}

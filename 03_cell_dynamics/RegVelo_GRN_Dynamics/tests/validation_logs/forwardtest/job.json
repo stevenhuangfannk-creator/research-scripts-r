@@ -1,0 +1,20 @@
+{
+  "input": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\canonical_fibroblasts_32_audit_only.h5ad",
+  "grn": "C:\\Users\\13683\\Documents\\Codex\\2026-10-08\\files-pasted-by-the-user-codex\\outputs\\tf-regulatory-network-atlas\\data\\cache\\collectri.csv",
+  "output": "run",
+  "grn_orientation": "regulator_by_target",
+  "group_key": "major_cell_type",
+  "time_key": null,
+  "species": "Homo sapiens",
+  "gene_id_type": "gene_symbol",
+  "input_provenance": "C:\\Users\\13683\\Desktop\\scriptsR\\reproductions\\lin_2026_peri_implantitis\\results\\phase4a\\phase4a_preliminary_integrated.h5ad",
+  "seed": 0,
+  "mode": "hard",
+  "perturb": {
+    "tfs": [
+      "JUND"
+    ],
+    "cutoff": 0.001,
+    "effects": 0
+  }
+}

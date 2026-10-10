@@ -1,0 +1,47 @@
+[
+  {
+    "test": "help",
+    "command": [
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Scripts\\python.exe",
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\research-scripts-r\\03_cell_dynamics\\RegVelo_GRN_Dynamics\\scripts\\regvelo.py",
+      "--help"
+    ],
+    "exit_code": 0,
+    "log": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\help_stdout_stderr.log"
+  },
+  {
+    "test": "audit",
+    "command": [
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Scripts\\python.exe",
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\research-scripts-r\\03_cell_dynamics\\RegVelo_GRN_Dynamics\\scripts\\regvelo.py",
+      "audit",
+      "--config",
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\job.json"
+    ],
+    "exit_code": 1,
+    "log": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\audit_stdout_stderr.log"
+  },
+  {
+    "test": "report",
+    "command": [
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Scripts\\python.exe",
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\research-scripts-r\\03_cell_dynamics\\RegVelo_GRN_Dynamics\\scripts\\regvelo.py",
+      "report",
+      "--config",
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\job.json"
+    ],
+    "exit_code": 0,
+    "log": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\report_stdout_stderr.log"
+  },
+  {
+    "test": "pip_check",
+    "command": [
+      "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\outputs\\regvelo_runtime\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "exit_code": 1,
+    "log": "C:\\Users\\13683\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-codex\\work\\forwardtest\\pip_check_stdout_stderr.log"
+  }
+]
