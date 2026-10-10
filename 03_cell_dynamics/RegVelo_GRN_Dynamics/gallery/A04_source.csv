@@ -1,7 +1,0 @@
-step,count,type
-Input,8012,feature_retention
-Velocity retained,2164,feature_retention
-GRN retained,1007,feature_retention
-Regulators,82,aligned_prior
-Targets,993,aligned_prior
-Prior edges,4380,aligned_prior

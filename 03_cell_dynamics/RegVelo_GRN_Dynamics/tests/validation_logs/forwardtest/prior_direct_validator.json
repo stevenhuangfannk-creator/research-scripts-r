@@ -1,4 +1,0 @@
-{
-  "status": "FAIL",
-  "error": "ValueError: GRN has duplicate gene labels; resolve gene IDs before alignment."
-}

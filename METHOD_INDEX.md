@@ -19,7 +19,6 @@
 | 细胞组成变化／差异丰度 | 先确定样本级设计，暂无默认方法 | [differential_abundance](02_differential_analysis/differential_abundance/METHOD_CARD.md) | — | — | R / Python | CANDIDATE；查看具体方法卡 |
 | 拟时序／轨迹 | [monocle3](03_cell_dynamics/monocle3/METHOD_CARD.md) | [slingshot](03_cell_dynamics/slingshot/METHOD_CARD.md) | [tradeseq](03_cell_dynamics/tradeSeq/METHOD_CARD.md) | — | R | CANDIDATE |
 | RNA velocity（RNA 速率） | 暂无默认方法 | [scvelo](09_python_bridge/scVelo/METHOD_CARD.md) | — | — | Python | 查看方法卡中的 CANDIDATE／EXPERIMENTAL 状态 |
-| GRN 感知的 RNA 动力学与 TF regulon 虚拟 KO | [regvelo_grn_dynamics](03_cell_dynamics/RegVelo_GRN_Dynamics/METHOD_CARD.md) | [scvelo](09_python_bridge/scVelo/METHOD_CARD.md)（基线） | [CellRank](09_python_bridge/CellRank/METHOD_CARD.md)（命运） | — | Python | CANDIDATE；官方697细胞hard/KO/27图已执行，稳定性与科学边界见模块QC |
 | 细胞命运 | 暂无默认方法 | [cellrank](09_python_bridge/CellRank/METHOD_CARD.md) | — | — | Python | 查看方法卡中的 CANDIDATE／EXPERIMENTAL 状态 |
 | 细胞通讯 | [cellchat](04_cell_communication/CellChat/METHOD_CARD.md) | [cellphonedb](09_python_bridge/CellPhoneDB/METHOD_CARD.md) | [liana_plus](04_cell_communication/LIANA/METHOD_CARD.md) | — | R / Python | CANDIDATE |
 | 配体到靶基因响应 | [nichenet](04_cell_communication/NicheNet/METHOD_CARD.md) | — | — | — | R | CANDIDATE |

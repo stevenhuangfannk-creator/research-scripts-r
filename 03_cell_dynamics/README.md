@@ -7,6 +7,5 @@
 | 从有依据的根细胞出发做表达状态排序 | [Monocle3](monocle3/README.md) | 有脚本，CANDIDATE / BLOCKED，尚未执行验证 |
 | 沿聚类骨架拟合谱系曲线 | [Slingshot](slingshot/README.md) | 候选说明，尚无脚本 |
 | 检验给定轨迹上的基因趋势/谱系差异 | [tradeSeq](tradeSeq/README.md) | 候选说明，尚无脚本 |
-| GRN约束RNA动力学、regulon虚拟KO与命运对照 | [RegVelo_GRN_Dynamics](RegVelo_GRN_Dynamics/README.md) | 官方Python模型独立CLI；工程测试已执行，模型/图件状态读真实报告 |
 
 先读[方法索引](../METHOD_INDEX.md)、[图例](../GALLERY.md)和[登记规则](../registry/README.md)。目录存在不等于方法已验证。Monocle3 拟时序不能直接解释为真实时间或已证明的细胞命运。

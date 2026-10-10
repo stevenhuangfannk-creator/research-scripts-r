@@ -1335,39 +1335,6 @@
         "model-specific": null
       },
       "last_validated": null
-    },
-    {
-      "id": "regvelo_grn_dynamics",
-      "category": "03_cell_dynamics",
-      "language": "Python",
-      "status": "CANDIDATE",
-      "validated": false,
-      "validation": {
-        "status": "PARTIAL",
-        "scope": "官方697细胞hard训练、velocity/CellRank/GRN、2个regulon KO、null/no-edge和27图已执行PASS；后验稳定性读取MODEL_QC_REPORT，正式多训练seed和实验验证NOT_RUN；保持CANDIDATE，不自动推荐",
-        "dataset": "official zebrafish neural crest, 697 cells / 1007 model genes",
-        "date": "2026-10-10"
-      },
-      "default_for": [],
-      "priority": "B",
-      "path": "03_cell_dynamics/RegVelo_GRN_Dynamics",
-      "script": "03_cell_dynamics/RegVelo_GRN_Dynamics/scripts/regvelo.py",
-      "config": "03_cell_dynamics/RegVelo_GRN_Dynamics/config/official_zebrafish.json",
-      "package": "regvelo; scvelo; cellrank",
-      "outputs": [
-        "Input audit and named target-by-regulator GRN",
-        "Official REGVELOVI model, velocity and latent time",
-        "CellRank fate probabilities and regulon-level in silico perturbation",
-        "Real numerical tables, QC, reproducible scientific figures and run status"
-      ],
-      "gallery": "03_cell_dynamics/RegVelo_GRN_Dynamics/gallery",
-      "source": "https://github.com/theislab/regvelo",
-      "package_versions": {
-        "regvelo": "0.4.2+ae68f699b154",
-        "scvelo": "0.3.3",
-        "cellrank": "2.0.7"
-      },
-      "last_validated": "2026-10-10"
     }
   ]
 }

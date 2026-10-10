@@ -21,7 +21,6 @@ English summary: An R-first bioinformatics methods and visualization library. St
 | 单细胞对象构建、质控、标准化、整合、聚类和注释 | [单细胞基础分析](01_scrna_core/README.md) | Seurat、scDblFinder、DecontX、Harmony |
 | 找 cluster marker、按样本汇总 pseudobulk | [差异分析](02_differential_analysis/README.md) | Seurat；区分探索性 marker 与有生物学重复的条件比较 |
 | 拟时序、轨迹和基因动态 | [细胞动态](03_cell_dynamics/README.md) | Monocle3；Slingshot、tradeSeq 为候选 |
-| GRN感知RNA动力学与TF regulon虚拟KO | [RegVelo](03_cell_dynamics/RegVelo_GRN_Dynamics/README.md) | 官方Python模型独立CLI；真实剪接层与命名GRN准入，状态读实际运行报告 |
 | 细胞通讯、通讯角色、条件比较 | [细胞通讯](04_cell_communication/README.md) | CellChat；LIANA、NicheNet、CellPhoneDB 为候选 |
 | GO/KEGG、GSEA、通路活性 | [通路与功能分析](05_pathway_function/README.md) | clusterProfiler、fgsea；其他方法见状态说明 |
 | PPI、共表达、转录调控网络 | [基因网络](06_gene_networks/README.md) | 方法卡与候选规划，尚无可运行封装 |

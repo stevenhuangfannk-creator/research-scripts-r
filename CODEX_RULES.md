@@ -16,4 +16,3 @@
 14. 缺失输出应标为 `BLOCKED`／`UNVALIDATED`；静态解析通过不能证明分析完成。
 15. 保持细胞和条件的颜色一致。原创示意图必须保留可编辑源文件和明确的来源／许可说明。
 16. 重要使用指南与决策说明遵循 [AGENTS.md](AGENTS.md)：中文完整解释，保留英文技术名／命令和必要英文摘要，不只提供纯英文说明。
-17. Python专用的 [RegVelo模块](03_cell_dynamics/RegVelo_GRN_Dynamics/README.md)按独立CLI运行，不交给R `run_method.R`。先核查真实剪接层、命名GRN及动力学准入；模型运行、预测稳定性和生物验证分别记录，不把疾病组当真实时间。
